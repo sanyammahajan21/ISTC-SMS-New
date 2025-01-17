@@ -131,11 +131,11 @@ const AssignmentListPage = async ({
         },
       };
       break;
-    case "parent":
+    case "registrar":
       query.lesson.class = {
         students: {
           some: {
-            parentId: currentUserId!,
+            registrarId: currentUserId!,
           },
         },
       };

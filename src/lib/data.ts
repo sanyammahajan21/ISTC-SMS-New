@@ -248,7 +248,7 @@ export const studentsData = [
   },
 ];
 
-export const parentsData = [
+export const registrartsData = [
   {
     id: 1,
     name: "John Doe",

@@ -118,7 +118,7 @@ const EventListPage = async ({
   const roleConditions = {
     teacher: { lessons: { some: { teacherId: currentUserId! } } },
     student: { students: { some: { id: currentUserId! } } },
-    parent: { students: { some: { parentId: currentUserId! } } },
+    registrar: { students: { some: { registrarId: currentUserId! } } },
   };
 
   query.OR = [

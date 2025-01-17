@@ -25,7 +25,7 @@ CREATE TABLE "Student" (
     "bloodType" TEXT NOT NULL,
     "sex" "UserSex" NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "parentId" TEXT NOT NULL,
+    "registrartId" TEXT NOT NULL,
     "classId" INTEGER NOT NULL,
     "gradeId" INTEGER NOT NULL,
 
@@ -50,7 +50,7 @@ CREATE TABLE "Teacher" (
 );
 
 -- CreateTable
-CREATE TABLE "Parent" (
+CREATE TABLE "Registrar" (
     "id" TEXT NOT NULL,
     "username" TEXT NOT NULL,
     "name" TEXT NOT NULL,
@@ -60,7 +60,7 @@ CREATE TABLE "Parent" (
     "address" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
-    CONSTRAINT "Parent_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "Registrar_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -199,13 +199,13 @@ CREATE UNIQUE INDEX "Teacher_email_key" ON "Teacher"("email");
 CREATE UNIQUE INDEX "Teacher_phone_key" ON "Teacher"("phone");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "Parent_username_key" ON "Parent"("username");
+CREATE UNIQUE INDEX "Registrar_username_key" ON "Registrar"("username");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "Parent_email_key" ON "Parent"("email");
+CREATE UNIQUE INDEX "Registrar_email_key" ON "Registrar"("email");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "Parent_phone_key" ON "Parent"("phone");
+CREATE UNIQUE INDEX "Registrar_phone_key" ON "Registrar"("phone");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Grade_level_key" ON "Grade"("level");
@@ -223,7 +223,7 @@ CREATE UNIQUE INDEX "_SubjectToTeacher_AB_unique" ON "_SubjectToTeacher"("A", "B
 CREATE INDEX "_SubjectToTeacher_B_index" ON "_SubjectToTeacher"("B");
 
 -- AddForeignKey
-ALTER TABLE "Student" ADD CONSTRAINT "Student_parentId_fkey" FOREIGN KEY ("parentId") REFERENCES "Parent"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Student" ADD CONSTRAINT "Student_registrarId_fkey" FOREIGN KEY ("registrarId") REFERENCES "Registrar"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Student" ADD CONSTRAINT "Student_classId_fkey" FOREIGN KEY ("classId") REFERENCES "Class"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

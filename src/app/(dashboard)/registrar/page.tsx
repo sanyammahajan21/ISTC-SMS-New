@@ -4,13 +4,13 @@ import prisma from "@/lib/prisma";
 import { auth } from "@clerk/nextjs/server";
 
 
-const ParentPage = async () => {
+const RegistrarPage = async () => {
   const { userId } = auth();
   const currentUserId = userId;
   
   const students = await prisma.student.findMany({
     where: {
-      parentId: currentUserId!,
+      registrarId: currentUserId!,
     },
   });
 
@@ -37,4 +37,4 @@ const ParentPage = async () => {
   );
 };
 
-export default ParentPage;
+export default RegistrarPage;

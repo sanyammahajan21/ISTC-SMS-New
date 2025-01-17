@@ -285,7 +285,7 @@ export const createStudent = async (
         birthday: data.birthday,
         gradeId: data.gradeId,
         classId: data.classId,
-        parentId: data.parentId,
+        registrarId: data.registrarId,
       },
     });
 
@@ -330,7 +330,7 @@ export const updateStudent = async (
         birthday: data.birthday,
         gradeId: data.gradeId,
         classId: data.classId,
-        parentId: data.parentId,
+        registrarId: data.registrarId,
       },
     });
     // revalidatePath("/list/students");
