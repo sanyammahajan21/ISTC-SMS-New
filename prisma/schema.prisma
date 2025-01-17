@@ -28,8 +28,8 @@ model Student {
   class       Class        @relation(fields: [classId], references: [id])
   gradeId     Int
   grade       Grade        @relation(fields: [gradeId], references: [id])
-  attendances Attendance[]
-  results     Result[]
+  attendances Attendance[] 
+  results     Result[] 
   birthday    DateTime
 }
 
