@@ -74,6 +74,22 @@ async function main() {
     });
   }
 
+  // registrar
+
+  await prisma.registrar.create({
+    data: {
+      id: "registrar1",
+      username: "registrar1",
+    },
+  });
+  await prisma.registrar.create({
+    data: {
+      id: "registrar2",
+      username: "registrar2",
+    },
+  });
+
+
   // LESSON
   for (let i = 1; i <= 30; i++) {
     await prisma.lesson.create({
@@ -93,20 +109,6 @@ async function main() {
     });
   }
 
-  // PARENT
-  for (let i = 1; i <= 25; i++) {
-    await prisma.parent.create({
-      data: {
-        id: `parentId${i}`,
-        username: `parentId${i}`,
-        name: `PName ${i}`,
-        surname: `PSurname ${i}`,
-        email: `parent${i}@example.com`,
-        phone: `123-456-789${i}`,
-        address: `Address${i}`,
-      },
-    });
-  }
 
   // STUDENT
   for (let i = 1; i <= 50; i++) {

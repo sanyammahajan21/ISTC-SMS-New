@@ -51,7 +51,7 @@ const columns = [
     : []),
 ];
 
-const renderRow = (item: RegistrartList) => (
+const renderRow = (item: RegistrarList) => (
   <tr
     key={item.id}
     className="border-b border-gray-200 even:bg-slate-50 text-sm hover:bg-lamaPurpleLight"

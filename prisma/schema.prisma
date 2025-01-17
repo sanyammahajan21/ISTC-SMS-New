@@ -24,8 +24,6 @@ model Student {
   bloodType   String
   sex         UserSex
   createdAt   DateTime     @default(now())
-  registrarId    String
-  registrar      Registrar       @relation(fields: [registrarId], references: [id])
   classId     Int
   class       Class        @relation(fields: [classId], references: [id])
   gradeId     Int
@@ -56,13 +54,6 @@ model Teacher {
 model Registrar {
   id        String    @id
   username  String    @unique
-  name      String
-  surname   String
-  email     String?   @unique
-  phone     String    @unique
-  address   String
-  createdAt DateTime  @default(now())
-  students  Student[]
 }
 
 model Grade {
