@@ -62,7 +62,7 @@ const columns = [
     accessor: "date",
     className: "hidden md:table-cell",
   },
-  ...(role === "admin" || role === "teacher"
+  ...(role === "registrar" || role === "teacher"
     ? [
         {
           header: "Actions",
@@ -89,7 +89,7 @@ const renderRow = (item: ResultList) => (
     </td>
     <td>
       <div className="flex items-center gap-2">
-        {(role === "admin" || role === "teacher") && (
+        {(role === "registrar" || role === "teacher") && (
           <>
             <FormContainer table="result" type="update" data={item} />
             <FormContainer table="result" type="delete" id={item.id} />
@@ -145,11 +145,6 @@ const renderRow = (item: ResultList) => (
       break;
 
     case "registrar":
-      query.student = {
-        registrarId: currentUserId!,
-      };
-      break;
-    default:
       break;
   }
 
@@ -219,7 +214,7 @@ const renderRow = (item: ResultList) => (
             <button className="w-8 h-8 flex items-center justify-center rounded-full bg-lamaYellow">
               <Image src="/sort.png" alt="" width={14} height={14} />
             </button>
-            {(role === "admin" || role === "teacher") && (
+            {(role === "registrar" || role === "teacher") && (
               <FormContainer table="result" type="create" />
             )}
           </div>

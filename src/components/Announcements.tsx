@@ -5,25 +5,36 @@ const Announcements = async () => {
   const { userId, sessionClaims } = auth();
   const role = (sessionClaims?.metadata as { role?: string })?.role;
 
+  // Define the conditions based on user role
   const roleConditions = {
     teacher: { lessons: { some: { teacherId: userId! } } },
     student: { students: { some: { id: userId! } } },
-    registrar: { students: { some: { registrarId: userId! } } },
+    // Registrar and Admin have global access, so no specific conditions
+    registrar: {},
+    admin: {},
   };
 
+  const whereConditions: any = {
+    // Default case for non-admin users
+    ...(role !== "admin" && role !== "registrar" && {
+      OR: [
+        // Allow null classId for public announcements
+        { classId: null },
+        // Use role-specific conditions to filter based on the user's role
+        ...(roleConditions[role as keyof typeof roleConditions]
+          ? [{ class: roleConditions[role as keyof typeof roleConditions] }]
+          : []),
+      ],
+    }),
+    ...(role === "admin" || role === "registrar" ? {} : {}),
+  };
+
+  // Fetch the announcements
   const data = await prisma.announcement.findMany({
     take: 3,
     orderBy: { date: "desc" },
-    where: {
-      ...(role !== "admin" && {
-        OR: [
-          { classId: null },
-          { class: roleConditions[role as keyof typeof roleConditions] || {} },
-        ],
-      }),
-    },
+    where: whereConditions, // Apply the refactored whereConditions
   });
-
   return (
     <div className="bg-white p-4 rounded-md">
       <div className="flex items-center justify-between">
