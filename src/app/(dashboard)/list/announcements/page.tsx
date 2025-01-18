@@ -93,7 +93,7 @@ const AnnouncementListPage = async ({
   const roleConditions = {
     teacher: { lessons: { some: { teacherId: currentUserId! } } },
     student: { students: { some: { id: currentUserId! } } },
-    registrar: { students: { some: { registrarId: currentUserId! } } },
+    // registrar: { students: { some: { registrarId: currentUserId! } } },
   };
 
   query.OR = [

@@ -1,4 +1,3 @@
-// TEMPORARY DATA
 
 export let role = "student";
 
