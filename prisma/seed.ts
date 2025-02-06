@@ -75,20 +75,23 @@ async function main() {
   }
 
   // registrar
-
-  await prisma.registrar.create({
-    data: {
-      id: "registrar1",
-      username: "registrar1",
-    },
-  });
-  await prisma.registrar.create({
-    data: {
-      id: "registrar2",
-      username: "registrar2",
-    },
-  });
-
+  for (let i = 1; i <= 5; i++) {
+    await prisma.registrar.create({
+      data: {
+        id: `registrar${i}`, // Unique ID for the teacher
+        username: `registrar${i}`,
+        name: `RName${i}`,
+        surname: `RSurname${i}`,
+        email: `registrar${i}@example.com`,
+        phone: `123-456-789${i}`,
+        address: `Address${i}`,
+        bloodType: "A+",
+        sex: i % 2 === 0 ? UserSex.MALE : UserSex.FEMALE,
+        birthday: new Date(new Date().setFullYear(new Date().getFullYear() - 30)),
+      },
+    });
+  }
+  
 
   // LESSON
   for (let i = 1; i <= 30; i++) {

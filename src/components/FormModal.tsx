@@ -6,6 +6,7 @@ import {
   deleteStudent,
   deleteSubject,
   deleteTeacher,
+  deleteRegistrar,
 } from "@/lib/actions";
 import dynamic from "next/dynamic";
 import Image from "next/image";
@@ -37,6 +38,9 @@ const deleteActionMap = {
 // import StudentForm from "./forms/StudentForm";
 
 const TeacherForm = dynamic(() => import("./forms/TeacherForm"), {
+  loading: () => <h1>Loading...</h1>,
+});
+const RegistrarForm = dynamic(() => import("./forms/RegistrarForm"), {
   loading: () => <h1>Loading...</h1>,
 });
 const StudentForm = dynamic(() => import("./forms/StudentForm"), {
@@ -79,6 +83,14 @@ const forms: {
   ),
   teacher: (setOpen, type, data, relatedData) => (
     <TeacherForm
+      type={type}
+      data={data}
+      setOpen={setOpen}
+      relatedData={relatedData}
+    />
+  ),
+  registrar: (setOpen, type, data, relatedData) => (
+    <RegistrarForm
       type={type}
       data={data}
       setOpen={setOpen}
@@ -130,12 +142,12 @@ const FormModal = ({
     const router = useRouter();
 
     useEffect(() => {
-      if (state.success) {
+      if (state && state.success) { 
         toast(`${table} has been deleted!`);
         setOpen(false);
         router.refresh();
       }
-    }, [state, router]);
+    }, [state]);
 
     return type === "delete" && id ? (
       <form action={formAction} className="p-4 flex flex-col gap-4">
