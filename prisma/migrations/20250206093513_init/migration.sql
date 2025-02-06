@@ -55,8 +55,20 @@ CREATE TABLE `Teacher` (
 CREATE TABLE `Registrar` (
     `id` VARCHAR(191) NOT NULL,
     `username` VARCHAR(191) NOT NULL,
+    `name` VARCHAR(191) NOT NULL,
+    `surname` VARCHAR(191) NOT NULL,
+    `email` VARCHAR(191) NULL,
+    `phone` VARCHAR(191) NULL,
+    `address` VARCHAR(191) NOT NULL,
+    `img` VARCHAR(191) NULL,
+    `bloodType` VARCHAR(191) NOT NULL,
+    `sex` ENUM('MALE', 'FEMALE') NOT NULL,
+    `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+    `birthday` DATETIME(3) NOT NULL,
 
     UNIQUE INDEX `Registrar_username_key`(`username`),
+    UNIQUE INDEX `Registrar_email_key`(`email`),
+    UNIQUE INDEX `Registrar_phone_key`(`phone`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
