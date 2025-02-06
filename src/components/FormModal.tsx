@@ -142,12 +142,12 @@ const FormModal = ({
     const router = useRouter();
 
     useEffect(() => {
-      if (state.success) {
+      if (state && state.success) { 
         toast(`${table} has been deleted!`);
         setOpen(false);
         router.refresh();
       }
-    }, [state, router]);
+    }, [state]);
 
     return type === "delete" && id ? (
       <form action={formAction} className="p-4 flex flex-col gap-4">
