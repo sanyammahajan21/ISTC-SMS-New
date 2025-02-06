@@ -1,27 +1,28 @@
 version: '3.8'
 
 services:
-  postgress:
-    image: postgres:15
-    container_name: postgres_db
+  mysql:
+    image: mysql:latest
+    container_name: mysql_db
     environment:
-      POSTGRES_USER: myuser
-      POSTGRES_PASSWORD: mypassword
-      POSTGRES_DB: mydb
+      MYSQL_ROOT_PASSWORD: sms12345678
+      MYSQL_DATABASE: mydb
+      MYSQL_USER: myuser
+      MYSQL_PASSWORD: mypassword
     ports:
-      - '5432:5432'
+      - '3306:3306'
     volumes:
-      - postgres_data:/var/lib/postgresql/data
-    
+      - mysql_data:/var/lib/mysql
+
   app:
     build: .
     container_name: nextjs_app
     ports:
       - '3000:3000'
     environment:
-      - DATABASE_URL: postgresql://myuser:mypassword@[YOUR_SERVER_IP]:5432/mydb
+      - DATABASE_URL: mysql://myuser:mypassword@[YOUR_SERVER_IP]:3306/mydb
     depends_on:
-      - postgres
+      - mysql
 
 volumes:
-  postgres_data:
+  mysql_data:
