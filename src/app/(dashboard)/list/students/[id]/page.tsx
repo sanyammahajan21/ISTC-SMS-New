@@ -1,7 +1,6 @@
 import Announcements from "@/components/Announcements";
 import BigCalendarContainer from "@/components/BigCalendarContainer";
 import FormContainer from "@/components/FormContainer";
-import Performance from "@/components/Performance";
 import StudentAttendanceCard from "@/components/StudentAttendanceCard";
 import prisma from "@/lib/prisma";
 import { auth } from "@clerk/nextjs/server";
@@ -61,7 +60,8 @@ const SingleStudentPage = async ({
                 )}
               </div>
               <p className="text-sm text-gray-500">
-                Lorem ipsum, dolor sit amet consectetur adipisicing elit.
+              The username of student is {student.username}.
+              Studing in class {student.classId}
               </p>
               <div className="flex items-center justify-between gap-2 flex-wrap text-xs font-medium">
                 <div className="w-full md:w-1/3 lg:w-full 2xl:w-1/3 flex items-center gap-2">
@@ -191,7 +191,7 @@ const SingleStudentPage = async ({
             </Link>
           </div>
         </div>
-        <Performance />
+        {/* <Performance /> */}
         <Announcements />
       </div>
     </div>

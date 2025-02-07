@@ -34,7 +34,7 @@ const AnnouncementListPage = async ({
       accessor: "date",
       className: "hidden md:table-cell",
     },
-    ...(role === "admin"
+    ...(role === "admin" || role === "registrar"
       ? [
           {
             header: "Actions",
