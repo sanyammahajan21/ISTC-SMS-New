@@ -1,10 +1,10 @@
 "use client";
 
 import {
-  deleteClass,
+  deleteBranch,
   deleteExam,
   deleteStudent,
-  deleteSubject,
+  deleteCourse,
   deleteTeacher,
   deleteRegistrar,
 } from "@/lib/actions";
@@ -17,19 +17,18 @@ import { toast } from "react-toastify";
 import { FormContainerProps } from "./FormContainer";
 
 const deleteActionMap = {
-  subject: deleteSubject,
-  class: deleteClass,
+  course: deleteCourse,
+  branch: deleteBranch,
   teacher: deleteTeacher,
   student: deleteStudent,
   exam: deleteExam,
 // TODO: OTHER DELETE ACTIONS
-  registrar: deleteSubject,
-  lesson: deleteSubject,
-  assignment: deleteSubject,
-  result: deleteSubject,
-  attendance: deleteSubject,
-  event: deleteSubject,
-  announcement: deleteSubject,
+  registrar: deleteCourse,
+  lecture: deleteCourse,
+  assignment: deleteCourse,
+  result: deleteCourse,
+  attendance: deleteCourse,
+  announcement: deleteCourse,
 };
 
 // USE LAZY LOADING
@@ -46,10 +45,10 @@ const RegistrarForm = dynamic(() => import("./forms/RegistrarForm"), {
 const StudentForm = dynamic(() => import("./forms/StudentForm"), {
   loading: () => <h1>Loading...</h1>,
 });
-const SubjectForm = dynamic(() => import("./forms/SubjectForm"), {
+const CourseForm = dynamic(() => import("./forms/CourseForm"), {
   loading: () => <h1>Loading...</h1>,
 });
-const ClassForm = dynamic(() => import("./forms/ClassForm"), {
+const BranchForm = dynamic(() => import("./forms/BranchForm"), {
   loading: () => <h1>Loading...</h1>,
 });
 const ExamForm = dynamic(() => import("./forms/ExamForm"), {
@@ -65,16 +64,16 @@ const forms: {
     relatedData?: any
   ) => JSX.Element;
 } = {
-  subject: (setOpen, type, data, relatedData) => (
-    <SubjectForm
+  course: (setOpen, type, data, relatedData) => (
+    <CourseForm
       type={type}
       data={data}
       setOpen={setOpen}
       relatedData={relatedData}
     />
   ),
-  class: (setOpen, type, data, relatedData) => (
-    <ClassForm
+  branch: (setOpen, type, data, relatedData) => (
+    <BranchForm
       type={type}
       data={data}
       setOpen={setOpen}

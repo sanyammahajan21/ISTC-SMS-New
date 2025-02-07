@@ -2,11 +2,11 @@
 
 import { revalidatePath } from "next/cache";
 import {
-  ClassSchema,
+  BranchSchema,
   ExamSchema,
   RegistrarSchema,
   StudentSchema,
-  SubjectSchema,
+  CourseSchema,
   TeacherSchema,
 } from "./formValidationSchemas";
 import prisma from "./prisma";
@@ -14,12 +14,12 @@ import { clerkClient } from "@clerk/nextjs/server";
 
 type CurrentState = { success: boolean; error: boolean };
 
-export const createSubject = async (
+export const createCourse = async (
   currentState: CurrentState,
-  data: SubjectSchema
+  data: CourseSchema
 ) => {
   try {
-    await prisma.subject.create({
+    await prisma.course.create({
       data: {
         name: data.name,
         teachers: {
@@ -36,12 +36,12 @@ export const createSubject = async (
   }
 };
 
-export const updateSubject = async (
+export const updateCourse = async (
   currentState: CurrentState,
-  data: SubjectSchema
+  data: CourseSchema
 ) => {
   try {
-    await prisma.subject.update({
+    await prisma.course.update({
       where: {
         id: data.id,
       },
@@ -61,13 +61,13 @@ export const updateSubject = async (
   }
 };
 
-export const deleteSubject = async (
+export const deleteCourse = async (
   currentState: CurrentState,
   data: FormData
 ) => {
   const id = data.get("id") as string;
   try {
-    await prisma.subject.delete({
+    await prisma.course.delete({
       where: {
         id: parseInt(id),
       },
@@ -81,12 +81,12 @@ export const deleteSubject = async (
   }
 };
 
-export const createClass = async (
+export const createBranch = async (
   currentState: CurrentState,
-  data: ClassSchema
+  data: BranchSchema
 ) => {
   try {
-    await prisma.class.create({
+    await prisma.branch.create({
       data,
     });
 
@@ -98,12 +98,12 @@ export const createClass = async (
   }
 };
 
-export const updateClass = async (
+export const updateBranch = async (
   currentState: CurrentState,
-  data: ClassSchema
+  data: BranchSchema
 ) => {
   try {
-    await prisma.class.update({
+    await prisma.branch.update({
       where: {
         id: data.id,
       },
@@ -118,13 +118,13 @@ export const updateClass = async (
   }
 };
 
-export const deleteClass = async (
+export const deleteBranch = async (
   currentState: CurrentState,
   data: FormData
 ) => {
   const id = data.get("id") as string;
   try {
-    await prisma.class.delete({
+    await prisma.branch.delete({
       where: {
         id: parseInt(id),
       },
@@ -164,9 +164,9 @@ export const createTeacher = async (
         bloodType: data.bloodType,
         sex: data.sex,
         birthday: data.birthday,
-        subjects: {
-          connect: data.subjects?.map((subjectId: string) => ({
-            id: parseInt(subjectId),
+        courses: {
+          connect: data.courses?.map((courseId: string) => ({
+            id: parseInt(courseId),
           })),
         },
       },
@@ -211,9 +211,9 @@ export const updateTeacher = async (
         bloodType: data.bloodType,
         sex: data.sex,
         birthday: data.birthday,
-        subjects: {
-          set: data.subjects?.map((subjectId: string) => ({
-            id: parseInt(subjectId),
+        courses: {
+          set: data.courses?.map((coursesId: string) => ({
+            id: parseInt(coursesId),
           })),
         },
       },
@@ -352,12 +352,12 @@ export const createStudent = async (
 ) => {
   console.log(data);
   try {
-    const classItem = await prisma.class.findUnique({
-      where: { id: data.classId },
+    const branchItem = await prisma.branch.findUnique({
+      where: { id: data.branchId },
       include: { _count: { select: { students: true } } },
     });
 
-    if (classItem && classItem.capacity === classItem._count.students) {
+    if (branchItem && branchItem.capacity === branchItem._count.students) {
       return { success: false, error: true };
     }
 
@@ -383,7 +383,7 @@ export const createStudent = async (
         sex: data.sex,
         birthday: data.birthday,
         gradeId: data.gradeId,
-        classId: data.classId,
+        branchId: data.branchId,
       },
     });
 
@@ -427,7 +427,7 @@ export const updateStudent = async (
         sex: data.sex,
         birthday: data.birthday,
         gradeId: data.gradeId,
-        classId: data.classId
+        branchId: data.branchId,
       },
     });
     // revalidatePath("/list/students");
@@ -469,14 +469,14 @@ export const createExam = async (
 
   try {
     // if (role === "teacher") {
-    //   const teacherLesson = await prisma.lesson.findFirst({
+    //   const teacherLecture = await prisma.lecture.findFirst({
     //     where: {
     //       teacherId: userId!,
-    //       id: data.lessonId,
+    //       id: data.lectureId,
     //     },
     //   });
 
-    //   if (!teacherLesson) {
+    //   if (!teacherLecture) {
     //     return { success: false, error: true };
     //   }
     // }
@@ -486,7 +486,7 @@ export const createExam = async (
         title: data.title,
         startTime: data.startTime,
         endTime: data.endTime,
-        lessonId: data.lessonId,
+        lectureId: data.lectureId,
       },
     });
 
@@ -507,14 +507,14 @@ export const updateExam = async (
 
   try {
     // if (role === "teacher") {
-    //   const teacherLesson = await prisma.lesson.findFirst({
+    //   const teacherLecture = await prisma.lecture.findFirst({
     //     where: {
     //       teacherId: userId!,
-    //       id: data.lessonId,
+    //       id: data.lectureId,
     //     },
     //   });
 
-    //   if (!teacherLesson) {
+    //   if (!teacherLecture) {
     //     return { success: false, error: true };
     //   }
     // }
@@ -527,7 +527,7 @@ export const updateExam = async (
         title: data.title,
         startTime: data.startTime,
         endTime: data.endTime,
-        lessonId: data.lessonId,
+        lectureId: data.lectureId,
       },
     });
 
@@ -552,7 +552,7 @@ export const deleteExam = async (
     await prisma.exam.delete({
       where: {
         id: parseInt(id),
-        // ...(role === "teacher" ? { lesson: { teacherId: userId! } } : {}),
+        // ...(role === "teacher" ? { lecture: { teacherId: userId! } } : {}),
       },
     });
 

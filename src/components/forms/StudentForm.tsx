@@ -217,7 +217,7 @@ const StudentForm = ({
           <label className="text-xs text-gray-500">Class</label>
           <select
             className="ring-[1.5px] ring-gray-300 p-2 rounded-md text-sm w-full"
-            {...register("classId")}
+            {...register("branchId")}
             defaultValue={data?.classId}
           >
             {classes.map(
@@ -235,9 +235,9 @@ const StudentForm = ({
               )
             )}
           </select>
-          {errors.classId?.message && (
+          {errors.branchId?.message && (
             <p className="text-xs text-red-400">
-              {errors.classId.message.toString()}
+              {errors.branchId.message.toString()}
             </p>
           )}
         </div>

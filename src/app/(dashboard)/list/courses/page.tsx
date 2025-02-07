@@ -4,13 +4,13 @@ import Table from "@/components/Table";
 import TableSearch from "@/components/TableSearch";
 import prisma from "@/lib/prisma";
 import { ITEM_PER_PAGE } from "@/lib/settings";
-import { Prisma, Subject, Teacher } from "@prisma/client";
+import { Prisma, Course , Teacher } from "@prisma/client";
 import Image from "next/image";
 import { auth } from "@clerk/nextjs/server";
 
-type SubjectList = Subject & { teachers: Teacher[] };
+type CourseList = Course & { teachers: Teacher[] };
 
-const SubjectListPage = async ({
+const CourseListPage = async ({
   searchParams,
 }: {
   searchParams: { [key: string]: string | undefined };
@@ -20,7 +20,7 @@ const SubjectListPage = async ({
 
   const columns = [
     {
-      header: "Subject Name",
+      header: "Course Name",
       accessor: "name",
     },
     {
@@ -34,7 +34,7 @@ const SubjectListPage = async ({
     },
   ];
 
-  const renderRow = (item: SubjectList) => (
+  const renderRow = (item: CourseList) => (
     <tr
       key={item.id}
       className="border-b border-gray-200 even:bg-slate-50 text-sm hover:bg-lamaPurpleLight"
@@ -47,8 +47,8 @@ const SubjectListPage = async ({
         <div className="flex items-center gap-2">
           {(role === "admin" || role === "registrar") && (
             <>
-              <FormContainer table="subject" type="update" data={item} />
-              <FormContainer table="subject" type="delete" id={item.id} />
+              <FormContainer table="course" type="update" data={item} />
+              <FormContainer table="course" type="delete" id={item.id} />
             </>
           )}
         </div>
@@ -62,7 +62,7 @@ const SubjectListPage = async ({
 
   // URL PARAMS CONDITION
 
-  const query: Prisma.SubjectWhereInput = {};
+  const query: Prisma.CourseWhereInput = {};
 
   if (queryParams) {
     for (const [key, value] of Object.entries(queryParams)) {
@@ -79,7 +79,7 @@ const SubjectListPage = async ({
   }
 
   const [data, count] = await prisma.$transaction([
-    prisma.subject.findMany({
+    prisma.course.findMany({
       where: query,
       include: {
         teachers: true,
@@ -87,14 +87,14 @@ const SubjectListPage = async ({
       take: ITEM_PER_PAGE,
       skip: ITEM_PER_PAGE * (p - 1),
     }),
-    prisma.subject.count({ where: query }),
+    prisma.course.count({ where: query }),
   ]);
 
   return (
     <div className="bg-white p-4 rounded-md flex-1 m-4 mt-0">
       {/* TOP */}
       <div className="flex items-center justify-between">
-        <h1 className="hidden md:block text-lg font-semibold">All Subjects</h1>
+        <h1 className="hidden md:block text-lg font-semibold">All Courses</h1>
         <div className="flex flex-col md:flex-row items-center gap-4 w-full md:w-auto">
           <TableSearch />
           <div className="flex items-center gap-4 self-end">
@@ -105,7 +105,7 @@ const SubjectListPage = async ({
               <Image src="/sort.png" alt="" width={14} height={14} />
             </button>
             {(role === "admin" || role === "registrar") && (
-              <FormContainer table="subject" type="create" />
+              <FormContainer table="course" type="create" />
             )}
           </div>
         </div>
@@ -118,4 +118,4 @@ const SubjectListPage = async ({
   );
 };
 
-export default SubjectListPage;
+export default CourseListPage;

@@ -32,8 +32,8 @@ const menuItems = [
       },
       {
         icon: "/subject.png",
-        label: "Subjects",
-        href: "/list/subjects",
+        label: "Courses",
+        href: "/list/courses",
         visible: ["registrar"],
       },
       {
@@ -44,14 +44,14 @@ const menuItems = [
       },
       {
         icon: "/class.png",
-        label: "Classes",
-        href: "/list/classes",
+        label: "Branches",
+        href: "/list/branches",
         visible: ["registrar", "teacher"],
       },
       {
         icon: "/lesson.png",
-        label: "Lessons",
-        href: "/list/lessons",
+        label: "Lectures",
+        href: "/list/lectures",
         visible: ["teacher"],
       },
       {
@@ -95,18 +95,18 @@ const menuItems = [
         href: "/profile",
         visible: ["admin", "teacher", "student", "registrar"],
       },
-      {
-        icon: "/setting.png",
-        label: "Settings",
-        href: "/settings",
-        visible: ["admin", "teacher", "student", "registrar"],
-      },
-      {
-        icon: "/logout.png",
-        label: "Logout",
-        href: "/logout",
-        visible: ["admin", "teacher", "student", "registrar"],
-      },
+      // {
+      //   icon: "/setting.png",
+      //   label: "Settings",
+      //   href: "/settings",
+      //   visible: ["admin", "teacher", "student", "registrar"],
+      // },
+      // {
+      //   icon: "/logout.png",
+      //   label: "Logout",
+      //   href: "/logout",
+      //   visible: ["admin", "teacher", "student", "registrar"],
+      // },
     ],
   },
 ];
