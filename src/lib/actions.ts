@@ -364,8 +364,9 @@ export const createStudent = async (
     const user = await clerkClient.users.createUser({
       username: data.username,
       password: data.password,
-      firstName: data.name,
-      lastName: data.surname,
+      name: data.name,
+      fatherName: data.fatherName,
+      motherName: data.motherName,
       publicMetadata:{role:"student"}
     });
 
@@ -374,14 +375,11 @@ export const createStudent = async (
         id: user.id,
         username: data.username,
         name: data.name,
-        surname: data.surname,
-        email: data.email || null,
+        fatherName: data.fatherName,
+        motherName: data.motherName,
         phone: data.phone || null,
-        address: data.address,
         img: data.img || null,
-        bloodType: data.bloodType,
         sex: data.sex,
-        birthday: data.birthday,
         gradeId: data.gradeId,
         branchId: data.branchId,
       },
@@ -406,8 +404,9 @@ export const updateStudent = async (
     const user = await clerkClient.users.updateUser(data.id, {
       username: data.username,
       ...(data.password !== "" && { password: data.password }),
-      firstName: data.name,
-      lastName: data.surname,
+      name: data.name,
+      fatherName: data.fatherName,
+      motherName: data.motherName,
     });
 
     await prisma.student.update({
@@ -418,14 +417,11 @@ export const updateStudent = async (
         ...(data.password !== "" && { password: data.password }),
         username: data.username,
         name: data.name,
-        surname: data.surname,
-        email: data.email || null,
+        fatherName: data.fatherName,
+        motherName: data.motherName,
         phone: data.phone || null,
-        address: data.address,
         img: data.img || null,
-        bloodType: data.bloodType,
         sex: data.sex,
-        birthday: data.birthday,
         gradeId: data.gradeId,
         branchId: data.branchId,
       },

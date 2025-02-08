@@ -38,8 +38,8 @@ const menuItems = [
       },
       {
         icon: "/subject.png",
-        label: "Alloted Subjects",
-        href: "/list/allotedSubjects",
+        label: "Alloted Courses",
+        href: "/list/allotedCourses",
         visible: ["teacher"],
       },
       {
@@ -71,12 +71,6 @@ const menuItems = [
         label: "Attendance",
         href: "/list/attendance",
         visible: [ "teacher"],
-      },
-      {
-        icon: "/calendar.png",
-        label: "Events",
-        href: "/list/events",
-        visible: ["admin", "teacher", "registrar"],
       },
       {
         icon: "/announcement.png",

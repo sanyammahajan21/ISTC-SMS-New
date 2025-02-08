@@ -67,7 +67,7 @@ const StudentForm = ({
     }
   }, [state, router, type, setOpen]);
 
-  const { grades, classes } = relatedData;
+  const { grades, branches } = relatedData;
 
   return (
     <form className="flex flex-col gap-8" onSubmit={onSubmit}>
@@ -84,13 +84,6 @@ const StudentForm = ({
           defaultValue={data?.username}
           register={register}
           error={errors?.username}
-        />
-        <InputField
-          label="Email"
-          name="email"
-          defaultValue={data?.email}
-          register={register}
-          error={errors?.email}
         />
         <InputField
           label="Password"
@@ -125,19 +118,26 @@ const StudentForm = ({
       </CldUploadWidget>
       <div className="flex justify-between flex-wrap gap-4">
         <InputField
-          label="First Name"
+          label="Name"
           name="name"
           defaultValue={data?.name}
           register={register}
           error={errors.name}
-        />
+        />     
         <InputField
-          label="Last Name"
-          name="surname"
-          defaultValue={data?.surname}
+          label="Father Name"
+          name="fatherName"
+          defaultValue={data?.fatherName}
           register={register}
-          error={errors.surname}
-        />
+          error={errors.fatherName}
+        />  
+        <InputField
+          label="Mother Name"
+          name="motherName"
+          defaultValue={data?.motherName}
+          register={register}
+          error={errors.motherName}
+        />  
         <InputField
           label="Phone"
           name="phone"
@@ -145,29 +145,7 @@ const StudentForm = ({
           register={register}
           error={errors.phone}
         />
-        <InputField
-          label="Address"
-          name="address"
-          defaultValue={data?.address}
-          register={register}
-          error={errors.address}
-        />
-        <InputField
-          label="Blood Type"
-          name="bloodType"
-          defaultValue={data?.bloodType}
-          register={register}
-          error={errors.bloodType}
-        />
-        <InputField
-          label="Birthday"
-          name="birthday"
-          defaultValue={data?.birthday.toISOString().split("T")[0]}
-          register={register}
-          error={errors.birthday}
-          type="date"
-        />
-
+        
         {data && (
           <InputField
             label="Id"
@@ -214,22 +192,22 @@ const StudentForm = ({
           )}
         </div>
         <div className="flex flex-col gap-2 w-full md:w-1/4">
-          <label className="text-xs text-gray-500">Class</label>
+          <label className="text-xs text-gray-500">Branch</label>
           <select
             className="ring-[1.5px] ring-gray-300 p-2 rounded-md text-sm w-full"
             {...register("branchId")}
-            defaultValue={data?.classId}
+            defaultValue={data?.branchId}
           >
-            {classes.map(
-              (classItem: {
+            {branches.map(
+              (branchItem: {
                 id: number;
                 name: string;
                 capacity: number;
                 _count: { students: number };
               }) => (
-                <option value={classItem.id} key={classItem.id}>
-                  ({classItem.name} -{" "}
-                  {classItem._count.students + "/" + classItem.capacity}{" "}
+                <option value={branchItem.id} key={branchItem.id}>
+                  ({branchItem.name} -{" "}
+                  {branchItem._count.students + "/" + branchItem.capacity}{" "}
                   Capacity)
                 </option>
               )

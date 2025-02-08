@@ -4,12 +4,12 @@ import Table from "@/components/Table";
 import TableSearch from "@/components/TableSearch";
 import prisma from "@/lib/prisma";
 import { ITEM_PER_PAGE } from "@/lib/settings";
-import { Announcement, Class, Prisma } from "@prisma/client";
+import { Announcement, Branch, Prisma } from "@prisma/client";
 import Image from "next/image";
 import { auth } from "@clerk/nextjs/server";
 
 
-type AnnouncementList = Announcement & { class: Class };
+type AnnouncementList = Announcement & { branch: Branch };
 const AnnouncementListPage = async ({
   searchParams,
 }: {
@@ -26,8 +26,8 @@ const AnnouncementListPage = async ({
       accessor: "title",
     },
     {
-      header: "Class",
-      accessor: "class",
+      header: "Branch",
+      accessor: "branch",
     },
     {
       header: "Date",
@@ -50,7 +50,7 @@ const AnnouncementListPage = async ({
       className="border-b border-gray-200 even:bg-slate-50 text-sm hover:bg-lamaPurpleLight"
     >
       <td className="flex items-center gap-4 p-4">{item.title}</td>
-      <td>{item.class?.name || "-"}</td>
+      <td>{item.branch?.name || "-"}</td>
       <td className="hidden md:table-cell">
         {new Intl.DateTimeFormat("en-US").format(item.date)}
       </td>
@@ -91,15 +91,15 @@ const AnnouncementListPage = async ({
   // ROLE CONDITIONS
 
   const roleConditions = {
-    teacher: { lessons: { some: { teacherId: currentUserId! } } },
+    teacher: { lectures: { some: { teacherId: currentUserId! } } },
     student: { students: { some: { id: currentUserId! } } },
     // registrar: { students: { some: { registrarId: currentUserId! } } },
   };
 
   query.OR = [
-    { classId: null },
+    { branchId: null },
     {
-      class: roleConditions[role as keyof typeof roleConditions] || {},
+      branch: roleConditions[role as keyof typeof roleConditions] || {},
     },
   ];
 
@@ -107,7 +107,7 @@ const AnnouncementListPage = async ({
     prisma.announcement.findMany({
       where: query,
       include: {
-        class: true,
+        branch: true,
       },
       take: ITEM_PER_PAGE,
       skip: ITEM_PER_PAGE * (p - 1),

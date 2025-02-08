@@ -8,7 +8,7 @@ import { Branch , Event, Prisma } from "@prisma/client";
 import Image from "next/image";
 import { auth } from "@clerk/nextjs/server";
 
-type EventList = Event & { class: Class };
+type EventList = Event & { branch: Branch };
 
 const EventListPage = async ({
   searchParams,
@@ -26,8 +26,8 @@ const EventListPage = async ({
       accessor: "title",
     },
     {
-      header: "Class",
-      accessor: "class",
+      header: "Branch",
+      accessor: "branch",
     },
     {
       header: "Date",
@@ -116,7 +116,7 @@ const EventListPage = async ({
   // ROLE CONDITIONS
 
   const roleConditions = {
-    teacher: { lessons: { some: { teacherId: currentUserId! } } },
+    teacher: { lectures: { some: { teacherId: currentUserId! } } },
     student: { students: { some: { id: currentUserId! } } },
     registrar: { students: { some: { registrarId: currentUserId! } } },
   };

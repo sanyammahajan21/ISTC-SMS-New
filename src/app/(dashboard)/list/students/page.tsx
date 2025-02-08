@@ -5,13 +5,13 @@ import TableSearch from "@/components/TableSearch";
 
 import prisma from "@/lib/prisma";
 import { ITEM_PER_PAGE } from "@/lib/settings";
-import { Class, Prisma, Student } from "@prisma/client";
+import { Branch, Prisma, Student } from "@prisma/client";
 import Image from "next/image";
 import Link from "next/link";
 
 import { auth } from "@clerk/nextjs/server";
 
-type StudentList = Student & { class: Class };
+type StudentList = Student & { class: Branch };
 
 const StudentListPage = async ({
   searchParams,
@@ -71,13 +71,12 @@ const StudentListPage = async ({
         />
         <div className="flex flex-col">
           <h3 className="font-semibold">{item.name}</h3>
-          <p className="text-xs text-gray-500">{item.class.name}</p>
+          <p className="text-xs text-gray-500">{item.branch.name}</p>
         </div>
       </td>
       <td className="hidden md:table-cell">{item.username}</td>
-      <td className="hidden md:table-cell">{item.class.name[0]}</td>
+      <td className="hidden md:table-cell">{item.branch.name[0]}</td>
       <td className="hidden md:table-cell">{item.phone}</td>
-      <td className="hidden md:table-cell">{item.address}</td>
       <td>
         <div className="flex items-center gap-2">
           <Link href={`/list/students/${item.id}`}>
@@ -109,8 +108,8 @@ const StudentListPage = async ({
       if (value !== undefined) {
         switch (key) {
           case "teacherId":
-            query.class = {
-              lessons: {
+            query.branch = {
+              lectures: {
                 some: {
                   teacherId: value,
                 },
@@ -131,7 +130,7 @@ const StudentListPage = async ({
     prisma.student.findMany({
       where: query,
       include: {
-        class: true,
+        branch: true,
       },
       take: ITEM_PER_PAGE,
       skip: ITEM_PER_PAGE * (p - 1),

@@ -12,32 +12,32 @@ const getLatestMonday = (): Date => {
 };
 
 export const adjustScheduleToCurrentWeek = (
-  lessons: { title: string; start: Date; end: Date }[]
+  lectures: { title: string; start: Date; end: Date }[]
 ): { title: string; start: Date; end: Date }[] => {
   const latestMonday = getLatestMonday();
 
-  return lessons.map((lesson) => {
-    const lessonDayOfWeek = lesson.start.getDay();
+  return lectures.map((lectures) => {
+    const lecturesDayOfWeek = lectures.start.getDay();
 
-    const daysFromMonday = lessonDayOfWeek === 0 ? 6 : lessonDayOfWeek - 1;
+    const daysFromMonday = lecturesDayOfWeek === 0 ? 6 : lecturesDayOfWeek - 1;
 
     const adjustedStartDate = new Date(latestMonday);
 
     adjustedStartDate.setDate(latestMonday.getDate() + daysFromMonday);
     adjustedStartDate.setHours(
-      lesson.start.getHours(),
-      lesson.start.getMinutes(),
-      lesson.start.getSeconds()
+      lectures.start.getHours(),
+      lectures.start.getMinutes(),
+      lectures.start.getSeconds()
     );
     const adjustedEndDate = new Date(adjustedStartDate);
     adjustedEndDate.setHours(
-      lesson.end.getHours(),
-      lesson.end.getMinutes(),
-      lesson.end.getSeconds()
+      lectures.end.getHours(),
+      lectures.end.getMinutes(),
+      lectures.end.getSeconds()
     );
 
     return {
-      title: lesson.title,
+      title: lectures.title,
       start: adjustedStartDate,
       end: adjustedEndDate,
     };

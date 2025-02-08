@@ -7,7 +7,7 @@ const Announcements = async () => {
 
   // Define the conditions based on user role
   const roleConditions = {
-    teacher: { lessons: { some: { teacherId: userId! } } },
+    teacher: { lectures: { some: { teacherId: userId! } } },
     student: { students: { some: { id: userId! } } },
     // Registrar and Admin have global access, so no specific conditions
     registrar: {},
@@ -19,10 +19,10 @@ const Announcements = async () => {
     ...(role !== "admin" && role !== "registrar" && {
       OR: [
         // Allow null classId for public announcements
-        { classId: null },
+        { branchId: null },
         // Use role-specific conditions to filter based on the user's role
         ...(roleConditions[role as keyof typeof roleConditions]
-          ? [{ class: roleConditions[role as keyof typeof roleConditions] }]
+          ? [{ branch: roleConditions[role as keyof typeof roleConditions] }]
           : []),
       ],
     }),

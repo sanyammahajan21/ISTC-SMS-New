@@ -2,7 +2,7 @@ import { z } from "zod";
 
 export const courseSchema = z.object({
   id: z.coerce.number().optional(),
-  name: z.string().min(1, { message: "Subject name is required!" }),
+  name: z.string().min(1, { message: "Course name is required!" }),
   teachers: z.array(z.string()), //teacher ids
 });
 
@@ -10,7 +10,7 @@ export type CourseSchema = z.infer<typeof courseSchema>;
 
 export const branchSchema = z.object({
   id: z.coerce.number().optional(),
-  name: z.string().min(1, { message: "branch name is required!" }),
+  name: z.string().min(1, { message: "Branch name is required!" }),
   capacity: z.coerce.number().min(1, { message: "Capacity name is required!" }),
   gradeId: z.coerce.number().min(1, { message: "Grade name is required!" }),
   supervisorId: z.coerce.string().optional(),
@@ -87,17 +87,10 @@ export const studentSchema = z.object({
     .optional()
     .or(z.literal("")),
   name: z.string().min(1, { message: "First name is required!" }),
-  surname: z.string().min(1, { message: "Last name is required!" }),
-  email: z
-    .string()
-    .email({ message: "Invalid email address!" })
-    .optional()
-    .or(z.literal("")),
+  fatherName: z.string().min(1, { message: "Father Name is required!" }),
+  motherName: z.string().min(1, { message: "Mother Name is required!" }),
   phone: z.string().optional(),
-  address: z.string(),
   img: z.string().optional(),
-  bloodType: z.string().min(1, { message: "Blood Type is required!" }),
-  birthday: z.coerce.date({ message: "Birthday is required!" }),
   sex: z.enum(["MALE", "FEMALE"], { message: "Sex is required!" }),
   gradeId: z.coerce.number().min(1, { message: "Grade is required!" }),
   branchId: z.coerce.number().min(1, { message: "branch name is required!" }),

@@ -9,9 +9,9 @@ import Image from "next/image";
 import { auth } from "@clerk/nextjs/server";
 
 type ExamList = Exam & {
-  lesson: {
-    subject: Subject;
-    class: Class;
+  lectures: {
+    course: Course;
+    branch: Branch;
     teacher: Teacher;
   };
 };
@@ -29,12 +29,12 @@ const currentUserId = userId;
 
 const columns = [
   {
-    header: "Subject Name",
+    header: "Course Name",
     accessor: "name",
   },
   {
-    header: "Class",
-    accessor: "class",
+    header: "Branch",
+    accessor: "branch",
   },
   {
     header: "Teacher",
@@ -61,10 +61,10 @@ const renderRow = (item: ExamList) => (
     key={item.id}
     className="border-b border-gray-200 even:bg-slate-50 text-sm hover:bg-lamaPurpleLight"
   >
-    <td className="flex items-center gap-4 p-4">{item.lesson.subject.name}</td>
-    <td>{item.lesson.class.name}</td>
+    <td className="flex items-center gap-4 p-4">{item.lectures.course.name}</td>
+    <td>{item.lectures.branch.name}</td>
     <td className="hidden md:table-cell">
-      {item.lesson.teacher.name + " " + item.lesson.teacher.surname}
+      {item.lectures.teacher.name + " " + item.lectures.teacher.surname}
     </td>
     <td className="hidden md:table-cell">
       {new Intl.DateTimeFormat("en-US").format(item.startTime)}
@@ -90,19 +90,19 @@ const renderRow = (item: ExamList) => (
 
   const query: Prisma.ExamWhereInput = {};
 
-  query.lesson = {};
+  query.lectures = {};
   if (queryParams) {
     for (const [key, value] of Object.entries(queryParams)) {
       if (value !== undefined) {
         switch (key) {
-          case "classId":
-            query.lesson.classId = parseInt(value);
+          case "branchId":
+            query.lectures.branchId = parseInt(value);
             break;
           case "teacherId":
-            query.lesson.teacherId = value;
+            query.lectures.teacherId = value;
             break;
           case "search":
-            query.lesson.subject = {
+            query.lecturess.course = {
               name: { contains: value, mode: "insensitive" },
             };
             break;
@@ -119,10 +119,10 @@ const renderRow = (item: ExamList) => (
     case "admin":
       break;
     case "teacher":
-      query.lesson.teacherId = currentUserId!;
+      query.lectures.teacherId = currentUserId!;
       break;
     case "student":
-      query.lesson.class = {
+      query.lectures.branch = {
         students: {
           some: {
             id: currentUserId!,
@@ -131,7 +131,7 @@ const renderRow = (item: ExamList) => (
       };
       break;
     case "registrar":
-      query.lesson.class = {
+      query.lectures.branch = {
         students: {
           some: {
             registrarId: currentUserId!,
@@ -148,11 +148,11 @@ const renderRow = (item: ExamList) => (
     prisma.exam.findMany({
       where: query,
       include: {
-        lesson: {
+        lectures: {
           select: {
-            subject: { select: { name: true } },
+            course: { select: { name: true } },
             teacher: { select: { name: true, surname: true } },
-            class: { select: { name: true } },
+            branch: { select: { name: true } },
           },
         },
       },

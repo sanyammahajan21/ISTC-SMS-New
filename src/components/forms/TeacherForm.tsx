@@ -56,7 +56,7 @@ const TeacherForm = ({
     }
   }, [state, router, type, setOpen]);
 
-  const { subjects } = relatedData;
+  const { courses } = relatedData;
 
   return (
     <form className="flex flex-col gap-8" onSubmit={onSubmit}>
@@ -164,16 +164,16 @@ const TeacherForm = ({
           )}
         </div>
         <div className="flex flex-col gap-2 w-full md:w-1/4">
-          <label className="text-xs text-gray-500">Subjects</label>
+          <label className="text-xs text-gray-500">Courses</label>
           <select
             multiple
             className="ring-[1.5px] ring-gray-300 p-2 rounded-md text-sm w-full"
             {...register("courses")}
-            defaultValue={data?.subjects}
+            defaultValue={data?.courses}
           >
-            {subjects.map((subject: { id: number; name: string }) => (
-              <option value={subject.id} key={subject.id}>
-                {subject.name}
+            {courses.map((course: { id: number; name: string }) => (
+              <option value={course.id} key={course.id}>
+                {course.name}
               </option>
             ))}
           </select>

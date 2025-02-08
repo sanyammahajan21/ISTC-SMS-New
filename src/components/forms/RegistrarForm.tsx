@@ -55,7 +55,7 @@ const RegistrarForm = ({
     }
   }, [state, router, type, setOpen]);
 
-  const { subjects } = relatedData;
+  const { courses } = relatedData;
 
   return (
     <form className="flex flex-col gap-8" onSubmit={onSubmit}>

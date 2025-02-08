@@ -6,14 +6,14 @@ import InputField from "../InputField";
 import {
   examSchema,
   ExamSchema,
-  subjectSchema,
-  SubjectSchema,
+  courseSchema,
+  CourseSchema,
 } from "@/lib/formValidationSchemas";
 import {
   createExam,
-  createSubject,
+  createCourse,
   updateExam,
-  updateSubject,
+  updateCourse,
 } from "@/lib/actions";
 import { useFormState } from "react-dom";
 import { Dispatch, SetStateAction, useEffect } from "react";
@@ -64,7 +64,7 @@ const ExamForm = ({
     }
   }, [state, router, type, setOpen]);
 
-  const { lessons } = relatedData;
+  const { lectures } = relatedData;
 
   return (
     <form className="flex flex-col gap-8" onSubmit={onSubmit}>
@@ -107,21 +107,21 @@ const ExamForm = ({
           />
         )}
         <div className="flex flex-col gap-2 w-full md:w-1/4">
-          <label className="text-xs text-gray-500">Lesson</label>
+          <label className="text-xs text-gray-500">Lectures</label>
           <select
             className="ring-[1.5px] ring-gray-300 p-2 rounded-md text-sm w-full"
-            {...register("lessonId")}
+            {...register("lecturesId")}
             defaultValue={data?.teachers}
           >
-            {lessons.map((lesson: { id: number; name: string }) => (
-              <option value={lesson.id} key={lesson.id}>
-                {lesson.name}
+            {lectures.map((lectures: { id: number; name: string }) => (
+              <option value={lectures.id} key={lectures.id}>
+                {lectures.name}
               </option>
             ))}
           </select>
-          {errors.lessonId?.message && (
+          {errors.lecturesId?.message && (
             <p className="text-xs text-red-400">
-              {errors.lessonId.message.toString()}
+              {errors.lecturesId.message.toString()}
             </p>
           )}
         </div>

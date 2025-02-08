@@ -53,8 +53,8 @@ const columns = [
     className: "hidden md:table-cell",
   },
   {
-    header: "Class",
-    accessor: "class",
+    header: "Branch",
+    accessor: "branch",
     className: "hidden md:table-cell",
   },
   {
@@ -135,8 +135,8 @@ const renderRow = (item: ResultList) => (
       break;
     case "teacher":
       query.OR = [
-        { exam: { lesson: { teacherId: currentUserId! } } },
-        { assignment: { lesson: { teacherId: currentUserId! } } },
+        { exam: { lectures: { teacherId: currentUserId! } } },
+        { assignment: { lectures: { teacherId: currentUserId! } } },
       ];
       break;
 
@@ -155,9 +155,9 @@ const renderRow = (item: ResultList) => (
         student: { select: { name: true, surname: true } },
         exam: {
           include: {
-            lesson: {
+            lectures: {
               select: {
-                class: { select: { name: true } },
+                branch: { select: { name: true } },
                 teacher: { select: { name: true, surname: true } },
               },
             },
@@ -165,9 +165,9 @@ const renderRow = (item: ResultList) => (
         },
         assignment: {
           include: {
-            lesson: {
+            lectures: {
               select: {
-                class: { select: { name: true } },
+                branch: { select: { name: true } },
                 teacher: { select: { name: true, surname: true } },
               },
             },
@@ -192,10 +192,10 @@ const renderRow = (item: ResultList) => (
       title: assessment.title,
       studentName: item.student.name,
       studentSurname: item.student.surname,
-      teacherName: assessment.lesson.teacher.name,
-      teacherSurname: assessment.lesson.teacher.surname,
+      teacherName: assessment.lectures.teacher.name,
+      teacherSurname: assessment.lectures.teacher.surname,
       score: item.score,
-      className: assessment.lesson.class.name,
+      className: assessment.lectures.branch.name,
       startTime: isExam ? assessment.startTime : assessment.startDate,
     };
   });

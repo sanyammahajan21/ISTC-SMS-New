@@ -400,7 +400,7 @@ export const classesData = [
   },
 ];
 
-export const lessonsData = [
+export const lecturesData = [
   {
     id: 1,
     subject: "Math",

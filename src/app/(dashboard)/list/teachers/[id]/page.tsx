@@ -19,16 +19,16 @@ const SingleTeacherPage = async ({
 
   const teacher:
     | (Teacher & {
-        _count: { subjects: number; lessons: number; classes: number };
+        _count: { course: number; lectures: number; branches: number };
       })
     | null = await prisma.teacher.findUnique({
     where: { id },
     include: {
       _count: {
         select: {
-          subjects: true,
-          lessons: true,
-          classes: true,
+          courses: true,
+          lectures: true,
+          branches: true,
         },
       },
     },
@@ -116,9 +116,9 @@ const SingleTeacherPage = async ({
               />
               <div className="">
                 <h1 className="text-xl font-semibold">
-                  {teacher._count.subjects}
+                  {teacher._count.courses}
                 </h1>
-                <span className="text-sm text-gray-400">Branches</span>
+                <span className="text-sm text-gray-400">Courses</span>
               </div>
             </div>
             {/* CARD */}
@@ -132,9 +132,9 @@ const SingleTeacherPage = async ({
               />
               <div className="">
                 <h1 className="text-xl font-semibold">
-                  {teacher._count.lessons}
+                  {teacher._count.lectures}
                 </h1>
-                <span className="text-sm text-gray-400">Lessons</span>
+                <span className="text-sm text-gray-400">Lectures</span>
               </div>
             </div>
             {/* CARD */}
@@ -148,9 +148,9 @@ const SingleTeacherPage = async ({
               />
               <div className="">
                 <h1 className="text-xl font-semibold">
-                  {teacher._count.classes}
+                  {teacher._count.branches}
                 </h1>
-                <span className="text-sm text-gray-400">Classes</span>
+                <span className="text-sm text-gray-400">Branches</span>
               </div>
             </div>
           </div>
@@ -170,7 +170,7 @@ const SingleTeacherPage = async ({
               className="p-3 rounded-md bg-lamaSkyLight"
               href={`/list/classes?supervisorId=${teacher.id}`}
             >
-              Teacher&apos;s Classes
+              Teacher&apos;s Branches
             </Link>
             <Link
               className="p-3 rounded-md bg-lamaPurpleLight"
@@ -180,9 +180,9 @@ const SingleTeacherPage = async ({
             </Link>
             <Link
               className="p-3 rounded-md bg-lamaYellowLight"
-              href={`/list/lessons?teacherId=${teacher.id}`}
+              href={`/list/lectures?teacherId=${teacher.id}`}
             >
-              Teacher&apos;s Lessons
+              Teacher&apos;s Lectures
             </Link>
             <Link
               className="p-3 rounded-md bg-pink-50"

@@ -16,21 +16,16 @@ model Student {
   id          String       @id @default(uuid())
   username    String       @unique
   name        String
-  surname     String
-  email       String?      @unique
-  phone       String?      @unique
-  address     String
+  fatherName  String
+  motherName  String
   img         String?
-  bloodType   String
-  sex         UserSex
   createdAt   DateTime     @default(now())
-  semesterId  Int
-  semester    Semester     @relation(fields: [semesterId], references: [id])
+  branchId  Int
+  branch      Branch     @relation(fields: [branchId], references: [id])
   gradeId     Int
   grade       Grade        @relation(fields: [gradeId], references: [id])
   attendances Attendance[] 
   results     Result[] 
-  birthday    DateTime
 }
 
 model Teacher {
@@ -47,7 +42,7 @@ model Teacher {
   createdAt DateTime  @default(now())
   courses   Course[] 
   lectures  Lecture[]  
-  semesters Semester[]  
+  branches  Branch[]  
   birthday  DateTime
 }
 
@@ -70,10 +65,10 @@ model Grade {
   id        Int       @id @default(autoincrement())
   level     Int       @unique
   students  Student[] 
-  semesters Semester[] 
+  branches  Branch[] 
 }
 
-model Semester {
+model Branch {
   id           Int      @id @default(autoincrement())
   name         String   @unique
   capacity     Int
@@ -102,8 +97,8 @@ model Lecture {
 
   courseId   Int
   course     Course    @relation(fields: [courseId], references: [id])
-  semesterId Int
-  semester   Semester  @relation(fields: [semesterId], references: [id])
+  branchId   Int
+  branch     Branch  @relation(fields: [branchId], references: [id])
   teacherId  String
   teacher    Teacher   @relation(fields: [teacherId], references: [id])
   exams      Exam[] 
@@ -148,7 +143,7 @@ model Result {
 model Attendance {
   id        Int      @id @default(autoincrement())
   date      DateTime
-  status    Status
+  present   Boolean
 
   studentId String
   student   Student  @relation(fields: [studentId], references: [id])
@@ -164,19 +159,13 @@ model Announcement {
   description String
   date        DateTime
 
-  semesterId  Int
-  semester    Semester @relation(fields: [semesterId], references: [id])
+  branchId    Int
+  branch      Branch @relation(fields: [branchId], references: [id])
 }
 
 enum UserSex {
   MALE
   FEMALE
-}
-
-enum Status {
-  present
-  absent
-  late
 }
 
 enum Day {
