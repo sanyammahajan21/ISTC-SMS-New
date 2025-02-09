@@ -7,6 +7,8 @@ import {
   deleteCourse,
   deleteTeacher,
   deleteRegistrar,
+  deleteAnnouncement,
+  deleteLectures,
 } from "@/lib/actions";
 import dynamic from "next/dynamic";
 import Image from "next/image";
@@ -23,12 +25,12 @@ const deleteActionMap = {
   student: deleteStudent,
   exam: deleteExam,
 // TODO: OTHER DELETE ACTIONS
-  registrar: deleteCourse,
-  lecture: deleteCourse,
+  registrar: deleteRegistrar,
+  lectures: deleteLectures,
   assignment: deleteCourse,
   result: deleteCourse,
   attendance: deleteCourse,
-  announcement: deleteCourse,
+  announcement: deleteAnnouncement,
 };
 
 // USE LAZY LOADING
@@ -121,7 +123,7 @@ const forms: {
       type={type}
       data={data}
       setOpen={setOpen}
-      relatedData={relatedData}
+      relatedData={relatedData} 
     />
     // TODO OTHER LIST ITEMS
   ),
@@ -158,7 +160,7 @@ const FormModal = ({
         setOpen(false);
         router.refresh();
       }
-    }, [state]);
+    }, [state,router]);
 
     return type === "delete" && id ? (
       <form action={formAction} className="p-4 flex flex-col gap-4">

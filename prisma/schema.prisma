@@ -72,12 +72,12 @@ model Branch {
   id           Int      @id @default(autoincrement())
   name         String   @unique
   capacity     Int
-  supervisorId String?
+  supervisorId String?  @unique
   supervisor   Teacher? @relation(fields: [supervisorId], references: [id])
   lectures     Lectures[] 
   students     Student[] 
-  gradeId      Int
-  grade        Grade    @relation(fields: [gradeId], references: [id])
+  gradeId      Int?
+  grade        Grade?    @relation(fields: [gradeId], references: [id])
   announcements Announcement[] 
 }
 
