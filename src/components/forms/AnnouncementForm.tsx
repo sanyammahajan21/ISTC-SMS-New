@@ -64,7 +64,7 @@ const AnnouncementForm = ({
     }
   }, [state, router, type, setOpen]);
 
-  const { lectures } = relatedData;
+  const { branches } = relatedData;
 
   return (
     <form className="flex flex-col gap-8" onSubmit={onSubmit}>
@@ -96,6 +96,7 @@ const AnnouncementForm = ({
           error={errors?.endTime}
           type="datetime-local"
         />
+
         {data && (
           <InputField
             label="Id"
@@ -106,6 +107,25 @@ const AnnouncementForm = ({
             hidden
           />
         )}
+        <div className="flex flex-col gap-2 w-full md:w-1/4">
+          <label className="text-xs text-gray-500">Branches</label>
+          <select
+            className="ring-[1.5px] ring-gray-300 p-2 rounded-md text-sm w-full"
+            {...register("branchId")}
+            defaultValue={data?.teachers}
+          >
+            {branches.map((branch: { id: number; name: string }) => (
+              <option value={branch.id} key={branch.id}>
+                {branch.name}
+              </option>
+            ))}
+          </select>
+          {errors.branchId?.message && (
+            <p className="text-xs text-red-400">
+              {errors.branchId.message.toString()}
+            </p>
+          )}
+        </div>
       </div>
       {state.error && (
         <span className="text-red-500">Something went wrong!</span>
