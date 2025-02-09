@@ -21,19 +21,11 @@ export async function POST(req: NextRequest) {
         { status: 400 }
       );
     }
-
-    // Convert Blob to Uint8Array
     const arrayBuffer = await file.arrayBuffer();
     const uint8Array = new Uint8Array(arrayBuffer);
-
-    // Ensure a writable temp directory
     const tempDir = os.tmpdir();
     const tempFilePath = path.join(tempDir, "uploaded.xlsx");
-
-    // Write the file
     await writeFile(tempFilePath, uint8Array);
-
-    // Confirm file exists before reading
     if (!existsSync(tempFilePath)) {
       return NextResponse.json(
         { success: false, error: "File save failed." },
@@ -41,14 +33,9 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Read the Excel file using buffer
     const fileBuffer = await readFile(tempFilePath);
     const workbook = xlsx.read(fileBuffer, { type: "buffer" });
-
-    // const sheet = workbook.Sheets[workbook.SheetNames[0]];
     const sheet = workbook.Sheets[workbook.SheetNames[0]];
-const rawData = xlsx.utils.sheet_to_json(sheet, { header: 1 }); // Extract only headers
-console.log("Extracted Headers:", rawData[0]);
     const studentData = xlsx.utils.sheet_to_json<{
       Name: string;
       RollNo: string;
