@@ -108,18 +108,26 @@ const AnnouncementForm = ({
           />
         )}
         <div className="flex flex-col gap-2 w-full md:w-1/4">
-          <label className="text-xs text-gray-500">Branches</label>
+          <label className="text-xs text-gray-500">Branch</label>
           <select
             className="ring-[1.5px] ring-gray-300 p-2 rounded-md text-sm w-full"
             {...register("branchId")}
-            defaultValue={data?.branch}
+            defaultValue={data?.branchId}
           >
-            
-            {branches.map((branch: { id: number; name: string }) => (
-              <option value={branch.id} key={branch.id}>
-                {branch.name}
-              </option>
-            ))}
+            {branches.map(
+              (branchItem: {
+                id: number;
+                name: string;
+                capacity: number;
+                _count: { students: number };
+              }) => (
+                <option value={branchItem.id} key={branchItem.id}>
+                  ({branchItem.name} -{" "}
+                  {branchItem._count.students + "/" + branchItem.capacity}{" "}
+                  Capacity)
+                </option>
+              )
+            )}
           </select>
           {errors.branchId?.message && (
             <p className="text-xs text-red-400">

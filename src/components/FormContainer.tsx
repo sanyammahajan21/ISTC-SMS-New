@@ -9,7 +9,7 @@ export type FormContainerProps = {
     | "registrar"
     | "course"
     | "branch"
-    | "lecture"
+    | "lectures"
     | "exam"
     | "assignment"
     | "result"
@@ -67,6 +67,14 @@ const FormContainer = async ({ table, type, data, id }: FormContainerProps) => {
           select: { id: true, name: true },
         });
         relatedData = { lectures: examLectures };
+        break;
+      
+        case "announcement":
+          
+          const announcementBranches = await prisma.branch.findMany({
+            include: { _count: { select: { students: true } } },
+          });
+          relatedData = { branches: announcementBranches};
         break;
 
       default:

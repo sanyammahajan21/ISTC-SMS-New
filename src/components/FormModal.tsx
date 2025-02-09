@@ -8,7 +8,6 @@ import {
   deleteTeacher,
   deleteRegistrar,
   deleteAnnouncement,
-  deleteLectures,
 } from "@/lib/actions";
 import dynamic from "next/dynamic";
 import Image from "next/image";
@@ -26,7 +25,6 @@ const deleteActionMap = {
   exam: deleteExam,
 // TODO: OTHER DELETE ACTIONS
   registrar: deleteRegistrar,
-  lectures: deleteLectures,
   assignment: deleteCourse,
   result: deleteCourse,
   attendance: deleteCourse,

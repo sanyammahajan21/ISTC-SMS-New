@@ -69,7 +69,7 @@ console.log("Extracted Headers:", rawData[0]);
       gradeId,
     }));
 
-    await prisma.student.createMany({ data: students, skipDuplicates: true });
+    await prisma.student.createMany({ data: students, skipDuplicates: false });
 
     return NextResponse.json({ success: true, message: "Students imported successfully" });
   } catch (error) {
