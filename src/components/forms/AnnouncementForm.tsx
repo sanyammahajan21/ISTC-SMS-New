@@ -64,7 +64,7 @@ const AnnouncementForm = ({
     }
   }, [state, router, type, setOpen]);
 
-  const { branches } = relatedData;
+  const branches = relatedData?.branches || [];
 
   return (
     <form className="flex flex-col gap-8" onSubmit={onSubmit}>
@@ -112,8 +112,9 @@ const AnnouncementForm = ({
           <select
             className="ring-[1.5px] ring-gray-300 p-2 rounded-md text-sm w-full"
             {...register("branchId")}
-            defaultValue={data?.teachers}
+            defaultValue={data?.branch}
           >
+            
             {branches.map((branch: { id: number; name: string }) => (
               <option value={branch.id} key={branch.id}>
                 {branch.name}
