@@ -40,7 +40,7 @@ const columns = [
     accessor: "supervisor",
     className: "hidden md:table-cell",
   },
-  ...(role === "admin"
+  ...(role === "registrar"
     ? [
         {
           header: "Actions",
@@ -63,7 +63,7 @@ const renderRow = (item: BranchList) => (
     </td>
     <td>
       <div className="flex items-center gap-2">
-        {role === "admin" && (
+        {role === "registrar" && (
           <>
             <FormContainer table="branch" type="update" data={item} />
             <FormContainer table="branch" type="delete" id={item.id} />

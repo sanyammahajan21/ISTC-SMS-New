@@ -8,6 +8,7 @@ import {
   StudentSchema,
   CourseSchema,
   TeacherSchema,
+  AnnouncementSchema,
 } from "./formValidationSchemas";
 import prisma from "./prisma";
 import { clerkClient } from "@clerk/nextjs/server";
@@ -482,7 +483,7 @@ export const createExam = async (
         title: data.title,
         startTime: data.startTime,
         endTime: data.endTime,
-        lectureId: data.lectureId,
+        lecturesId: data.lecturesId,
       },
     });
 
@@ -523,7 +524,7 @@ export const updateExam = async (
         title: data.title,
         startTime: data.startTime,
         endTime: data.endTime,
-        lectureId: data.lectureId,
+        lecturesId: data.lecturesId,
       },
     });
 
@@ -569,7 +570,7 @@ export const createAnnouncement = async (
         title: data.title,
         startTime: data.startTime,
         endTime: data.endTime,
-        lectureId: data.lectureId,
+        branchId: data.branchId,
       },
     });
 
@@ -596,7 +597,7 @@ export const updateAnnouncement = async (
         title: data.title,
         startTime: data.startTime,
         endTime: data.endTime,
-        lectureId: data.lectureId,
+        branchId: data.branchId,
       },
     });
 
