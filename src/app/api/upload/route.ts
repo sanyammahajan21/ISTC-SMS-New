@@ -45,7 +45,10 @@ export async function POST(req: NextRequest) {
     const fileBuffer = await readFile(tempFilePath);
     const workbook = xlsx.read(fileBuffer, { type: "buffer" });
 
+    // const sheet = workbook.Sheets[workbook.SheetNames[0]];
     const sheet = workbook.Sheets[workbook.SheetNames[0]];
+const rawData = xlsx.utils.sheet_to_json(sheet, { header: 1 }); // Extract only headers
+console.log("Extracted Headers:", rawData[0]);
     const studentData = xlsx.utils.sheet_to_json<{
       Name: string;
       RollNo: string;
