@@ -20,7 +20,7 @@ model Student {
   motherName  String
   img         String?
   createdAt   DateTime     @default(now())
-  branchId  Int
+  branchId    Int
   branch      Branch     @relation(fields: [branchId], references: [id])
   gradeId     Int
   grade       Grade        @relation(fields: [gradeId], references: [id])
