@@ -14,25 +14,23 @@ const Announcements = async () => {
     admin: {},
   };
 
-  const whereConditions: any = {
-    // Default case for non-admin users
-    ...(role !== "admin" && role !== "registrar" && {
-      OR: [
-        // Allow null classId for public announcements
-        { branchId: null },
-        // Use role-specific conditions to filter based on the user's role
-        ...(roleConditions[role as keyof typeof roleConditions]
-          ? [{ branch: roleConditions[role as keyof typeof roleConditions] }]
-          : []),
-      ],
-    }),
-    ...(role === "admin" || role === "registrar" ? {} : {}),
-  };
-
+  const whereConditions: any =
+  role !== "admin" && role !== "registrar"
+    ? {
+        OR: [
+          { branchId: null }, // Public announcements
+          role === "teacher"
+            ? { branch: { lectures: { some: { teacherId: userId! } } } } // Teacher's branches
+            : role === "student"
+            ? { branch: { students: { some: { id: userId! } } } } // Student's branch
+            : {},
+        ],
+      }
+    : {}; // Admin and Registrar see all
   // Fetch the announcements
   const data = await prisma.announcement.findMany({
     take: 3,
-    orderBy: { date: "desc" },
+    orderBy: { title: "desc" },
     where: whereConditions, // Apply the refactored whereConditions
   });
   return (
@@ -47,7 +45,7 @@ const Announcements = async () => {
             <div className="flex items-center justify-between">
               <h2 className="font-medium">{data[0].title}</h2>
               <span className="text-xs text-gray-400 bg-white rounded-md px-1 py-1">
-                {new Intl.DateTimeFormat("en-GB").format(data[0].date)}
+                {new Intl.DateTimeFormat("en-GB").format(data[0].title)}
               </span>
             </div>
             <p className="text-sm text-gray-400 mt-1">{data[0].description}</p>
@@ -58,10 +56,10 @@ const Announcements = async () => {
             <div className="flex items-center justify-between">
               <h2 className="font-medium">{data[1].title}</h2>
               <span className="text-xs text-gray-400 bg-white rounded-md px-1 py-1">
-                {new Intl.DateTimeFormat("en-GB").format(data[1].date)}
+                {new Intl.DateTimeFormat("en-GB").format(data[1].title)}
               </span>
             </div>
-            <p className="text-sm text-gray-400 mt-1">{data[1].description}</p>
+            <p className="text-sm text-gray-400 mt-1">{data[1].title}</p>
           </div>
         )}
         {data[2] && (
@@ -69,10 +67,10 @@ const Announcements = async () => {
             <div className="flex items-center justify-between">
               <h2 className="font-medium">{data[2].title}</h2>
               <span className="text-xs text-gray-400 bg-white rounded-md px-1 py-1">
-                {new Intl.DateTimeFormat("en-GB").format(data[2].date)}
+                {new Intl.DateTimeFormat("en-GB").format(data[2].title)}
               </span>
             </div>
-            <p className="text-sm text-gray-400 mt-1">{data[2].description}</p>
+            <p className="text-sm text-gray-400 mt-1">{data[2].title}</p>
           </div>
         )}
       </div>

@@ -156,11 +156,11 @@ model Attendance {
 model Announcement {
   id          Int      @id @default(autoincrement())
   title       String
-  description String
-  date        DateTime
+  startTime DateTime
+  endTime   DateTime
 
-  branchId    Int
-  branch      Branch @relation(fields: [branchId], references: [id])
+  branchId    Int?
+  branch    Branch? @relation(fields: [branchId], references: [id])
 }
 
 enum UserSex {

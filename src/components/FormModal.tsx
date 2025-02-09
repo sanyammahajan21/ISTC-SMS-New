@@ -54,6 +54,9 @@ const BranchForm = dynamic(() => import("./forms/BranchForm"), {
 const ExamForm = dynamic(() => import("./forms/ExamForm"), {
   loading: () => <h1>Loading...</h1>,
 });
+const AnnouncementForm = dynamic(() => import("./forms/AnnouncementForm"), {
+  loading: () => <h1>Loading...</h1>,
+});
 // TODO: OTHER FORMS
 
 const forms: {
@@ -106,6 +109,15 @@ const forms: {
   ),
   exam: (setOpen, type, data, relatedData) => (
     <ExamForm
+      type={type}
+      data={data}
+      setOpen={setOpen}
+      relatedData={relatedData}
+    />
+    // TODO OTHER LIST ITEMS
+  ),
+  announcement: (setOpen, type, data, relatedData) => (
+    <AnnouncementForm
       type={type}
       data={data}
       setOpen={setOpen}

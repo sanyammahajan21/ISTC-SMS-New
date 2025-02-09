@@ -157,9 +157,9 @@ CREATE TABLE `Attendance` (
 CREATE TABLE `Announcement` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
     `title` VARCHAR(191) NOT NULL,
-    `description` VARCHAR(191) NOT NULL,
-    `date` DATETIME(3) NOT NULL,
-    `branchId` INTEGER NOT NULL,
+    `startTime` DATETIME(3) NOT NULL,
+    `endTime` DATETIME(3) NOT NULL,
+    `branchId` INTEGER NULL,
 
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -216,7 +216,7 @@ ALTER TABLE `Attendance` ADD CONSTRAINT `Attendance_studentId_fkey` FOREIGN KEY 
 ALTER TABLE `Attendance` ADD CONSTRAINT `Attendance_lectureId_fkey` FOREIGN KEY (`lectureId`) REFERENCES `Lecture`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `Announcement` ADD CONSTRAINT `Announcement_branchId_fkey` FOREIGN KEY (`branchId`) REFERENCES `Branch`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE `Announcement` ADD CONSTRAINT `Announcement_branchId_fkey` FOREIGN KEY (`branchId`) REFERENCES `Branch`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `_CourseToTeacher` ADD CONSTRAINT `_CourseToTeacher_A_fkey` FOREIGN KEY (`A`) REFERENCES `Course`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;

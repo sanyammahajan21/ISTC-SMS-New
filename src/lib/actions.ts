@@ -559,3 +559,73 @@ export const deleteExam = async (
     return { success: false, error: true };
   }
 };
+export const createAnnouncement = async (
+  currentState: CurrentState,
+  data: AnnouncementSchema
+) => {
+  try {
+    await prisma.announcement.create({
+      data: {
+        title: data.title,
+        startTime: data.startTime,
+        endTime: data.endTime,
+        lectureId: data.lectureId,
+      },
+    });
+
+    // revalidatePath("/list/subjects");
+    return { success: true, error: false };
+  } catch (err) {
+    console.log(err);
+    return { success: false, error: true };
+  }
+};
+
+export const updateAnnouncement = async (
+  currentState: CurrentState,
+  data: AnnouncementSchema
+) => {
+ 
+  try {
+
+    await prisma.announcement.update({
+      where: {
+        id: data.id,
+      },
+      data: {
+        title: data.title,
+        startTime: data.startTime,
+        endTime: data.endTime,
+        lectureId: data.lectureId,
+      },
+    });
+
+    // revalidatePath("/list/subjects");
+    return { success: true, error: false };
+  } catch (err) {
+    console.log(err);
+    return { success: false, error: true };
+  }
+};
+
+export const deleteAnnouncement = async (
+  currentState: CurrentState,
+  data: FormData
+) => {
+  const id = data.get("id") as string;
+
+  try {
+    await prisma.announcement.delete({
+      where: {
+        id: parseInt(id),
+        // ...(role === "teacher" ? { lecture: { teacherId: userId! } } : {}),
+      },
+    });
+
+    // revalidatePath("/list/subjects");
+    return { success: true, error: false };
+  } catch (err) {
+    console.log(err);
+    return { success: false, error: true };
+  }
+};
