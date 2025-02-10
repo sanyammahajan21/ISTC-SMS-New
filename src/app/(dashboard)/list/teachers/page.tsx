@@ -20,10 +20,6 @@ const TeacherListPage = async ({
   const role = (sessionClaims?.metadata as { role?: string })?.role;
   const columns = [
     {
-      header: "Info",
-      accessor: "info",
-    },
-    {
       header: "Teacher ID",
       accessor: "teacherId",
       className: "hidden md:table-cell",
