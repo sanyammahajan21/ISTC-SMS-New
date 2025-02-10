@@ -28,19 +28,9 @@ CREATE TABLE `Teacher` (
     `id` VARCHAR(191) NOT NULL,
     `username` VARCHAR(191) NOT NULL,
     `name` VARCHAR(191) NOT NULL,
-    `surname` VARCHAR(191) NOT NULL,
-    `email` VARCHAR(191) NULL,
-    `phone` VARCHAR(191) NULL,
-    `address` VARCHAR(191) NOT NULL,
-    `img` VARCHAR(191) NULL,
-    `bloodType` VARCHAR(191) NOT NULL,
-    `sex` ENUM('MALE', 'FEMALE') NOT NULL,
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
-    `birthday` DATETIME(3) NOT NULL,
 
     UNIQUE INDEX `Teacher_username_key`(`username`),
-    UNIQUE INDEX `Teacher_email_key`(`email`),
-    UNIQUE INDEX `Teacher_phone_key`(`phone`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
@@ -174,6 +164,15 @@ CREATE TABLE `_CourseToTeacher` (
     INDEX `_CourseToTeacher_B_index`(`B`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
+-- CreateTable
+CREATE TABLE `_AnnouncementToBranch` (
+    `A` INTEGER NOT NULL,
+    `B` INTEGER NOT NULL,
+
+    UNIQUE INDEX `_AnnouncementToBranch_AB_unique`(`A`, `B`),
+    INDEX `_AnnouncementToBranch_B_index`(`B`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
 -- AddForeignKey
 ALTER TABLE `Student` ADD CONSTRAINT `Student_branchId_fkey` FOREIGN KEY (`branchId`) REFERENCES `Branch`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
@@ -217,10 +216,13 @@ ALTER TABLE `Attendance` ADD CONSTRAINT `Attendance_studentId_fkey` FOREIGN KEY 
 ALTER TABLE `Attendance` ADD CONSTRAINT `Attendance_lecturesId_fkey` FOREIGN KEY (`lecturesId`) REFERENCES `Lectures`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `Announcement` ADD CONSTRAINT `Announcement_branchId_fkey` FOREIGN KEY (`branchId`) REFERENCES `Branch`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
-
--- AddForeignKey
 ALTER TABLE `_CourseToTeacher` ADD CONSTRAINT `_CourseToTeacher_A_fkey` FOREIGN KEY (`A`) REFERENCES `Course`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `_CourseToTeacher` ADD CONSTRAINT `_CourseToTeacher_B_fkey` FOREIGN KEY (`B`) REFERENCES `Teacher`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `_AnnouncementToBranch` ADD CONSTRAINT `_AnnouncementToBranch_A_fkey` FOREIGN KEY (`A`) REFERENCES `Announcement`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `_AnnouncementToBranch` ADD CONSTRAINT `_AnnouncementToBranch_B_fkey` FOREIGN KEY (`B`) REFERENCES `Branch`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;

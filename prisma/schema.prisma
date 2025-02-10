@@ -32,18 +32,10 @@ model Teacher {
   id        String    @id @default(uuid())
   username  String    @unique
   name      String
-  surname   String
-  email     String?   @unique
-  phone     String?   @unique
-  address   String
-  img       String?
-  bloodType String
-  sex       UserSex
   createdAt DateTime  @default(now())
   courses   Course[] 
   lectures  Lectures[]  
-  branches  Branch[]  
-  birthday  DateTime
+  branches  Branch[] 
 }
 
 model Registrar {
@@ -160,7 +152,7 @@ model Announcement {
   endTime   DateTime
 
   branchId    Int?
-  branch    Branch? @relation(fields: [branchId], references: [id])
+  branches    Branch[]
 }
 
 enum UserSex {

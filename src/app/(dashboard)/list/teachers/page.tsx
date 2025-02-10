@@ -38,16 +38,6 @@ const TeacherListPage = async ({
       accessor: "branches",
       className: "hidden md:table-cell",
     },
-    {
-      header: "Phone",
-      accessor: "phone",
-      className: "hidden lg:table-cell",
-    },
-    {
-      header: "Address",
-      accessor: "address",
-      className: "hidden lg:table-cell",
-    },
     ...(role === "admin" || role === "registrar"
       ? [
           {
@@ -63,19 +53,6 @@ const TeacherListPage = async ({
       key={item.id}
       className="border-b border-gray-200 even:bg-slate-50 text-sm hover:bg-lamaPurpleLight"
     >
-      <td className="flex items-center gap-4 p-4">
-        <Image
-          src={item.img || "/noAvatar.png"}
-          alt=""
-          width={40}
-          height={40}
-          className="md:hidden xl:block w-10 h-10 rounded-full object-cover"
-        />
-        <div className="flex flex-col">
-          <h3 className="font-semibold">{item.name}</h3>
-          <p className="text-xs text-gray-500">{item?.email}</p>
-        </div>
-      </td>
       <td className="hidden md:table-cell">{item.username}</td>
       <td className="hidden md:table-cell">
         {item.courses.map((course) => course.name).join(",")}
@@ -83,8 +60,6 @@ const TeacherListPage = async ({
       <td className="hidden md:table-cell">
         {item.branches.map((branchItem) => branchItem.name).join(",")}
       </td>
-      <td className="hidden md:table-cell">{item.phone}</td>
-      <td className="hidden md:table-cell">{item.address}</td>
       <td>
         <div className="flex items-center gap-2">
           <Link href={`/list/teachers/${item.id}`}>

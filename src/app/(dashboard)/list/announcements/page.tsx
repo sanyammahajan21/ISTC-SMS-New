@@ -9,7 +9,7 @@ import Image from "next/image";
 import { auth } from "@clerk/nextjs/server";
 
 
-type AnnouncementList = Announcement & { branch: Branch };
+type AnnouncementList = Announcement & { branches: Branch };
 const AnnouncementListPage = async ({
   searchParams,
 }: {
@@ -18,16 +18,11 @@ const AnnouncementListPage = async ({
   
   const { userId, sessionClaims } = auth();
   const role = (sessionClaims?.metadata as { role?: string })?.role;
-  const currentUserId = userId;
   
   const columns = [
     {
       header: "Title",
       accessor: "title",
-    },
-    {
-      header: "Branch",
-      accessor: "branch",
     },
     {
       header: "Date",
@@ -50,13 +45,12 @@ const AnnouncementListPage = async ({
       className="border-b border-gray-200 even:bg-slate-50 text-sm hover:bg-lamaPurpleLight"
     >
       <td className="flex items-center gap-4 p-4">{item.title}</td>
-      <td>{item.branch?.name || "-"}</td>
       <td className="hidden md:table-cell">
-        {new Intl.DateTimeFormat("en-US").format(item.date)}
+        {new Intl.DateTimeFormat("en-US").format(item.startTime)}
       </td>
       <td>
         <div className="flex items-center gap-2">
-          {(role === "admin" || role === 'registrar' || role === ' teacher' )&& (
+          {(role === "admin" || role === 'registrar' )&& (
             <>
               <FormContainer table="announcement" type="update" data={item} />
               <FormContainer table="announcement" type="delete" id={item.id} />
@@ -90,24 +84,11 @@ const AnnouncementListPage = async ({
 
   // ROLE CONDITIONS
 
-  const roleConditions = {
-    teacher: { lectures: { some: { teacherId: currentUserId! } } },
-    student: { students: { some: { id: currentUserId! } } },
-    // registrar: { students: { some: { registrarId: currentUserId! } } },
-  };
-
-  query.OR = [
-    { branchId: null },
-    {
-      branch: roleConditions[role as keyof typeof roleConditions] || {},
-    },
-  ];
-
   const [data, count] = await prisma.$transaction([
     prisma.announcement.findMany({
       where: query,
       include: {
-        branch: true,
+        branches: true,
       },
       take: ITEM_PER_PAGE,
       skip: ITEM_PER_PAGE * (p - 1),
