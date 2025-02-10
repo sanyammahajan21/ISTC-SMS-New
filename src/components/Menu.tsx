@@ -1,3 +1,4 @@
+
 import { currentUser } from "@clerk/nextjs/server";
 import Image from "next/image";
 import Link from "next/link";
@@ -82,12 +83,13 @@ const menuItems = [
   },
   {
     title: "OTHER",
+    visible: ["teacher", "student", "registrar"],
     items: [
       {
         icon: "/profile.png",
         label: "Profile",
         href: "/profile",
-        visible: ["admin", "teacher", "student", "registrar"],
+        visible: ["teacher", "student", "registrar"],
       },
       // {
       //   icon: "/setting.png",
@@ -95,12 +97,12 @@ const menuItems = [
       //   href: "/settings",
       //   visible: ["admin", "teacher", "student", "registrar"],
       // },
-      // {
-      //   icon: "/logout.png",
-      //   label: "Logout",
-      //   href: "/logout",
-      //   visible: ["admin", "teacher", "student", "registrar"],
-      // },
+      {
+        icon: "/logout.png",
+        label: "Logout",
+        href: "/logout",
+        visible: ["admin", "teacher", "student", "registrar"],
+      },
     ],
   },
 ];

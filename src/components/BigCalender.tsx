@@ -21,7 +21,6 @@ const BigCalendar = ({
   return (
     <Calendar
       localizer={localizer}
-      events={data}
       startAccessor="start"
       endAccessor="end"
       views={["work_week", "day"]}
