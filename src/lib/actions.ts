@@ -157,14 +157,6 @@ export const createTeacher = async (
         id: user.id,
         username: data.username,
         name: data.name,
-        surname: data.surname,
-        email: data.email || null,
-        phone: data.phone || null,
-        address: data.address,
-        img: data.img || null,
-        bloodType: data.bloodType,
-        sex: data.sex,
-        birthday: data.birthday,
         courses: {
           connect: data.courses?.map((courseId: string) => ({
             id: parseInt(courseId),
@@ -204,14 +196,6 @@ export const updateTeacher = async (
         ...(data.password !== "" && { password: data.password }),
         username: data.username,
         name: data.name,
-        surname: data.surname,
-        email: data.email || null,
-        phone: data.phone || null,
-        address: data.address,
-        img: data.img || null,
-        bloodType: data.bloodType,
-        sex: data.sex,
-        birthday: data.birthday,
         courses: {
           set: data.courses?.map((coursesId: string) => ({
             id: parseInt(coursesId),
@@ -479,7 +463,7 @@ export const createExam = async (
         title: data.title,
         startTime: data.startTime,
         endTime: data.endTime,
-        lecturesId: data.lecturesId,
+        lecturesId: data.branchId,
       },
     });
 
@@ -520,7 +504,7 @@ export const updateExam = async (
         title: data.title,
         startTime: data.startTime,
         endTime: data.endTime,
-        lecturesId: data.lecturesId,
+        lecturesId: data.branchId,
       },
     });
 
