@@ -11,7 +11,7 @@ import Link from "next/link";
 
 import { auth } from "@clerk/nextjs/server";
 
-type StudentList = Student & { class: Branch };
+type StudentList = Student & { branch: Branch };
 
 const StudentListPage = async ({
   searchParams,

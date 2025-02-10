@@ -96,7 +96,7 @@ const AssignmentListPage = async ({
     for (const [key, value] of Object.entries(queryParams)) {
       if (value !== undefined) {
         switch (key) {
-          case "classId":
+          case "branchId":
             query.lectures.branchId = parseInt(value);
             break;
           case "teacherId":
