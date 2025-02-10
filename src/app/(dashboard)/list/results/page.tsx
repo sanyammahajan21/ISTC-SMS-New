@@ -13,9 +13,7 @@ type ResultList = {
   id: number;
   title: string;
   studentName: string;
-  studentSurname: string;
   teacherName: string;
-  teacherSurname: string;
   score: number;
   className: string;
   startTime: Date;
@@ -81,7 +79,7 @@ const renderRow = (item: ResultList) => (
     <td>{item.studentName + " " + item.studentName}</td>
     <td className="hidden md:table-cell">{item.score}</td>
     <td className="hidden md:table-cell">
-      {item.teacherName + " " + item.teacherSurname}
+      {item.teacherName}
     </td>
     <td className="hidden md:table-cell">{item.className}</td>
     <td className="hidden md:table-cell">
@@ -152,13 +150,13 @@ const renderRow = (item: ResultList) => (
     prisma.result.findMany({
       where: query,
       include: {
-        student: { select: { name: true, surname: true } },
+        student: { select: { name: true } },
         exam: {
           include: {
             lectures: {
               select: {
                 branch: { select: { name: true } },
-                teacher: { select: { name: true, surname: true } },
+                teacher: { select: { name: true} },
               },
             },
           },
@@ -168,7 +166,7 @@ const renderRow = (item: ResultList) => (
             lectures: {
               select: {
                 branch: { select: { name: true } },
-                teacher: { select: { name: true, surname: true } },
+                teacher: { select: { name: true } },
               },
             },
           },
@@ -191,9 +189,9 @@ const renderRow = (item: ResultList) => (
       id: item.id,
       title: assessment.title,
       studentName: item.student.name,
-      studentSurname: item.student.surname,
+
       teacherName: assessment.lectures.teacher.name,
-      teacherSurname: assessment.lectures.teacher.surname,
+
       score: item.score,
       className: assessment.lectures.branch.name,
       startTime: isExam ? assessment.startTime : assessment.startDate,

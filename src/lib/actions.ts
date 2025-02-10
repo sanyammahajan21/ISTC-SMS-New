@@ -147,8 +147,7 @@ export const createTeacher = async (
     const user = await clerkClient.users.createUser({
       username: data.username,
       password: data.password,
-      firstName: data.name,
-      lastName: data.surname,
+      name: data.name,
       publicMetadata:{role:"teacher"}
     });
 
@@ -184,8 +183,8 @@ export const updateTeacher = async (
     const user = await clerkClient.users.updateUser(data.id, {
       username: data.username,
       ...(data.password !== "" && { password: data.password }),
-      firstName: data.name,
-      lastName: data.surname,
+      name: data.name,
+
     });
 
     await prisma.teacher.update({
