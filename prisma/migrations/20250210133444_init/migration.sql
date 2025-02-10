@@ -17,7 +17,7 @@ CREATE TABLE `Student` (
     `img` VARCHAR(191) NULL,
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `branchId` INTEGER NOT NULL,
-    `gradeId` INTEGER NOT NULL,
+    `semesterId` INTEGER NOT NULL,
 
     UNIQUE INDEX `Student_username_key`(`username`),
     PRIMARY KEY (`id`)
@@ -56,11 +56,11 @@ CREATE TABLE `Registrar` (
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
-CREATE TABLE `Grade` (
+CREATE TABLE `Semester` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
     `level` INTEGER NOT NULL,
 
-    UNIQUE INDEX `Grade_level_key`(`level`),
+    UNIQUE INDEX `Semester_level_key`(`level`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
@@ -70,7 +70,7 @@ CREATE TABLE `Branch` (
     `name` VARCHAR(191) NOT NULL,
     `capacity` INTEGER NOT NULL,
     `supervisorId` VARCHAR(191) NULL,
-    `gradeId` INTEGER NULL,
+    `semesterId` INTEGER NULL,
 
     UNIQUE INDEX `Branch_name_key`(`name`),
     UNIQUE INDEX `Branch_supervisorId_key`(`supervisorId`),
@@ -177,13 +177,13 @@ CREATE TABLE `_AnnouncementToBranch` (
 ALTER TABLE `Student` ADD CONSTRAINT `Student_branchId_fkey` FOREIGN KEY (`branchId`) REFERENCES `Branch`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `Student` ADD CONSTRAINT `Student_gradeId_fkey` FOREIGN KEY (`gradeId`) REFERENCES `Grade`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE `Student` ADD CONSTRAINT `Student_semesterId_fkey` FOREIGN KEY (`semesterId`) REFERENCES `Semester`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `Branch` ADD CONSTRAINT `Branch_supervisorId_fkey` FOREIGN KEY (`supervisorId`) REFERENCES `Teacher`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `Branch` ADD CONSTRAINT `Branch_gradeId_fkey` FOREIGN KEY (`gradeId`) REFERENCES `Grade`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE `Branch` ADD CONSTRAINT `Branch_semesterId_fkey` FOREIGN KEY (`semesterId`) REFERENCES `Semester`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `Lectures` ADD CONSTRAINT `Lectures_courseId_fkey` FOREIGN KEY (`courseId`) REFERENCES `Course`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;

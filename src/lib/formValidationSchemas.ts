@@ -12,7 +12,7 @@ export const branchSchema = z.object({
   id: z.coerce.number().optional(),
   name: z.string().min(1, { message: "Branch name is required!" }),
   capacity: z.coerce.number().min(1, { message: "Capacity name is required!" }),
-  gradeId: z.coerce.number().optional(),
+  semesterId: z.coerce.number().optional(),
   supervisorId: z.coerce.string().optional(),
 });
 
@@ -80,7 +80,7 @@ export const studentSchema = z.object({
   phone: z.string().optional(),
   img: z.string().optional(),
   sex: z.enum(["MALE", "FEMALE"], { message: "Sex is required!" }),
-  gradeId: z.coerce.number().min(1, { message: "Grade is required!" }),
+  semesterId: z.coerce.number().min(1, { message: "Semester is required!" }),
   branchId: z.coerce.number().min(1, { message: "branch name is required!" }),
 });
 

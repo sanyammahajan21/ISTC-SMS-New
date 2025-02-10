@@ -105,7 +105,7 @@ const SingleStudentPage = async ({
                 <h1 className="text-xl font-semibold">
                   {student.branch.name.charAt(0)}th
                 </h1>
-                <span className="text-sm text-gray-400">Grade</span>
+                <span className="text-sm text-gray-400">Semester</span>
               </div>
             </div>
             {/* CARD */}

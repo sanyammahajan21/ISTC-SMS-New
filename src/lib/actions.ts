@@ -362,7 +362,7 @@ export const createStudent = async (
         fatherName: data.fatherName,
         motherName: data.motherName,
         img: data.img || null,
-        gradeId: data.gradeId,
+        semesterId: data.semesterId,
         branchId: data.branchId,
       },
     });
@@ -402,7 +402,7 @@ export const updateStudent = async (
         fatherName: data.fatherName,
         motherName: data.motherName,
         img: data.img || null,
-        gradeId: data.gradeId,
+        semesterId: data.gsemesterId,
         branchId: data.branchId,
       },
     });

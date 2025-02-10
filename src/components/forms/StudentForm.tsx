@@ -67,7 +67,7 @@ const StudentForm = ({
     }
   }, [state, router, type, setOpen]);
 
-  const { grades, branches } = relatedData;
+  const { semesters, branches } = relatedData;
 
   return (
     <form className="flex flex-col gap-8" onSubmit={onSubmit}>
@@ -136,18 +136,18 @@ const StudentForm = ({
           <label className="text-xs text-gray-500">Semester</label>
           <select
             className="ring-[1.5px] ring-gray-300 p-2 rounded-md text-sm w-full"
-            {...register("gradeId")}
-            defaultValue={data?.gradeId}
+            {...register("semesterId")}
+            defaultValue={data?.semesterId}
           >
-            {grades.map((grade: { id: number; level: number }) => (
-              <option value={grade.id} key={grade.id}>
-                {grade.level}
+            {semesters.map((semester: { id: number; level: number }) => (
+              <option value={semester.id} key={semester.id}>
+                {semester.level}
               </option>
             ))}
           </select>
-          {errors.gradeId?.message && (
+          {errors.semesterId?.message && (
             <p className="text-xs text-red-400">
-              {errors.gradeId.message.toString()}
+              {errors.semesterId.message.toString()}
             </p>
           )}
         </div>

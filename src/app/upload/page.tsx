@@ -4,13 +4,13 @@ import { useState } from "react";
 
 interface UploadSectionProps {
   title: string;
-  onUpload: (branchId: string | undefined, gradeId: string | undefined, file: File | null) => void;
+  onUpload: (branchId: string | undefined, semesterId: string | undefined, file: File | null) => void;
   isTeacherUpload?: boolean;
 }
 
 const UploadSection: React.FC<UploadSectionProps> = ({ title, onUpload, isTeacherUpload }) => {
   const [branchId, setBranchId] = useState("");
-  const [gradeId, setGradeId] = useState("");
+  const [semesterId, setSemesterId] = useState("");
   const [file, setFile] = useState<File | null>(null);
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
@@ -27,8 +27,8 @@ const UploadSection: React.FC<UploadSectionProps> = ({ title, onUpload, isTeache
       return;
     }
 
-    if (!isTeacherUpload && (!branchId || !gradeId)) {
-      setMessage("Please enter Branch ID and Grade ID.");
+    if (!isTeacherUpload && (!branchId || !semesterId)) {
+      setMessage("Please enter Branch ID and Semester ID.");
       return;
     }
 
@@ -36,7 +36,7 @@ const UploadSection: React.FC<UploadSectionProps> = ({ title, onUpload, isTeache
     setMessage(""); // Reset the message
 
     try {
-      await onUpload(isTeacherUpload ? undefined : branchId, isTeacherUpload ? undefined : gradeId, file);
+      await onUpload(isTeacherUpload ? undefined : branchId, isTeacherUpload ? undefined : semesterId, file);
       setMessage("Upload successful.");
     } catch (error) {
       setMessage("An error occurred during the upload.");
@@ -67,9 +67,9 @@ const UploadSection: React.FC<UploadSectionProps> = ({ title, onUpload, isTeache
         <div className="mb-6">
           <input
             type="text"
-            placeholder="Enter Grade ID"
-            value={gradeId}
-            onChange={(e) => setGradeId(e.target.value)}
+            placeholder="Enter Semester ID"
+            value={semesterId}
+            onChange={(e) => setSemesterId(e.target.value)}
             className="w-full p-4 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-800 bg-white"
           />
         </div>
@@ -107,15 +107,15 @@ const UploadSection: React.FC<UploadSectionProps> = ({ title, onUpload, isTeache
 
 export default function Upload() {
   // Handle student file upload
-  const handleStudentUpload = async (branchId: string | undefined, gradeId: string | undefined, file: File | null) => {
-    if (!gradeId) {
-      throw new Error("Grade ID is required for student upload.");
+  const handleStudentUpload = async (branchId: string | undefined, semesterId: string | undefined, file: File | null) => {
+    if (!semesterId) {
+      throw new Error("SemesterID is required for student upload.");
     }
 
     const formData = new FormData();
     formData.append("file", file as Blob);
     formData.append("branchId", branchId || "");
-    formData.append("gradeId", gradeId || "");
+    formData.append("semesterId", semesterId || "");
 
     try {
       const response = await fetch("/api/upload", {
@@ -136,7 +136,7 @@ export default function Upload() {
 
   // Handle teacher file upload
  // Handle teacher file upload
-const handleTeacherUpload = async (branchId: string | undefined, gradeId: string | undefined, file: File | null) => {
+const handleTeacherUpload = async (branchId: string | undefined, semesterId: string | undefined, file: File | null) => {
   if (!file) {
     throw new Error("File is required for teacher upload.");
   }

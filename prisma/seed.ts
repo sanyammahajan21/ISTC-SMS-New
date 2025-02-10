@@ -18,7 +18,7 @@ async function main() {
 
   // GRADE
   for (let i = 1; i <= 6; i++) {
-    await prisma.grade.create({
+    await prisma.semester.create({
       data: {
         level: i,
       },
@@ -30,7 +30,7 @@ async function main() {
     await prisma.branch.create({
       data: {
         name: `${i}A`, 
-        gradeId: i, 
+        semesterId: i, 
         capacity: Math.floor(Math.random() * (20 - 15 + 1)) + 15,
       },
     });

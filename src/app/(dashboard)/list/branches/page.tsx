@@ -31,8 +31,8 @@ const columns = [
     className: "hidden md:table-cell",
   },
   {
-    header: "Grade",
-    accessor: "grade",
+    header: "Semester",
+    accessor: "semester",
     className: "hidden md:table-cell",
   },
   {
@@ -59,7 +59,7 @@ const renderRow = (item: BranchList) => (
     <td className="hidden md:table-cell">{item.capacity}</td>
     <td className="hidden md:table-cell">{item.name[0]}</td>
     <td className="hidden md:table-cell">
-      {item.supervisor.name }
+      {item.supervisor?.name }
     </td>
     <td>
       <div className="flex items-center gap-2">
