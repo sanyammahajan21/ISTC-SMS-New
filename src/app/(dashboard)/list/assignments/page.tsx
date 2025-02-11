@@ -4,13 +4,13 @@ import Table from "@/components/Table";
 import TableSearch from "@/components/TableSearch";
 import prisma from "@/lib/prisma";
 import { ITEM_PER_PAGE } from "@/lib/settings";
-import { Assignment, Branch, Prisma, Course, Teacher } from "@prisma/client";
+import { Assignment, Branch, Prisma, Subject, Teacher } from "@prisma/client";
 import Image from "next/image";
 import { auth } from "@clerk/nextjs/server";
 
 type AssignmentList = Assignment & {
   lectures: {
-    course: Course;
+    subject: Subject;
     branch: Branch;
     teacher: Teacher;
   };
@@ -29,7 +29,7 @@ const AssignmentListPage = async ({
   
   const columns = [
     {
-      header: "Course Name",
+      header: "Subject Name",
       accessor: "name",
     },
     {
@@ -61,7 +61,7 @@ const AssignmentListPage = async ({
       key={item.id}
       className="border-b border-gray-200 even:bg-slate-50 text-sm hover:bg-lamaPurpleLight"
     >
-      <td className="flex items-center gap-4 p-4">{item.lectures.course.name}</td>
+      <td className="flex items-center gap-4 p-4">{item.lectures.subject.name}</td>
       <td>{item.lectures.branch.name}</td>
       <td className="hidden md:table-cell">
         {item.lectures.teacher.name }
@@ -103,7 +103,7 @@ const AssignmentListPage = async ({
             query.lectures.teacherId = value;
             break;
           case "search":
-            query.lectures.course = {
+            query.lectures.subject = {
               name: { contains: value, mode: "insensitive" },
             };
             break;
@@ -150,7 +150,7 @@ const AssignmentListPage = async ({
       include: {
         lectures: {
           select: {
-            course: { select: { name: true } },
+            subject: { select: { name: true } },
             teacher: { select: { name: true} },
             branch: { select: { name: true } },
           },

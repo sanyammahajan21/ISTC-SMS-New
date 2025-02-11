@@ -6,14 +6,14 @@ import InputField from "../InputField";
 import {
   branchSchema,
   BranchSchema,
-  courseSchema,
-  CourseSchema,
+  subjectSchema,
+  SubjectSchema,
 } from "@/lib/formValidationSchemas";
 import {
   createBranch,
-  createCourse,
+  createSubject,
   updateBranch,
-  updateCourse,
+  updateSubject,
 } from "@/lib/actions";
 import { useFormState } from "react-dom";
 import { Dispatch, SetStateAction, useEffect } from "react";
@@ -58,7 +58,7 @@ const BranchForm = ({
 
   useEffect(() => {
     if (state.success) {
-      toast(`Course has been ${type === "create" ? "created" : "updated"}!`);
+      toast(`Subject has been ${type === "create" ? "created" : "updated"}!`);
       setOpen(false);
       router.refresh();
     }

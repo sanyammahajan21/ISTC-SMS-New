@@ -4,11 +4,11 @@ import Table from "@/components/Table";
 import TableSearch from "@/components/TableSearch";
 import prisma from "@/lib/prisma";
 import { ITEM_PER_PAGE } from "@/lib/settings";
-import { Branch, Lectures, Prisma, Course, Teacher } from "@prisma/client";
+import { Branch, Lectures, Prisma, Subject, Teacher } from "@prisma/client";
 import Image from "next/image";
 import { auth } from "@clerk/nextjs/server";
 
-type LectruesList = Lectures & { course: Course } & { branch: Branch } & {
+type LectruesList = Lectures & { subject: Subject } & { branch: Branch } & {
   teacher: Teacher;
 };
 
@@ -25,7 +25,7 @@ const role = (sessionClaims?.metadata as { role?: string })?.role;
 
 const columns = [
   {
-    header: "Course Name",
+    header: "Subject Name",
     accessor: "name",
   },
   {
@@ -52,7 +52,7 @@ const renderRow = (item: LectruesList) => (
     key={item.id}
     className="border-b border-gray-200 even:bg-slate-50 text-sm hover:bg-lamaPurpleLight"
   >
-    <td className="flex items-center gap-4 p-4">{item.course.name}</td>
+    <td className="flex items-center gap-4 p-4">{item.subject.name}</td>
     <td>{item.branch.name}</td>
     <td className="hidden md:table-cell">
       {item.teacher.name }
@@ -90,7 +90,7 @@ const renderRow = (item: LectruesList) => (
             break;
           case "search":
             query.OR = [
-              { course: { name: { contains: value, mode: "insensitive" } } },
+              { subject: { name: { contains: value, mode: "insensitive" } } },
               { teacher: { name: { contains: value, mode: "insensitive" } } },
             ];
             break;
@@ -105,7 +105,7 @@ const renderRow = (item: LectruesList) => (
     prisma.lectures.findMany({
       where: query,
       include: {
-        course: { select: { name: true } },
+        subject: { select: { name: true } },
         branch: { select: { name: true } },
         teacher: { select: { name: true} },
       },

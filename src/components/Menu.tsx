@@ -33,14 +33,14 @@ const menuItems = [
       },
       {
         icon: "/subject.png",
-        label: "Courses",
-        href: "/list/courses",
+        label: "Subjects",
+        href: "/list/subjectes",
         visible: ["registrar"],
       },
       {
         icon: "/subject.png",
-        label: "Alloted Courses",
-        href: "/list/allotedCourses",
+        label: "Alloted Subjects",
+        href: "/list/allotedSubjects",
         visible: ["teacher"],
       },
       {

@@ -1,12 +1,12 @@
 import { z } from "zod";
 
-export const courseSchema = z.object({
+export const subjectSchema = z.object({
   id: z.coerce.number().optional(),
-  name: z.string().min(1, { message: "Course name is required!" }),
+  name: z.string().min(1, { message: "Subject name is required!" }),
   teachers: z.array(z.string()), //teacher ids
 });
 
-export type CourseSchema = z.infer<typeof courseSchema>;
+export type SubjectSchema = z.infer<typeof subjectSchema>;
 
 export const branchSchema = z.object({
   id: z.coerce.number().optional(),
@@ -30,7 +30,7 @@ export const teacherSchema = z.object({
     .optional()
     .or(z.literal("")),
   name: z.string().min(1, { message: "Name is required!" }),
-  courses: z.array(z.string()).optional(), // subject ids
+  subjects: z.array(z.string()).optional(), // subject ids
 });
 
 export type TeacherSchema = z.infer<typeof teacherSchema>;

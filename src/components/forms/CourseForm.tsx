@@ -3,14 +3,14 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import InputField from "../InputField";
-import { courseSchema, CourseSchema } from "@/lib/formValidationSchemas";
-import { createCourse, updateCourse } from "@/lib/actions";
+import { subjectSchema, SubjectSchema } from "@/lib/formValidationSchemas";
+import { createSubject, updateSubject } from "@/lib/actions";
 import { useFormState } from "react-dom";
 import { Dispatch, SetStateAction, useEffect } from "react";
 import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
 
-const CourseForm = ({
+const SubjectForm = ({
   type,
   data,
   setOpen,
@@ -25,14 +25,14 @@ const CourseForm = ({
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<CourseSchema>({
-    resolver: zodResolver(courseSchema),
+  } = useForm<SubjectSchema>({
+    resolver: zodResolver(subjectSchema),
   });
 
   // AFTER REACT 19 IT'LL BE USEACTIONSTATE
 
   const [state, formAction] = useFormState(
-    type === "create" ? createCourse : updateCourse,
+    type === "create" ? createSubject : updateSubject,
     {
       success: false,
       error: false,
@@ -48,7 +48,7 @@ const CourseForm = ({
 
   useEffect(() => {
     if (state.success) {
-      toast(`Course has been ${type === "create" ? "created" : "updated"}!`);
+      toast(`Subject has been ${type === "create" ? "created" : "updated"}!`);
       setOpen(false);
       router.refresh();
     }
@@ -59,12 +59,12 @@ const CourseForm = ({
   return (
     <form className="flex flex-col gap-8" onSubmit={onSubmit}>
       <h1 className="text-xl font-semibold">
-        {type === "create" ? "Create a new course" : "Update the course"}
+        {type === "create" ? "Create a new Subject" : "Update the Subject"}
       </h1>
 
       <div className="flex justify-between flex-wrap gap-4">
         <InputField
-          label="Course name"
+          label="Subject name"
           name="name"
           defaultValue={data?.name}
           register={register}
@@ -113,4 +113,4 @@ const CourseForm = ({
   );
 };
 
-export default CourseForm;
+export default SubjectForm;

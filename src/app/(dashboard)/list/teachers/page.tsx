@@ -3,13 +3,13 @@ import Pagination from "@/components/Pagination";
 import Table from "@/components/Table";
 import TableSearch from "@/components/TableSearch";
 import prisma from "@/lib/prisma";
-import { Branch, Prisma, Course, Teacher } from "@prisma/client";
+import { Branch, Prisma, Subject, Teacher } from "@prisma/client";
 import Image from "next/image";
 import Link from "next/link";
 import { ITEM_PER_PAGE } from "@/lib/settings";
 import { auth } from "@clerk/nextjs/server";
 
-type TeacherList = Teacher & { courses: Course[] } & { branches: Branch[] };
+type TeacherList = Teacher & { subjects: Subject[] } & { branches: Branch[] };
 
 const TeacherListPage = async ({
   searchParams,
@@ -25,8 +25,8 @@ const TeacherListPage = async ({
       className: "hidden md:table-cell",
     },
     {
-      header: "Courses",
-      accessor: "courses",
+      header: "Subjects",
+      accessor: "subjects",
       className: "hidden md:table-cell",
     },
     {
@@ -51,7 +51,7 @@ const TeacherListPage = async ({
     >
       <td className="hidden md:table-cell">{item.username}</td>
       <td className="hidden md:table-cell">
-        {item.courses.map((course) => course.name).join(",")}
+        {item.subjects.map((subject) => subject.name).join(",")}
       </td>
       <td className="hidden md:table-cell">
         {item.branches.map((branchItem) => branchItem.name).join(",")}
@@ -106,7 +106,7 @@ const TeacherListPage = async ({
     prisma.teacher.findMany({
       where: query,
       include: {
-        courses: true,
+        subjects: true,
         branches: true,
       },
       take: ITEM_PER_PAGE,

@@ -19,14 +19,14 @@ const SingleTeacherPage = async ({
 
   const teacher:
     | (Teacher & {
-        _count: { course: number; lectures: number; branches: number };
+        _count: { subjects: number; lectures: number; branches: number };
       })
     | null = await prisma.teacher.findUnique({
     where: { id },
     include: {
       _count: {
         select: {
-          courses: true,
+          subjects: true,
           lectures: true,
           branches: true,
         },
@@ -95,9 +95,9 @@ const SingleTeacherPage = async ({
               />
               <div className="">
                 <h1 className="text-xl font-semibold">
-                  {teacher._count.courses}
+                  {teacher._count.subjects}
                 </h1>
-                <span className="text-sm text-gray-400">Courses</span>
+                <span className="text-sm text-gray-400">Subjects</span>
               </div>
             </div>
             {/* CARD */}

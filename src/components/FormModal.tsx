@@ -4,7 +4,7 @@ import {
   deleteBranch,
   deleteExam,
   deleteStudent,
-  deleteCourse,
+  deleteSubject,
   deleteTeacher,
   deleteRegistrar,
   deleteAnnouncement,
@@ -18,16 +18,16 @@ import { toast } from "react-toastify";
 import { FormContainerProps } from "./FormContainer";
 
 const deleteActionMap = {
-  course: deleteCourse,
+  subject: deleteSubject,
   branch: deleteBranch,
   teacher: deleteTeacher,
   student: deleteStudent,
   exam: deleteExam,
 // TODO: OTHER DELETE ACTIONS
   registrar: deleteRegistrar,
-  assignment: deleteCourse,
-  result: deleteCourse,
-  attendance: deleteCourse,
+  assignment: deleteSubject,
+  result: deleteSubject,
+  attendance: deleteSubject,
   announcement: deleteAnnouncement,
 };
 
@@ -45,7 +45,7 @@ const RegistrarForm = dynamic(() => import("./forms/RegistrarForm"), {
 const StudentForm = dynamic(() => import("./forms/StudentForm"), {
   loading: () => <h1>Loading...</h1>,
 });
-const CourseForm = dynamic(() => import("./forms/CourseForm"), {
+const SubjectForm = dynamic(() => import("./forms/SubjectForm"), {
   loading: () => <h1>Loading...</h1>,
 });
 const BranchForm = dynamic(() => import("./forms/BranchForm"), {
@@ -67,8 +67,8 @@ const forms: {
     relatedData?: any
   ) => JSX.Element;
 } = {
-  course: (setOpen, type, data, relatedData) => (
-    <CourseForm
+  subjecte: (setOpen, type, data, relatedData) => (
+    <SubjectForm
       type={type}
       data={data}
       setOpen={setOpen}

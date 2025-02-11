@@ -6,14 +6,14 @@ import InputField from "../InputField";
 import {
   examSchema,
   ExamSchema,
-  courseSchema,
-  CourseSchema,
+  subjectSchema,
+  SubjectSchema,
 } from "@/lib/formValidationSchemas";
 import {
   createExam,
-  createCourse,
+  createSubject,
   updateExam,
-  updateCourse,
+  updateSubject,
 } from "@/lib/actions";
 import { useFormState } from "react-dom";
 import { Dispatch, SetStateAction, useEffect } from "react";

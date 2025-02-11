@@ -6,7 +6,7 @@ import {
   ExamSchema,
   RegistrarSchema,
   StudentSchema,
-  CourseSchema,
+  SubjectSchema,
   TeacherSchema,
   AnnouncementSchema,
 } from "./formValidationSchemas";
@@ -15,12 +15,12 @@ import { clerkClient } from "@clerk/nextjs/server";
 
 type CurrentState = { success: boolean; error: boolean };
 
-export const createCourse = async (
+export const createSubject = async (
   currentState: CurrentState,
-  data: CourseSchema
+  data: SubjectSchema
 ) => {
   try {
-    await prisma.course.create({
+    await prisma.subject.create({
       data: {
         name: data.name,
         teachers: {
@@ -37,12 +37,12 @@ export const createCourse = async (
   }
 };
 
-export const updateCourse = async (
+export const updateSubject = async (
   currentState: CurrentState,
-  data: CourseSchema
+  data: SubjectSchema
 ) => {
   try {
-    await prisma.course.update({
+    await prisma.subject.update({
       where: {
         id: data.id,
       },
@@ -62,13 +62,13 @@ export const updateCourse = async (
   }
 };
 
-export const deleteCourse = async (
+export const deleteSubject = async (
   currentState: CurrentState,
   data: FormData
 ) => {
   const id = data.get("id") as string;
   try {
-    await prisma.course.delete({
+    await prisma.subject.delete({
       where: {
         id: parseInt(id),
       },
@@ -156,9 +156,9 @@ export const createTeacher = async (
         id: user.id,
         username: data.username,
         name: data.name,
-        courses: {
-          connect: data.courses?.map((courseId: string) => ({
-            id: parseInt(courseId),
+        subjects: {
+          connect: data.subjects?.map((subjectId: string) => ({
+            id: parseInt(subjectId),
           })),
         },
       },
@@ -195,9 +195,9 @@ export const updateTeacher = async (
         ...(data.password !== "" && { password: data.password }),
         username: data.username,
         name: data.name,
-        courses: {
-          set: data.courses?.map((coursesId: string) => ({
-            id: parseInt(coursesId),
+        subjects: {
+          set: data.subjects?.map((subjectsId: string) => ({
+            id: parseInt(subjectsId),
           })),
         },
       },

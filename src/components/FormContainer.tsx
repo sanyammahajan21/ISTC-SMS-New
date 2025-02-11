@@ -7,7 +7,7 @@ export type FormContainerProps = {
     | "teacher"
     | "student"
     | "registrar"
-    | "course"
+    | "subject"
     | "branch"
     | "lectures"
     | "exam"
@@ -29,11 +29,11 @@ const FormContainer = async ({ table, type, data, id }: FormContainerProps) => {
 
   if (type !== "delete") {
     switch (table) {
-      case "course":
-        const courseTeachers = await prisma.teacher.findMany({
+      case "subject":
+        const subjectTeachers = await prisma.teacher.findMany({
           select: { id: true, name: true,  },
         });
-        relatedData = { teachers: courseTeachers };
+        relatedData = { teachers: subjectTeachers };
         break;
       case "branch":
         const branchSemesters = await prisma.semester.findMany({
@@ -45,10 +45,10 @@ const FormContainer = async ({ table, type, data, id }: FormContainerProps) => {
         relatedData = { teachers: branchTeachers, semesters: branchSemesters };
         break;
       case "teacher":
-        const teacherCourses = await prisma.course.findMany({
+        const teacherSubjects = await prisma.subject.findMany({
           select: { id: true, name: true },
         });
-        relatedData = { courses: teacherCourses };
+        relatedData = { subjects: teacherSubjects };
         break;
       case "student":
         const studentSemesters = await prisma.semester.findMany({

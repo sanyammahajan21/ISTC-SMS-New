@@ -11,7 +11,7 @@ export const routeAccessMap: RouteAccessMap = {
   "/list/teachers": ["admin", "teacher", "registrar"],
   "/list/students": ["admin", "teacher", "registrar"],
   "/list/registrars": ["admin"],
-  "/list/courses": ["registrar"],
+  "/list/subjects": ["registrar"],
   "/list/branches": ["registrar", "teacher"],
   "/list/exams": ["teacher", "registrar"],
   "/list/assignments": ["teacher"],
