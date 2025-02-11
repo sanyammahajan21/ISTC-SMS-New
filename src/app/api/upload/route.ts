@@ -12,12 +12,12 @@ export async function POST(req: NextRequest) {
     const formData = await req.formData();
 
     const branchId = parseInt(formData.get("branchId") as string);
-    const gradeId = parseInt(formData.get("gradeId") as string);
+    const semesterId = parseInt(formData.get("semesterId") as string);
     const file = formData.get("file") as Blob;
 
-    if (!branchId || !gradeId || !file) {
+    if (!branchId || !semesterId || !file) {
       return NextResponse.json(
-        { success: false, error: "Missing file, Branch ID, or Grade ID." },
+        { success: false, error: "Missing file, Branch ID, or Semester ID." },
         { status: 400 }
       );
     }
@@ -54,7 +54,7 @@ export async function POST(req: NextRequest) {
       fatherName: row["Father Name"],
       motherName: row["Mother Name"],
       branchId,
-      gradeId,
+      semesterId,
     }));
 
     await prisma.student.createMany({ data: students, skipDuplicates: false });

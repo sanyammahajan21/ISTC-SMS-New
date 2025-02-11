@@ -55,7 +55,7 @@ const renderRow = (item: LectruesList) => (
     <td className="flex items-center gap-4 p-4">{item.course.name}</td>
     <td>{item.branch.name}</td>
     <td className="hidden md:table-cell">
-      {item.teacher.name + " " + item.teacher.surname}
+      {item.teacher.name }
     </td>
     <td>
       <div className="flex items-center gap-2">
@@ -107,7 +107,7 @@ const renderRow = (item: LectruesList) => (
       include: {
         course: { select: { name: true } },
         branch: { select: { name: true } },
-        teacher: { select: { name: true, surname: true } },
+        teacher: { select: { name: true} },
       },
       take: ITEM_PER_PAGE,
       skip: ITEM_PER_PAGE * (p - 1),

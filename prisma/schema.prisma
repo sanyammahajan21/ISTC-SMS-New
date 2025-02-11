@@ -22,8 +22,8 @@ model Student {
   createdAt   DateTime     @default(now())
   branchId    Int
   branch      Branch     @relation(fields: [branchId], references: [id])
-  gradeId     Int
-  grade       Grade        @relation(fields: [gradeId], references: [id])
+  semesterId     Int
+  semester       Semester       @relation(fields: [semesterId], references: [id])
   attendances Attendance[] 
   results     Result[] 
 }
@@ -53,7 +53,7 @@ model Registrar {
   birthday  DateTime
 }
 
-model Grade {
+model Semester {
   id        Int       @id @default(autoincrement())
   level     Int       @unique
   students  Student[] 
@@ -68,8 +68,8 @@ model Branch {
   supervisor   Teacher? @relation(fields: [supervisorId], references: [id])
   lectures     Lectures[] 
   students     Student[] 
-  gradeId      Int?
-  grade        Grade?    @relation(fields: [gradeId], references: [id])
+  semesterId      Int?
+  semester        Semester?    @relation(fields: [semesterId], references: [id])
   announcements Announcement[] 
 }
 

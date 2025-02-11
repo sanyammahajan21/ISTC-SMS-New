@@ -12,7 +12,7 @@ export const branchSchema = z.object({
   id: z.coerce.number().optional(),
   name: z.string().min(1, { message: "Branch name is required!" }),
   capacity: z.coerce.number().min(1, { message: "Capacity name is required!" }),
-  gradeId: z.coerce.number().optional(),
+  semesterId: z.coerce.number().optional(),
   supervisorId: z.coerce.string().optional(),
 });
 
@@ -29,19 +29,7 @@ export const teacherSchema = z.object({
     .min(8, { message: "Password must be at least 8 characters long!" })
     .optional()
     .or(z.literal("")),
-  name: z.string().min(1, { message: "First name is required!" }),
-  surname: z.string().min(1, { message: "Last name is required!" }),
-  email: z
-    .string()
-    .email({ message: "Invalid email address!" })
-    .optional()
-    .or(z.literal("")),
-  phone: z.string().optional(),
-  address: z.string(),
-  img: z.string().optional(),
-  bloodType: z.string().min(1, { message: "Blood Type is required!" }),
-  birthday: z.coerce.date({ message: "Birthday is required!" }),
-  sex: z.enum(["MALE", "FEMALE"], { message: "Sex is required!" }),
+  name: z.string().min(1, { message: "Name is required!" }),
   courses: z.array(z.string()).optional(), // subject ids
 });
 
@@ -92,7 +80,7 @@ export const studentSchema = z.object({
   phone: z.string().optional(),
   img: z.string().optional(),
   sex: z.enum(["MALE", "FEMALE"], { message: "Sex is required!" }),
-  gradeId: z.coerce.number().min(1, { message: "Grade is required!" }),
+  semesterId: z.coerce.number().min(1, { message: "Semester is required!" }),
   branchId: z.coerce.number().min(1, { message: "branch name is required!" }),
 });
 
