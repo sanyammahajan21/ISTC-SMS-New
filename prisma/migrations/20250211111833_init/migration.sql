@@ -11,10 +11,17 @@ CREATE TABLE `Admin` (
 CREATE TABLE `Student` (
     `id` VARCHAR(191) NOT NULL,
     `username` VARCHAR(191) NOT NULL,
+    `password` VARCHAR(191) NOT NULL,
     `name` VARCHAR(191) NOT NULL,
     `fatherName` VARCHAR(191) NOT NULL,
     `motherName` VARCHAR(191) NOT NULL,
     `img` VARCHAR(191) NULL,
+    `address` VARCHAR(191) NULL,
+    `DOB` DATETIME(3) NOT NULL,
+    `phone` VARCHAR(191) NOT NULL,
+    `email` VARCHAR(191) NULL,
+    `sex` ENUM('MALE', 'FEMALE', 'PREFER_NOT_TO_SAY') NULL,
+    `bloodType` VARCHAR(191) NULL,
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `branchId` INTEGER NOT NULL,
     `semesterId` INTEGER NOT NULL,
@@ -28,9 +35,15 @@ CREATE TABLE `Teacher` (
     `id` VARCHAR(191) NOT NULL,
     `username` VARCHAR(191) NOT NULL,
     `name` VARCHAR(191) NOT NULL,
+    `password` VARCHAR(191) NOT NULL,
+    `Division` VARCHAR(191) NOT NULL,
+    `phone` VARCHAR(191) NOT NULL,
+    `email` VARCHAR(191) NOT NULL,
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
 
     UNIQUE INDEX `Teacher_username_key`(`username`),
+    UNIQUE INDEX `Teacher_phone_key`(`phone`),
+    UNIQUE INDEX `Teacher_email_key`(`email`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
@@ -39,15 +52,9 @@ CREATE TABLE `Registrar` (
     `id` VARCHAR(191) NOT NULL,
     `username` VARCHAR(191) NOT NULL,
     `name` VARCHAR(191) NOT NULL,
-    `surname` VARCHAR(191) NOT NULL,
     `email` VARCHAR(191) NULL,
     `phone` VARCHAR(191) NULL,
-    `address` VARCHAR(191) NOT NULL,
-    `img` VARCHAR(191) NULL,
-    `bloodType` VARCHAR(191) NOT NULL,
-    `sex` ENUM('MALE', 'FEMALE') NOT NULL,
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
-    `birthday` DATETIME(3) NOT NULL,
 
     UNIQUE INDEX `Registrar_username_key`(`username`),
     UNIQUE INDEX `Registrar_email_key`(`email`),
@@ -78,11 +85,16 @@ CREATE TABLE `Branch` (
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
-CREATE TABLE `Course` (
+CREATE TABLE `Subject` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
     `name` VARCHAR(191) NOT NULL,
+    `subjectCode` VARCHAR(191) NOT NULL,
+    `type` ENUM('THEORY', 'PRACTICAL') NOT NULL,
+    `maxMarks` INTEGER NOT NULL,
+    `branchId` INTEGER NOT NULL,
+    `semesterId` INTEGER NULL,
 
-    UNIQUE INDEX `Course_name_key`(`name`),
+    UNIQUE INDEX `Subject_name_key`(`name`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
@@ -93,7 +105,7 @@ CREATE TABLE `Lectures` (
     `day` ENUM('MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY') NOT NULL,
     `startTime` DATETIME(3) NOT NULL,
     `endTime` DATETIME(3) NOT NULL,
-    `courseId` INTEGER NOT NULL,
+    `subjectId` INTEGER NOT NULL,
     `branchId` INTEGER NOT NULL,
     `teacherId` VARCHAR(191) NOT NULL,
 
@@ -112,22 +124,13 @@ CREATE TABLE `Exam` (
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
-CREATE TABLE `Assignment` (
-    `id` INTEGER NOT NULL AUTO_INCREMENT,
-    `title` VARCHAR(191) NOT NULL,
-    `startDate` DATETIME(3) NOT NULL,
-    `dueDate` DATETIME(3) NOT NULL,
-    `lecturesId` INTEGER NOT NULL,
-
-    PRIMARY KEY (`id`)
-) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-
--- CreateTable
 CREATE TABLE `Result` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
-    `score` INTEGER NOT NULL,
+    `sessionalExam` VARCHAR(191) NULL,
+    `endTerm` VARCHAR(191) NULL,
+    `overallMark` VARCHAR(191) NOT NULL,
+    `grade` VARCHAR(191) NOT NULL,
     `examId` INTEGER NULL,
-    `assignmentId` INTEGER NULL,
     `studentId` VARCHAR(191) NOT NULL,
 
     PRIMARY KEY (`id`)
@@ -156,12 +159,12 @@ CREATE TABLE `Announcement` (
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
-CREATE TABLE `_CourseToTeacher` (
+CREATE TABLE `_SubjectToTeacher` (
     `A` INTEGER NOT NULL,
     `B` VARCHAR(191) NOT NULL,
 
-    UNIQUE INDEX `_CourseToTeacher_AB_unique`(`A`, `B`),
-    INDEX `_CourseToTeacher_B_index`(`B`)
+    UNIQUE INDEX `_SubjectToTeacher_AB_unique`(`A`, `B`),
+    INDEX `_SubjectToTeacher_B_index`(`B`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
@@ -186,7 +189,13 @@ ALTER TABLE `Branch` ADD CONSTRAINT `Branch_supervisorId_fkey` FOREIGN KEY (`sup
 ALTER TABLE `Branch` ADD CONSTRAINT `Branch_semesterId_fkey` FOREIGN KEY (`semesterId`) REFERENCES `Semester`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `Lectures` ADD CONSTRAINT `Lectures_courseId_fkey` FOREIGN KEY (`courseId`) REFERENCES `Course`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE `Subject` ADD CONSTRAINT `Subject_branchId_fkey` FOREIGN KEY (`branchId`) REFERENCES `Branch`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `Subject` ADD CONSTRAINT `Subject_semesterId_fkey` FOREIGN KEY (`semesterId`) REFERENCES `Semester`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `Lectures` ADD CONSTRAINT `Lectures_subjectId_fkey` FOREIGN KEY (`subjectId`) REFERENCES `Subject`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `Lectures` ADD CONSTRAINT `Lectures_branchId_fkey` FOREIGN KEY (`branchId`) REFERENCES `Branch`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -198,13 +207,7 @@ ALTER TABLE `Lectures` ADD CONSTRAINT `Lectures_teacherId_fkey` FOREIGN KEY (`te
 ALTER TABLE `Exam` ADD CONSTRAINT `Exam_lecturesId_fkey` FOREIGN KEY (`lecturesId`) REFERENCES `Lectures`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `Assignment` ADD CONSTRAINT `Assignment_lecturesId_fkey` FOREIGN KEY (`lecturesId`) REFERENCES `Lectures`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
 ALTER TABLE `Result` ADD CONSTRAINT `Result_examId_fkey` FOREIGN KEY (`examId`) REFERENCES `Exam`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE `Result` ADD CONSTRAINT `Result_assignmentId_fkey` FOREIGN KEY (`assignmentId`) REFERENCES `Assignment`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `Result` ADD CONSTRAINT `Result_studentId_fkey` FOREIGN KEY (`studentId`) REFERENCES `Student`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -216,10 +219,10 @@ ALTER TABLE `Attendance` ADD CONSTRAINT `Attendance_studentId_fkey` FOREIGN KEY 
 ALTER TABLE `Attendance` ADD CONSTRAINT `Attendance_lecturesId_fkey` FOREIGN KEY (`lecturesId`) REFERENCES `Lectures`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `_CourseToTeacher` ADD CONSTRAINT `_CourseToTeacher_A_fkey` FOREIGN KEY (`A`) REFERENCES `Course`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE `_SubjectToTeacher` ADD CONSTRAINT `_SubjectToTeacher_A_fkey` FOREIGN KEY (`A`) REFERENCES `Subject`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `_CourseToTeacher` ADD CONSTRAINT `_CourseToTeacher_B_fkey` FOREIGN KEY (`B`) REFERENCES `Teacher`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE `_SubjectToTeacher` ADD CONSTRAINT `_SubjectToTeacher_B_fkey` FOREIGN KEY (`B`) REFERENCES `Teacher`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `_AnnouncementToBranch` ADD CONSTRAINT `_AnnouncementToBranch_A_fkey` FOREIGN KEY (`A`) REFERENCES `Announcement`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;

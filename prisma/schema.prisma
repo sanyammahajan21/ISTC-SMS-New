@@ -15,10 +15,17 @@ model Admin {
 model Student {
   id          String       @id @default(uuid())
   username    String       @unique
+  password    String
   name        String
   fatherName  String
   motherName  String
   img         String?
+  address     String?
+  DOB         DateTime
+  phone       String
+  email       String?
+  sex         UserSex?
+  bloodType   String? 
   createdAt   DateTime     @default(now())
   branchId    Int
   branch      Branch     @relation(fields: [branchId], references: [id])
@@ -32,8 +39,12 @@ model Teacher {
   id        String    @id @default(uuid())
   username  String    @unique
   name      String
+  password  String
+  Division  String
+  phone     String    @unique
+  email     String    @unique
   createdAt DateTime  @default(now())
-  courses   Course[] 
+  subjects   Subject[] 
   lectures  Lectures[]  
   branches  Branch[] 
 }
@@ -42,15 +53,9 @@ model Registrar {
   id        String    @id @default(uuid())
   username  String    @unique
   name      String
-  surname   String
   email     String?   @unique
   phone     String?   @unique
-  address   String
-  img       String?
-  bloodType String
-  sex       UserSex
   createdAt DateTime  @default(now())
-  birthday  DateTime
 }
 
 model Semester {
@@ -58,7 +63,9 @@ model Semester {
   level     Int       @unique
   students  Student[] 
   branches  Branch[] 
+  subjects  Subject[]  // Added inverse relation
 }
+
 
 model Branch {
   id           Int      @id @default(autoincrement())
@@ -68,14 +75,24 @@ model Branch {
   supervisor   Teacher? @relation(fields: [supervisorId], references: [id])
   lectures     Lectures[] 
   students     Student[] 
-  semesterId      Int?
-  semester        Semester?    @relation(fields: [semesterId], references: [id])
+  semesterId   Int?
+  semester     Semester? @relation(fields: [semesterId], references: [id])
   announcements Announcement[] 
+
+  subjects     Subject[]  // Added inverse relation
 }
 
-model Course {
+
+model Subject {
   id         Int       @id @default(autoincrement())
   name       String    @unique
+  subjectCode String
+  type       SubjectType
+  maxMarks   Int 
+  branchId   Int
+  branch     Branch    @relation(fields: [branchId], references: [id])
+  semesterId Int?
+  semester   Semester? @relation(fields: [semesterId], references: [id])
   teachers   Teacher[] 
   lectures   Lectures[] 
 }
@@ -87,16 +104,17 @@ model Lectures {
   startTime  DateTime
   endTime    DateTime
 
-  courseId   Int
-  course     Course    @relation(fields: [courseId], references: [id])
+  subjectId  Int
+  subject    Subject  @relation(fields: [subjectId], references: [id])
   branchId   Int
-  branch     Branch  @relation(fields: [branchId], references: [id])
+  branch     Branch   @relation(fields: [branchId], references: [id])
   teacherId  String
-  teacher    Teacher   @relation(fields: [teacherId], references: [id])
-  exams      Exam[] 
-  assignments Assignment[] 
-  attendances Attendance[] 
+  teacher    Teacher  @relation(fields: [teacherId], references: [id])
+  attendances Attendance[]
+
+  exams      Exam[]    // Added inverse relation
 }
+
 
 model Exam {
   id        Int      @id @default(autoincrement())
@@ -106,30 +124,20 @@ model Exam {
 
   lecturesId Int
   lectures   Lectures  @relation(fields: [lecturesId], references: [id])
-  results   Result[] 
+  results    Result[] 
 }
 
-model Assignment {
-  id        Int      @id @default(autoincrement())
-  title     String
-  startDate DateTime
-  dueDate   DateTime
-
-  lecturesId Int
-  lectures   Lectures  @relation(fields: [lecturesId], references: [id])
-  results   Result[] 
-}
 
 model Result {
-  id          Int      @id @default(autoincrement())
-  score       Int
-
-  examId      Int?
-  exam        Exam?    @relation(fields: [examId], references: [id])
-  assignmentId Int?
-  assignment  Assignment? @relation(fields: [assignmentId], references: [id])
-  studentId   String
-  student     Student  @relation(fields: [studentId], references: [id])
+  id               Int      @id @default(autoincrement())
+  sessionalExam    String?
+  endTerm          String?
+  overallMark      String  
+  grade            String
+  examId           Int?
+  exam             Exam?    @relation(fields: [examId], references: [id])
+  studentId        String
+  student          Student  @relation(fields: [studentId], references: [id])
 }
 
 model Attendance {
@@ -155,9 +163,15 @@ model Announcement {
   branches    Branch[]
 }
 
+enum SubjectType{
+  THEORY
+  PRACTICAL
+}
+
 enum UserSex {
   MALE
   FEMALE
+  PREFER_NOT_TO_SAY
 }
 
 enum Day {
