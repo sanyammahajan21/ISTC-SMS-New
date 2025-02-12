@@ -351,6 +351,7 @@ export const createStudent = async (
       name: data.name,
       fatherName: data.fatherName,
       motherName: data.motherName,
+
       publicMetadata:{role:"student"}
     });
 
@@ -361,7 +362,12 @@ export const createStudent = async (
         name: data.name,
         fatherName: data.fatherName,
         motherName: data.motherName,
-        img: data.img || null,
+        address: data.address,
+        birthday:data.birthday,
+        phone: data.phone,
+        email: data.email,
+        sex: data.sex,
+        bloodType: data.bloodType,
         semesterId: data.semesterId,
         branchId: data.branchId,
       },
@@ -401,8 +407,13 @@ export const updateStudent = async (
         name: data.name,
         fatherName: data.fatherName,
         motherName: data.motherName,
-        img: data.img || null,
-        semesterId: data.gsemesterId,
+        address: data.address,
+        birthday:data.birthday,
+        phone: data.phone,
+        email: data.email,
+        sex: data.sex,
+        bloodType: data.bloodType,
+        semesterId: data.semesterId,
         branchId: data.branchId,
       },
     });

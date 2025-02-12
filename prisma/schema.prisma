@@ -21,7 +21,7 @@ model Student {
   motherName  String
   img         String?
   address     String?
-  DOB         DateTime
+  birthday    DateTime
   phone       String
   email       String?
   sex         UserSex?

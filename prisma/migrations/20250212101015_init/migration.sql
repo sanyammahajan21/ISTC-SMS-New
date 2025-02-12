@@ -17,7 +17,7 @@ CREATE TABLE `Student` (
     `motherName` VARCHAR(191) NOT NULL,
     `img` VARCHAR(191) NULL,
     `address` VARCHAR(191) NULL,
-    `DOB` DATETIME(3) NOT NULL,
+    `birthday` DATETIME(3) NOT NULL,
     `phone` VARCHAR(191) NOT NULL,
     `email` VARCHAR(191) NULL,
     `sex` ENUM('MALE', 'FEMALE', 'PREFER_NOT_TO_SAY') NULL,
