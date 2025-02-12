@@ -39,8 +39,8 @@ model Teacher {
   id        String    @id @default(uuid())
   username  String    @unique
   name      String
-  password  String
-  Division  String
+  password  Division
+  division  String
   phone     String    @unique
   email     String    @unique
   createdAt DateTime  @default(now())
@@ -180,4 +180,9 @@ enum Day {
   WEDNESDAY
   THURSDAY
   FRIDAY
+}
+
+enum Division {
+  ISTC
+  LIBRARY
 }

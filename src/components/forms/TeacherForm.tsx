@@ -92,6 +92,27 @@ const TeacherForm = ({
           register={register}
           error={errors.name}
         />
+        <InputField
+          label="Phone"
+          name="phone"
+          defaultValue={data?.phone}
+          register={register}
+          error={errors.phone}
+        />
+        <InputField
+          label="Email"
+          name="email"
+          defaultValue={data?.email}
+          register={register}
+          error={errors.email}
+        />
+        <InputField
+          label="Division"
+          name="division"
+          defaultValue={data?.division}
+          register={register}
+          error={errors.division}
+        />
         {data && (
           <InputField
             label="Id"

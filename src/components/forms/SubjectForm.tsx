@@ -3,25 +3,16 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import InputField from "../InputField";
-import Image from "next/image";
-import { Dispatch, SetStateAction, useEffect, useState } from "react";
-import {
-  studentSchema,
-  StudentSchema,
-  teacherSchema,
-  TeacherSchema,
-} from "@/lib/formValidationSchemas";
+import { subjectSchema, SubjectSchema ,
+  branchSchema,
+  BranchSchema, } from "@/lib/formValidationSchemas";
+import { createSubject, updateSubject } from "@/lib/actions";
 import { useFormState } from "react-dom";
-import {
-  createStudent,
-  createTeacher,
-  updateStudent,
-  updateTeacher,
-} from "@/lib/actions";
-import { useRouter } from "next/navigation";
+import { Dispatch, SetStateAction, useEffect } from "react";
 import { toast } from "react-toastify";
+import { useRouter } from "next/navigation";
 
-const StudentForm = ({
+const SubjectForm = ({
   type,
   data,
   setOpen,
@@ -36,14 +27,14 @@ const StudentForm = ({
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<StudentSchema>({
-    resolver: zodResolver(studentSchema),
+  } = useForm<SubjectSchema>({
+    resolver: zodResolver(subjectSchema),
   });
 
-  const [img, setImg] = useState<any>();
+  // AFTER REACT 19 IT'LL BE USEACTIONSTATE
 
   const [state, formAction] = useFormState(
-    type === "create" ? createStudent : updateStudent,
+    type === "create" ? createSubject : updateSubject,
     {
       success: false,
       error: false,
@@ -51,109 +42,43 @@ const StudentForm = ({
   );
 
   const onSubmit = handleSubmit((data) => {
-    console.log("hello");
     console.log(data);
-    formAction({ ...data, img: img?.secure_url });
+    formAction(data);
   });
 
   const router = useRouter();
 
   useEffect(() => {
     if (state.success) {
-      toast(`Student has been ${type === "create" ? "created" : "updated"}!`);
+      toast(`Subject has been ${type === "create" ? "created" : "updated"}!`);
       setOpen(false);
       router.refresh();
     }
   }, [state, router, type, setOpen]);
 
-  const { semesters, branches } = relatedData;
-
+  const { teachers } = relatedData;
+  const branches = relatedData?.branches || [];
+const semesters = relatedData?.semesters || [];
   return (
     <form className="flex flex-col gap-8" onSubmit={onSubmit}>
       <h1 className="text-xl font-semibold">
-        {type === "create" ? "Create a new student" : "Update the student"}
+        {type === "create" ? "Create a new Subject" : "Update the Subject"}
       </h1>
-      <span className="text-xs text-gray-400 font-medium">
-        Authentication Information
-      </span>
+
       <div className="flex justify-between flex-wrap gap-4">
         <InputField
-          label="Username"
-          name="username"
-          defaultValue={data?.username}
-          register={register}
-          error={errors?.username}
-        />
-        <InputField
-          label="Password"
-          name="password"
-          type="password"
-          defaultValue={data?.password}
-          register={register}
-          error={errors?.password}
-        />
-      </div>
-      <span className="text-xs text-gray-400 font-medium">
-        Personal Information
-      </span>
-      
-      <div className="flex justify-between flex-wrap gap-4">
-        <InputField
-          label="Name"
+          label="Subject name"
           name="name"
           defaultValue={data?.name}
           register={register}
-          error={errors.name}
-        />     
-        <InputField
-          label="Father Name"
-          name="fatherName"
-          defaultValue={data?.fatherName}
-          register={register}
-          error={errors.fatherName}
-        />  
-        <InputField
-          label="Mother Name"
-          name="motherName"
-          defaultValue={data?.motherName}
-          register={register}
-          error={errors.motherName}
+          error={errors?.name}
         />
         <InputField
-          label="Address"
-          name="address"
-          defaultValue={data?.address}
+          label="Maximun marks"
+          name="maxMarks"
+          defaultValue={data?.maxMarks}
           register={register}
-          error={errors.address}
-        />
-        <InputField
-          label="Phone No."
-          name="phone"
-          defaultValue={data?.phone}
-          register={register}
-          error={errors.phone}
-        />
-        <InputField
-          label="Email"
-          name="email"
-          defaultValue={data?.email}
-          register={register}
-          error={errors.email}
-        />
-        <InputField
-          label="Blood Type"
-          name="bloodType"
-          defaultValue={data?.bloodType}
-          register={register}
-          error={errors.bloodType}
-        />
-        <InputField
-          label="Birthday"
-          name="birthday"
-          defaultValue={data?.birthday.toISOString().split("T")[0]}
-          register={register}
-          error={errors.birthday}
-          type="date"
+          error={errors?.maxMarks}
         />
         {data && (
           <InputField
@@ -166,18 +91,30 @@ const StudentForm = ({
           />
         )}
         <div className="flex flex-col gap-2 w-full md:w-1/4">
-          <label className="text-xs text-gray-500">Sex</label>
+          <label className="text-xs text-gray-500">Branch</label>
           <select
             className="ring-[1.5px] ring-gray-300 p-2 rounded-md text-sm w-full"
-            {...register("sex")}
-            defaultValue={data?.sex}
+            {...register("branchId")}
+            defaultValue={data?.branchId}
           >
-            <option value="MALE">Male</option>
-            <option value="FEMALE">Female</option>
+            {branches.map(
+              (branchItem: { 
+                id: number;
+                name: string;
+                capacity: number;
+                _count: { students: number };
+              }) => (
+                <option value={branchItem.id} key={branchItem.id}>
+                  ({branchItem.name} -{" "}
+                  {branchItem._count.students + "/" + branchItem.capacity}{" "}
+                  Capacity)
+                </option>
+              )
+            )}
           </select>
-          {errors.sex?.message && (
+          {errors.branchId?.message && (
             <p className="text-xs text-red-400">
-              {errors.sex.message.toString()}
+              {errors.branchId.message.toString()}
             </p>
           )}
         </div>
@@ -232,11 +169,11 @@ const StudentForm = ({
       {state.error && (
         <span className="text-red-500">Something went wrong!</span>
       )}
-      <button type="submit" className="bg-blue-400 text-white p-2 rounded-md">
+      <button className="bg-blue-400 text-white p-2 rounded-md">
         {type === "create" ? "Create" : "Update"}
       </button>
     </form>
   );
 };
 
-export default StudentForm;
+export default SubjectForm;

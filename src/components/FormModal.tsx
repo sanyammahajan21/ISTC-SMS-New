@@ -67,7 +67,7 @@ const forms: {
     relatedData?: any
   ) => JSX.Element;
 } = {
-  subjecte: (setOpen, type, data, relatedData) => (
+  subject: (setOpen, type, data, relatedData) => (
     <SubjectForm
       type={type}
       data={data}

@@ -3,6 +3,11 @@ import { z } from "zod";
 export const subjectSchema = z.object({
   id: z.coerce.number().optional(),
   name: z.string().min(1, { message: "Subject name is required!" }),
+  maxMarks : z.coerce.number()
+  .min(0, { message: "number cannot be negative" })
+  .max(100, {message : "max marks allotted cannot excced 100"}),
+  semesterId: z.coerce.number().min(1, { message: "Semester is required!" }),
+  branchId: z.coerce.number().min(1, { message: "branch name is required!" }),
   teachers: z.array(z.string()), //teacher ids
 });
 
@@ -30,6 +35,15 @@ export const teacherSchema = z.object({
     .optional()
     .or(z.literal("")),
   name: z.string().min(1, { message: "Name is required!" }),
+  email: z
+    .string()
+    .email({ message: "Invalid email address!" })
+    .optional()
+    .or(z.literal("")),
+  phone: z.string().optional(),
+  address: z.string(),
+  division: z.string().optional(),
+  bloodType: z.string().min(1, { message: "Blood Type is required!" }),
   subjects: z.array(z.string()).optional(), // subject ids
 });
 
@@ -55,6 +69,7 @@ export const registrarSchema = z.object({
     .or(z.literal("")),
   phone: z.string().optional(),
   address: z.string(),
+  division: z.string().optional(),
   bloodType: z.string().min(1, { message: "Blood Type is required!" }),
   birthday: z.coerce.date({ message: "Birthday is required!" }),
   sex: z.enum(["MALE", "FEMALE"], { message: "Sex is required!" }),
@@ -76,7 +91,15 @@ export const studentSchema = z.object({
     .or(z.literal("")),
   name: z.string().min(1, { message: "First name is required!" }),
   fatherName: z.string().min(1, { message: "Father Name is required!" }),
+  address: z.string(),
   motherName: z.string().min(1, { message: "Mother Name is required!" }),
+  email: z
+    .string()
+    .email({ message: "Invalid email address!" })
+    .optional()
+    .or(z.literal("")),
+    bloodType: z.string().min(1, { message: "Blood Type is required!" }),
+    birthday: z.coerce.date({ message: "Birthday is required!" }),
   phone: z.string().optional(),
   img: z.string().optional(),
   sex: z.enum(["MALE", "FEMALE"], { message: "Sex is required!" }),
