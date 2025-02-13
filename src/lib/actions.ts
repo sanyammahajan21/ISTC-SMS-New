@@ -446,104 +446,67 @@ export const deleteStudent = async (
     return { success: false, error: true };
   }
 };
-
 export const createExam = async (
   currentState: CurrentState,
   data: ExamSchema
 ) => {
-  // const { userId, sessionClaims } = auth();
-  // const role = (sessionClaims?.metadata as { role?: string })?.role;
-
   try {
-    // if (role === "teacher") {
-    //   const teacherLecture = await prisma.lecture.findFirst({
-    //     where: {
-    //       teacherId: userId!,
-    //       id: data.lectureId,
-    //     },
-    //   });
-
-    //   if (!teacherLecture) {
-    //     return { success: false, error: true };
-    //   }
-    // }
-
     await prisma.exam.create({
       data: {
-        title: data.title,
+        subjectId: data.subjectId,
+        examDate: data.examDate,
         startTime: data.startTime,
         endTime: data.endTime,
-        lecturesId: data.branchId,
+        semesterId: data.semesterId,
+        branchId: data.branchId,
       },
     });
 
-    // revalidatePath("/list/subjects");
+    revalidatePath("/list/exams");
     return { success: true, error: false };
   } catch (err) {
     console.log(err);
     return { success: false, error: true };
   }
 };
-
 export const updateExam = async (
   currentState: CurrentState,
   data: ExamSchema
 ) => {
-  // const { userId, sessionClaims } = auth();
-  // const role = (sessionClaims?.metadata as { role?: string })?.role;
-
   try {
-    // if (role === "teacher") {
-    //   const teacherLecture = await prisma.lecture.findFirst({
-    //     where: {
-    //       teacherId: userId!,
-    //       id: data.lectureId,
-    //     },
-    //   });
-
-    //   if (!teacherLecture) {
-    //     return { success: false, error: true };
-    //   }
-    // }
-
     await prisma.exam.update({
       where: {
         id: data.id,
       },
       data: {
-        title: data.title,
-        startTime: data.startTime,
-        endTime: data.endTime,
-        lecturesId: data.branchId,
+        subjectId: data.subjectId,
+        examDate: data.examDate,
+        duration: data.duration,
+        semesterId: data.semesterId,
+        branchId: data.branchId,
       },
     });
 
-    // revalidatePath("/list/subjects");
+    revalidatePath("/list/exams");
     return { success: true, error: false };
   } catch (err) {
     console.log(err);
     return { success: false, error: true };
   }
 };
-
 export const deleteExam = async (
   currentState: CurrentState,
   data: FormData
 ) => {
   const id = data.get("id") as string;
-
-  // const { userId, sessionClaims } = auth();
-  // const role = (sessionClaims?.metadata as { role?: string })?.role;
-
   try {
     await prisma.exam.delete({
       where: {
         id: parseInt(id),
-        // ...(role === "teacher" ? { lecture: { teacherId: userId! } } : {}),
       },
     });
 
-    // revalidatePath("/list/subjects");
+    revalidatePath("/list/exams");
     return { success: true, error: false };
   } catch (err) {
     console.log(err);

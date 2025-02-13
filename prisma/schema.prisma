@@ -13,59 +13,59 @@ model Admin {
 }
 
 model Student {
-  id          String       @id @default(uuid())
-  username    String       @unique
-  password    String
-  name        String
-  fatherName  String
-  motherName  String
-  img         String?
-  address     String?
-  birthday    DateTime
-  phone       String
-  email       String?
-  sex         UserSex?
-  bloodType   String? 
-  createdAt   DateTime     @default(now())
-  branchId    Int
-  branch      Branch     @relation(fields: [branchId], references: [id])
-  semesterId  Int
-  semester    Semester   @relation(fields: [semesterId], references: [id])
-  attendances Attendance[]
-  results     Result[]
-  studentExams StudentExam[] // Link for student-exam relation
+  id           String        @id @default(uuid())
+  username     String        @unique
+  password     String
+  name         String
+  fatherName   String
+  motherName   String
+  img          String?
+  address      String?
+  birthday     DateTime
+  phone        String
+  email        String?
+  sex          UserSex?
+  bloodType    String?
+  createdAt    DateTime      @default(now())
+  branchId     Int
+  branch       Branch        @relation(fields: [branchId], references: [id])
+  semesterId   Int
+  semester     Semester      @relation(fields: [semesterId], references: [id])
+  attendances  Attendance[]
+  results      Result[]
+  studentExams StudentExam[]
 }
 
 model Teacher {
-  id        String    @id @default(uuid())
-  username  String    @unique
+  id        String     @id @default(uuid())
+  username  String     @unique
   name      String
   password  String
   division  Division
-  phone     String    @unique
-  email     String    @unique
-  createdAt DateTime  @default(now())
-  subjects  Subject[] 
-  lectures  Lectures[]  
-  branches  Branch[] 
+  phone     String     @unique
+  email     String     @unique
+  createdAt DateTime   @default(now())
+  subjects  Subject[]
+  lectures  Lectures[]
+  branches  Branch[]
 }
 
 model Registrar {
-  id        String    @id @default(uuid())
-  username  String    @unique
+  id        String   @id @default(uuid())
+  username  String   @unique
   name      String
-  email     String?   @unique
-  phone     String?   @unique
-  createdAt DateTime  @default(now())
+  email     String?  @unique
+  phone     String?  @unique
+  createdAt DateTime @default(now())
 }
 
 model Semester {
-  id        Int       @id @default(autoincrement())
-  level     Int       @unique
-  students  Student[] 
-  branches  Branch[] 
-  subjects  Subject[]  
-  exams     Exam[]   
+  id       Int       @id @default(autoincrement())
+  level    Int       @unique
+  students Student[]
+  branches Branch[]
+  subjects Subject[]
+  exams    Exam[]
 }
 
 model StudentExam {
@@ -73,105 +73,113 @@ model StudentExam {
   studentId String
   examId    Int
   student   Student @relation(fields: [studentId], references: [id])
-  exam      Exam    @relation(fields: [examId], references: [id])
-  marks     Int?    
+  exam      Exam    @relation(fields: [examId], references: [id], onDelete: Cascade)
+  marks     Int?
 }
 
 model Branch {
-  id           Int      @id @default(autoincrement())
-  name         String   @unique
-  capacity     Int
-  supervisorId String?  @unique
-  supervisor   Teacher? @relation(fields: [supervisorId], references: [id])
-  lectures     Lectures[] 
-  students     Student[] 
-  semesterId   Int?
-  semester     Semester? @relation(fields: [semesterId], references: [id])
-  announcements Announcement[] 
-  subjects     Subject[]  
+  id            Int            @id @default(autoincrement())
+  name          String         @unique
+  capacity      Int
+  supervisorId  String?        @unique
+  supervisor    Teacher?       @relation(fields: [supervisorId], references: [id])
+  lectures      Lectures[]
+  students      Student[]
+  semesterId    Int?
+  semester      Semester?      @relation(fields: [semesterId], references: [id])
+  announcements Announcement[]
+  subjects      Subject[]
+  Exam          Exam[]
 }
 
 model Subject {
-  id           Int       @id @default(autoincrement())
-  name         String    @unique
-  subjectCode  String
-  type         SubjectType
-  maxMarks     Int 
-  branchId     Int
-  branch       Branch    @relation(fields: [branchId], references: [id])
-  semesterId   Int?
-  semester     Semester? @relation(fields: [semesterId], references: [id])
-  teachers     Teacher[] 
-  lectures     Lectures[] 
-  exams        Exam[]    // Link subjects to exams
+  id          Int         @id @default(autoincrement())
+  name        String      @unique
+  subjectCode String
+  type        SubjectType
+  maxMarks    Int
+  branchId    Int
+  branch      Branch      @relation(fields: [branchId], references: [id])
+  semesterId  Int?
+  semester    Semester?   @relation(fields: [semesterId], references: [id])
+  teachers    Teacher[]
+  lectures    Lectures[]
+  exams       Exam[]
 }
 
 model Lectures {
-  id         Int       @id @default(autoincrement())
-  name       String
-  day        Day
-  startTime  DateTime
-  endTime    DateTime
-  subjectId  Int
-  subject    Subject  @relation(fields: [subjectId], references: [id])
-  branchId   Int
-  branch     Branch   @relation(fields: [branchId], references: [id])
-  teacherId  String
-  teacher    Teacher  @relation(fields: [teacherId], references: [id])
-  attendances Attendance[] 
-  exams      Exam[]    // Link lectures to exams (in case exams are tied to lectures)
+  id          Int          @id @default(autoincrement())
+  name        String
+  day         Day
+  startTime   DateTime
+  endTime     DateTime
+  subjectId   Int
+  subject     Subject      @relation(fields: [subjectId], references: [id])
+  branchId    Int
+  branch      Branch       @relation(fields: [branchId], references: [id])
+  teacherId   String
+  teacher     Teacher      @relation(fields: [teacherId], references: [id])
+  attendances Attendance[]
+  exams       Exam[]
 }
 
 model Exam {
-  id            Int       @id @default(autoincrement())
-  subjectId     Int
-  subject       Subject   @relation(fields: [subjectId], references: [id])
-  examDate      DateTime
-  duration      Int       // in minutes
-  semesterId    Int
-  semester      Semester  @relation(fields: [semesterId], references: [id])
-  createdAt     DateTime  @default(now())
-  examSchedule  ExamSchedule[]  // Link exams to schedules
+  id           Int            @id @default(autoincrement())
+  subjectId    Int
+  subject      Subject        @relation(fields: [subjectId], references: [id])
+  examDate     DateTime
+  startTime    DateTime
+  endTime      DateTime
+  semesterId   Int
+  semester     Semester       @relation(fields: [semesterId], references: [id])
+  branchId     Int
+  branch       Branch         @relation(fields: [branchId], references: [id])
+  createdAt    DateTime       @default(now())
+  examSchedule ExamSchedule[]
+  studentExams StudentExam[]
+  results      Result[]
+  Lectures     Lectures?      @relation(fields: [lecturesId], references: [id])
+  lecturesId   Int?
 }
 
 model ExamSchedule {
-  id           Int      @id @default(autoincrement())
-  examId       Int
-  exam         Exam     @relation(fields: [examId], references: [id])
-  date         DateTime
-  location     String
-  invigilator  String
+  id          Int      @id @default(autoincrement())
+  examId      Int
+  exam        Exam     @relation(fields: [examId], references: [id])
+  date        DateTime
+  location    String
+  invigilator String
 }
 
 model Result {
-  id               Int      @id @default(autoincrement())
-  sessionalExam    String?
-  endTerm          String?
-  overallMark      String  
-  grade            String
-  examId           Int?
-  exam             Exam?    @relation(fields: [examId], references: [id])
-  studentId        String
-  student          Student  @relation(fields: [studentId], references: [id])
+  id            Int     @id @default(autoincrement())
+  sessionalExam String?
+  endTerm       String?
+  overallMark   String
+  grade         String
+  examId        Int?
+  exam          Exam?   @relation(fields: [examId], references: [id])
+  studentId     String
+  student       Student @relation(fields: [studentId], references: [id])
 }
 
 model Attendance {
-  id        Int      @id @default(autoincrement())
-  date      DateTime
-  present   Boolean
-  studentId String
-  student   Student  @relation(fields: [studentId], references: [id])
+  id         Int      @id @default(autoincrement())
+  date       DateTime
+  present    Boolean
+  studentId  String
+  student    Student  @relation(fields: [studentId], references: [id])
   lecturesId Int
-  lectures   Lectures  @relation(fields: [lecturesId], references: [id])
+  lectures   Lectures @relation(fields: [lecturesId], references: [id])
 }
 
 model Announcement {
-  id          Int      @id @default(autoincrement())
-  title       String
-  startTime   DateTime
-  endTime     DateTime
-  branchId    Int?
-  branches    Branch[]   // Link announcements to multiple branches
+  id        Int      @id @default(autoincrement())
+  title     String
+  startTime DateTime
+  endTime   DateTime
+  branchId  Int?
+  branches  Branch[] // Link announcements to multiple branches
 }
 
 enum SubjectType {

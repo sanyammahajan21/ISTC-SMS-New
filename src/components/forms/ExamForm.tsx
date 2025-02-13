@@ -3,18 +3,8 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import InputField from "../InputField";
-import {
-  examSchema,
-  ExamSchema,
-  subjectSchema,
-  SubjectSchema,
-} from "@/lib/formValidationSchemas";
-import {
-  createExam,
-  createSubject,
-  updateExam,
-  updateSubject,
-} from "@/lib/actions";
+import { examSchema, ExamSchema } from "@/lib/formValidationSchemas"; 
+import { createExam, updateExam } from "@/lib/actions";
 import { useFormState } from "react-dom";
 import { Dispatch, SetStateAction, useEffect } from "react";
 import { toast } from "react-toastify";
@@ -37,9 +27,15 @@ const ExamForm = ({
     formState: { errors },
   } = useForm<ExamSchema>({
     resolver: zodResolver(examSchema),
+    defaultValues: {
+      examDate: data?.examDate,
+      startTime: data?.startTime,
+      endTime: data?.endTime,
+      branchId: data?.branchId,
+      semesterId: data?.semesterId,
+      subjectId: data?.subjectId,
+    },
   });
-
-  // AFTER REACT 19 IT'LL BE USEACTIONSTATE
 
   const [state, formAction] = useFormState(
     type === "create" ? createExam : updateExam,
@@ -64,7 +60,7 @@ const ExamForm = ({
     }
   }, [state, router, type, setOpen]);
 
-  const { lectures } = relatedData;
+  const { subjects, branches, semesters } = relatedData;
 
   return (
     <form className="flex flex-col gap-8" onSubmit={onSubmit}>
@@ -73,12 +69,13 @@ const ExamForm = ({
       </h1>
 
       <div className="flex justify-between flex-wrap gap-4">
-        <InputField
-          label="Exam title"
-          name="title"
-          defaultValue={data?.title}
+      <InputField
+          label="Exam Date"
+          name="examDate"
+          defaultValue={data?.examDate}
           register={register}
-          error={errors?.title}
+          error={errors?.examDate}
+          type="datetime-local"
         />
         <InputField
           label="Start Date"
@@ -106,29 +103,78 @@ const ExamForm = ({
             hidden
           />
         )}
+
+        {/* Branch Dropdown */}
         <div className="flex flex-col gap-2 w-full md:w-1/4">
-          <label className="text-xs text-gray-500">Lectures</label>
+          <label className="text-xs text-gray-500">Branch</label>
           <select
             className="ring-[1.5px] ring-gray-300 p-2 rounded-md text-sm w-full"
-            {...register("lecturesId")}
-            defaultValue={data?.teachers}
+            {...register("branchId")}
+            defaultValue={data?.branchId}
           >
-            {lectures.map((lectures: { id: number; name: string }) => (
-              <option value={lectures.id} key={lectures.id}>
-                {lectures.name}
+            <option value="">Select Branch</option>
+            {branches.map((branch: { id: number; name: string }) => (
+              <option value={branch.id} key={branch.id}>
+                {branch.name}
               </option>
             ))}
           </select>
-          {errors.lecturesId?.message && (
+          {errors.branchId?.message && (
             <p className="text-xs text-red-400">
-              {errors.lecturesId.message.toString()}
+              {errors.branchId.message.toString()}
+            </p>
+          )}
+        </div>
+
+        {/* Semester Dropdown */}
+        <div className="flex flex-col gap-2 w-full md:w-1/4">
+          <label className="text-xs text-gray-500">Semester</label>
+          <select
+            className="ring-[1.5px] ring-gray-300 p-2 rounded-md text-sm w-full"
+            {...register("semesterId")}
+            defaultValue={data?.semesterId}
+          >
+            <option value="">Select Semester</option>
+            {semesters.map((semester: { id: number; level: number }) => (
+              <option value={semester.id} key={semester.id}>
+                Semester {semester.level}
+              </option>
+            ))}
+          </select>
+          {errors.semesterId?.message && (
+            <p className="text-xs text-red-400">
+              {errors.semesterId.message.toString()}
+            </p>
+          )}
+        </div>
+
+        {/* subjects Dropdown */}
+        <div className="flex flex-col gap-2 w-full md:w-1/4">
+          <label className="text-xs text-gray-500">subjects</label>
+          <select
+            className="ring-[1.5px] ring-gray-300 p-2 rounded-md text-sm w-full"
+            {...register("subjectId")}
+            defaultValue={data?.subjectsId}
+          >
+            <option value="">Select Subject</option>
+            {subjects.map((subject: { id: number; name: string }) => (
+              <option value={subject.id} key={subject.id}>
+                {subject.name}
+              </option>
+            ))}
+          </select>
+          {errors.subjectId?.message && (
+            <p className="text-xs text-red-400">
+              {errors.subjectId.message.toString()}
             </p>
           )}
         </div>
       </div>
+
       {state.error && (
         <span className="text-red-500">Something went wrong!</span>
       )}
+
       <button className="bg-blue-400 text-white p-2 rounded-md">
         {type === "create" ? "Create" : "Update"}
       </button>

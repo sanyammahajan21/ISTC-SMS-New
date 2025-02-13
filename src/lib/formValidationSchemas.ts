@@ -111,13 +111,15 @@ export type StudentSchema = z.infer<typeof studentSchema>;
 
 export const examSchema = z.object({
   id: z.coerce.number().optional(),
-  title: z.string().min(1, { message: "Title name is required!" }),
+  examDate: z.coerce.date({ message: "exam date is required!" }),
   startTime: z.coerce.date({ message: "Start time is required!" }),
   endTime: z.coerce.date({ message: "End time is required!" }),
-  lectureId: z.coerce.number({ message: "lecture is required!" }),
+  branchId: z.coerce.number({ message: "branch is required!" }),
+  subjectId: z.coerce.number({ message: "subject is required!" }),
+  semesterId: z.coerce.number({ message: "semester is required!" }),
 });
 
-export type ExamSchema = z.infer<typeof announcementSchema>;
+export type ExamSchema = z.infer<typeof examSchema>;
 
 export const announcementSchema = z.object({
   id: z.coerce.number().optional(),
