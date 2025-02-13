@@ -24,16 +24,18 @@ export const createSubject = async (
       data: {
         name: data.name,
         teachers: {
-          connect: data.teachers.map((teacherId) => ({ id: teacherId })),
+          connect: data.teachers?.map((teacherId) => ({ id: teacherId })) || [],
         },
+        semesterId: data.semesterId,
+        branchId: data.branchId,
       },
     });
 
-    // revalidatePath("/list/subjects");
+    revalidatePath("/list/subjects");
     return { success: true, error: false };
   } catch (err) {
-    console.log(err);
-    return { success: false, error: true };
+    console.error("Error creating subject:", err);
+    return { success: false, error: true, message: err.message };
   }
 };
 
@@ -51,6 +53,8 @@ export const updateSubject = async (
         teachers: {
           set: data.teachers.map((teacherId) => ({ id: teacherId })),
         },
+        semesterId: data.semesterId,
+        branchId: data.branchId,
       },
     });
 
