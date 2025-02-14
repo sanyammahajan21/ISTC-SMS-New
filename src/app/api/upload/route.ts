@@ -57,31 +57,15 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ success: false, error: "Invalid Excel columns." }, { status: 400 });
     }
 
-    const formatSex = (value: string): UserSex | null => {
-      const normalized = value.trim().toUpperCase();
-      if (["MALE", "FEMALE", "OTHER"].includes(normalized)) {
-        return normalized as UserSex;
-      }
-      return null; // Return null if invalid
-    };
-    
-    const students = studentData.map((row) => {
-      return {
-        name: row.Name,
-        username: row.RollNo,
-        fatherName: row["Father Name"],
-        motherName: row["Mother Name"],
-        birthday: new Date(row.Birthday), // Ensure it's a Date object
-        phone: row.Phone,
-        bloodtype: row["Blood Group"],
-        email: row.Email,
-        sex: formatSex(row.sex as string), // Convert properly
-        branchId,
-        semesterId,
-        password: "defaultpassword",
-      };
-    });
-    console.log(students)
+    const students = studentData.map((row) => ({
+      name: row.Name,
+      username: row.RollNo,
+      fatherName: row["Father Name"],
+      motherName: row["Mother Name"],
+      branchId,
+      semesterId,
+    }));
+
     await prisma.student.createMany({ data: students, skipDuplicates: false });
 
     return NextResponse.json({ success: true, message: "Students imported successfully" });

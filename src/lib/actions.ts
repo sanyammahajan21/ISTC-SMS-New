@@ -35,7 +35,7 @@ export const createSubject = async (
     return { success: true, error: false };
   } catch (err) {
     console.error("Error creating subject:", err);
-    return { success: false, error: true, message: err.message };
+    return { success: false, error: true, message: (err as Error).message };
   }
 };
 
@@ -160,6 +160,9 @@ export const createTeacher = async (
         id: user.id,
         username: data.username,
         name: data.name,
+        email: data.email || null,
+        phone: data.phone || null,
+        division: data.division,
         subjects: {
           connect: data.subjects?.map((subjectId: string) => ({
             id: parseInt(subjectId),
@@ -199,9 +202,12 @@ export const updateTeacher = async (
         ...(data.password !== "" && { password: data.password }),
         username: data.username,
         name: data.name,
+        email: data.email || null,
+        phone: data.phone || null,
+        division: data.division,
         subjects: {
-          set: data.subjects?.map((subjectsId: string) => ({
-            id: parseInt(subjectsId),
+          set: data.subjects?.map((subjectId: string) => ({
+            id: parseInt(subjectId),
           })),
         },
       },

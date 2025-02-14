@@ -3,6 +3,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import InputField from "../InputField";
+import Image from "next/image";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { teacherSchema, TeacherSchema } from "@/lib/formValidationSchemas";
 import { useFormState } from "react-dom";
@@ -41,7 +42,7 @@ const TeacherForm = ({
 
   const onSubmit = handleSubmit((data) => {
     console.log(data);
-    formAction({ ...data, img: img?.secure_url });
+    formAction({ ...data,});
   });
 
   const router = useRouter();
@@ -73,6 +74,13 @@ const TeacherForm = ({
           error={errors?.username}
         />
         <InputField
+          label="Email"
+          name="email"
+          defaultValue={data?.email}
+          register={register}
+          error={errors?.email}
+        />
+        <InputField
           label="Password"
           name="password"
           type="password"
@@ -98,21 +106,8 @@ const TeacherForm = ({
           defaultValue={data?.phone}
           register={register}
           error={errors.phone}
-        />
-        <InputField
-          label="Email"
-          name="email"
-          defaultValue={data?.email}
-          register={register}
-          error={errors.email}
-        />
-        <InputField
-          label="Division"
-          name="division"
-          defaultValue={data?.division}
-          register={register}
-          error={errors.division}
-        />
+        />       
+        
         {data && (
           <InputField
             label="Id"
@@ -123,7 +118,22 @@ const TeacherForm = ({
             hidden
           />
         )}
-       
+        <div className="flex flex-col gap-2 w-full md:w-1/4">
+          <label className="text-xs text-gray-500">Division</label>
+          <select
+            className="ring-[1.5px] ring-gray-300 p-2 rounded-md text-sm w-full"
+            {...register("division")}
+            defaultValue={data?.division}
+          >
+            <option value="ISTC">ISTC</option>
+            <option value="LIBRARY">LIBRARY</option>
+          </select>
+          {errors.division?.message && (
+            <p className="text-xs text-red-400">
+              {errors.division.message.toString()}
+            </p>
+          )}
+        </div>
         <div className="flex flex-col gap-2 w-full md:w-1/4">
           <label className="text-xs text-gray-500">Subjects</label>
           <select

@@ -9,7 +9,6 @@ export type FormContainerProps = {
     | "registrar"
     | "subject"
     | "branch"
-    | "lectures"
     | "exam"
     | "assignment"
     | "result"
