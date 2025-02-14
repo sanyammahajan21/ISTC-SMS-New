@@ -6,6 +6,7 @@ import { existsSync } from "fs";
 import path from "path";
 import os from "os";
 import { NextRequest } from "next/server";
+import { UserSex } from "@prisma/client";
 
 export async function POST(req: NextRequest) {
   try {
@@ -42,21 +43,45 @@ export async function POST(req: NextRequest) {
       RollNo: string;
       "Father Name": string;
       "Mother Name": string;
+      Address : string
+      Birthday: Date;
+      Phone : string;
+      "Blood Group" : string;
+      Email : string;
+      sex: UserSex;
+
     }>(sheet);
 
-    if (!studentData.every((row) => row.Name && row.RollNo && row["Father Name"] && row["Mother Name"])) {
+    if (!studentData.every((row) => row.Name && row.RollNo && row["Father Name"] && row["Mother Name"] && row.Birthday && row.Email && 
+  row.sex && row.Phone && row["Blood Group"] && row.Address)) {
       return NextResponse.json({ success: false, error: "Invalid Excel columns." }, { status: 400 });
     }
 
-    const students = studentData.map((row) => ({
-      name: row.Name,
-      username: row.RollNo,
-      fatherName: row["Father Name"],
-      motherName: row["Mother Name"],
-      branchId,
-      semesterId,
-    }));
-
+    const formatSex = (value: string): UserSex | null => {
+      const normalized = value.trim().toUpperCase();
+      if (["MALE", "FEMALE", "OTHER"].includes(normalized)) {
+        return normalized as UserSex;
+      }
+      return null; // Return null if invalid
+    };
+    
+    const students = studentData.map((row) => {
+      return {
+        name: row.Name,
+        username: row.RollNo,
+        fatherName: row["Father Name"],
+        motherName: row["Mother Name"],
+        birthday: new Date(row.Birthday), // Ensure it's a Date object
+        phone: row.Phone,
+        bloodtype: row["Blood Group"],
+        email: row.Email,
+        sex: formatSex(row.sex as string), // Convert properly
+        branchId,
+        semesterId,
+        password: "defaultpassword",
+      };
+    });
+    console.log(students)
     await prisma.student.createMany({ data: students, skipDuplicates: false });
 
     return NextResponse.json({ success: true, message: "Students imported successfully" });
