@@ -42,6 +42,8 @@ export async function POST(req: NextRequest) {
       RollNo: string;
       "Father Name": string;
       "Mother Name": string;
+      Birthday: Date,
+      Phone: string,
     }>(sheet);
 
     if (!studentData.every((row) => row.Name && row.RollNo && row["Father Name"] && row["Mother Name"])) {
@@ -53,11 +55,11 @@ export async function POST(req: NextRequest) {
       username: row.RollNo,
       fatherName: row["Father Name"],
       motherName: row["Mother Name"],
+      password: "defaultPassword", // or generate a password
+      birthday: new Date(row.Birthday), // or set an appropriate date
+      phone: row.Phone ? String(row.Phone) : "",// or set an appropriate phone number
       branchId,
       semesterId,
-      password: "defaultPassword", // or generate a password
-      birthday: new Date(), // or set an appropriate date
-      phone: "0000000000", // or set an appropriate phone number
     }));
 
     await prisma.student.createMany({ data: students, skipDuplicates: false });
