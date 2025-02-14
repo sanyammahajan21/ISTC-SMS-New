@@ -6,7 +6,6 @@ import { existsSync } from "fs";
 import path from "path";
 import os from "os";
 import { NextRequest } from "next/server";
-import { UserSex } from "@prisma/client";
 
 export async function POST(req: NextRequest) {
   try {
@@ -43,17 +42,9 @@ export async function POST(req: NextRequest) {
       RollNo: string;
       "Father Name": string;
       "Mother Name": string;
-      Address : string
-      Birthday: Date;
-      Phone : string;
-      "Blood Group" : string;
-      Email : string;
-      sex: UserSex;
-
     }>(sheet);
 
-    if (!studentData.every((row) => row.Name && row.RollNo && row["Father Name"] && row["Mother Name"] && row.Birthday && row.Email && 
-  row.sex && row.Phone && row["Blood Group"] && row.Address)) {
+    if (!studentData.every((row) => row.Name && row.RollNo && row["Father Name"] && row["Mother Name"])) {
       return NextResponse.json({ success: false, error: "Invalid Excel columns." }, { status: 400 });
     }
 
@@ -64,6 +55,9 @@ export async function POST(req: NextRequest) {
       motherName: row["Mother Name"],
       branchId,
       semesterId,
+      password: "defaultPassword", // or generate a password
+      birthday: new Date(), // or set an appropriate date
+      phone: "0000000000", // or set an appropriate phone number
     }));
 
     await prisma.student.createMany({ data: students, skipDuplicates: false });
