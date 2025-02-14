@@ -94,18 +94,11 @@ const RegistrarForm = ({
       </span>
       <div className="flex justify-between flex-wrap gap-4">
         <InputField
-          label="First Name"
+          label="Name"
           name="name"
           defaultValue={data?.name}
           register={register}
           error={errors.name}
-        />
-        <InputField
-          label="Last Name"
-          name="surname"
-          defaultValue={data?.surname}
-          register={register}
-          error={errors.surname}
         />
         <InputField
           label="Phone"
@@ -113,28 +106,6 @@ const RegistrarForm = ({
           defaultValue={data?.phone}
           register={register}
           error={errors.phone}
-        />
-        <InputField
-          label="Address"
-          name="address"
-          defaultValue={data?.address}
-          register={register}
-          error={errors.address}
-        />
-        <InputField
-          label="Blood Type"
-          name="bloodType"
-          defaultValue={data?.bloodType}
-          register={register}
-          error={errors.bloodType}
-        />
-        <InputField
-          label="Birthday"
-          name="birthday"
-          defaultValue={data?.birthday.toISOString().split("T")[0]}
-          register={register}
-          error={errors.birthday}
-          type="date"
         />
         {data && (
           <InputField
@@ -146,22 +117,6 @@ const RegistrarForm = ({
             hidden
           />
         )}
-        <div className="flex flex-col gap-2 w-full md:w-1/4">
-          <label className="text-xs text-gray-500">Sex</label>
-          <select
-            className="ring-[1.5px] ring-gray-300 p-2 rounded-md text-sm w-full"
-            {...register("sex")}
-            defaultValue={data?.sex}
-          >
-            <option value="MALE">Male</option>
-            <option value="FEMALE">Female</option>
-          </select>
-          {errors.sex?.message && (
-            <p className="text-xs text-red-400">
-              {errors.sex.message.toString()}
-            </p>
-          )}
-        </div>
       </div>
       {state.error && (
         <span className="text-red-500">Something went wrong!</span>

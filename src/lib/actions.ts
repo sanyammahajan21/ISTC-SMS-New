@@ -165,6 +165,7 @@ export const createTeacher = async (
       data: {
         id: user.id,
         username: data.username,
+        password: data.password || "",
         name: data.name,
         email: data.email || "",
         phone: data.phone || "",
@@ -208,8 +209,9 @@ export const updateTeacher = async (
         ...(data.password !== "" && { password: data.password }),
         username: data.username,
         name: data.name,
-        email: data.email || undefined,
-        phone: data.phone || undefined,
+        password: data.password || "",
+        email: data.email || "",
+        phone: data.phone || "",
         division: data.division,
         subjects: {
           set: data.subjects?.map((subjectId: string) => ({
@@ -256,8 +258,7 @@ export const createRegistrar = async (
     const user = await clerkClient.users.createUser({
       username: data.username,
       password: data.password || "",
-      firstName: data.name,
-      lastName: data.surname,
+      name: data.name,
       publicMetadata:{role:"registrar"}
     });
 
@@ -266,13 +267,8 @@ export const createRegistrar = async (
         id: user.id,
         username: data.username,
         name: data.name,
-        surname: data.surname,
         email: data.email || null,
         phone: data.phone || "",
-        address: data.address,
-        bloodType: data.bloodType,
-        sex: data.sex,
-        birthday: data.birthday,
       },
     });
 
@@ -295,8 +291,7 @@ export const updateRegistrar = async (
     const user = await clerkClient.users.updateUser(data.id, {
       username: data.username,
       ...(data.password !== "" && { password: data.password }),
-      firstName: data.name,
-      lastName: data.surname,
+      name: data.name,
     });
 
     await prisma.registrar.update({
@@ -307,13 +302,8 @@ export const updateRegistrar = async (
         ...(data.password !== "" && { password: data.password }),
         username: data.username,
         name: data.name,
-        surname: data.surname,
         email: data.email || null,
         phone: data.phone || null,
-        address: data.address,
-        bloodType: data.bloodType,
-        sex: data.sex,
-        birthday: data.birthday,
       },
     });
     // revalidatePath("/list/teachers");
