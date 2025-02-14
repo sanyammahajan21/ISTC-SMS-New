@@ -74,7 +74,7 @@ const BranchForm = ({
 
       <div className="flex justify-between flex-wrap gap-4">
         <InputField
-          label="Branch name "
+          label="Branch Name "
           name="name"
           defaultValue={data?.name}
           register={register}

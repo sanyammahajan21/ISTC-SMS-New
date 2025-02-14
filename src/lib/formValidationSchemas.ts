@@ -5,9 +5,9 @@ export const subjectSchema = z.object({
   name: z.string().min(1, { message: "Subject name is required!" }),
   maxMarks : z.coerce.number()
   .min(0, { message: "number cannot be negative" })
-  .max(100, {message : "max marks allotted cannot excced 100"}),
+  .max(100, {message : "Max marks allotted cannot excced 100"}),
   semesterId: z.coerce.number().min(1, { message: "Semester is required!" }),
-  branchId: z.coerce.number().min(1, { message: "branch name is required!" }),
+  branchId: z.coerce.number().min(1, { message: "Branch name is required!" }),
   teachers: z.array(z.string()), //teacher ids
 });
 

@@ -5,8 +5,15 @@ import { useForm } from "react-hook-form";
 import InputField from "../InputField";
 import { subjectSchema, SubjectSchema ,
   branchSchema,
-  BranchSchema, } from "@/lib/formValidationSchemas";
-import { createSubject, updateSubject } from "@/lib/actions";
+  BranchSchema,
+  
+ } from "@/lib/formValidationSchemas";
+import { createSubject,
+   updateSubject,
+   createBranch,
+    updateBranch,
+    
+  } from "@/lib/actions";
 import { useFormState } from "react-dom";
 import { Dispatch, SetStateAction, useEffect } from "react";
 import { toast } from "react-toastify";
@@ -58,7 +65,7 @@ const SubjectForm = ({
 
   const { teachers } = relatedData;
   const branches = relatedData?.branches || [];
-const semesters = relatedData?.semesters || [];
+  const semesters = relatedData?.semesters || [];
   return (
     <form className="flex flex-col gap-8" onSubmit={onSubmit}>
       <h1 className="text-xl font-semibold">
@@ -90,34 +97,6 @@ const semesters = relatedData?.semesters || [];
             hidden
           />
         )}
-        <div className="flex flex-col gap-2 w-full md:w-1/4">
-          <label className="text-xs text-gray-500">Branch</label>
-          <select
-            className="ring-[1.5px] ring-gray-300 p-2 rounded-md text-sm w-full"
-            {...register("branchId")}
-            defaultValue={data?.branchId}
-          >
-            {branches.map(
-              (branchItem: { 
-                id: number;
-                name: string;
-                capacity: number;
-                _count: { students: number };
-              }) => (
-                <option value={branchItem.id} key={branchItem.id}>
-                  ({branchItem.name} -{" "}
-                  {branchItem._count.students + "/" + branchItem.capacity}{" "}
-                  Capacity)
-                </option>
-              )
-            )}
-          </select>
-          {errors.branchId?.message && (
-            <p className="text-xs text-red-400">
-              {errors.branchId.message.toString()}
-            </p>
-          )}
-        </div>
         <div className="flex flex-col gap-2 w-full md:w-1/4">
           <label className="text-xs text-gray-500">Semester</label>
           <select
