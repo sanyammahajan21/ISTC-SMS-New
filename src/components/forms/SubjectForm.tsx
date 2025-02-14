@@ -87,6 +87,14 @@ const SubjectForm = ({
           register={register}
           error={errors?.maxMarks}
         />
+        <InputField
+          label="Subject code"
+          name="subjectCode"
+          defaultValue={data?.subjectCode}
+          register={register}
+          error={errors?.subjectCode}
+        />
+
         {data && (
           <InputField
             label="Id"
@@ -97,6 +105,22 @@ const SubjectForm = ({
             hidden
           />
         )}
+        <div className="flex flex-col gap-2 w-full md:w-1/4">
+          <label className="text-xs text-gray-500">Type</label>
+          <select
+            className="ring-[1.5px] ring-gray-300 p-2 rounded-md text-sm w-full"
+            {...register("type")}
+            defaultValue={data?.type}
+          >
+            <option value="THEORY">THEORY</option>
+            <option value="PRACTICAL">PRACTICAL</option>
+          </select>
+          {errors.type?.message && (
+            <p className="text-xs text-red-400">
+              {errors.type.message.toString()}
+            </p>
+          )}
+        </div>
         <div className="flex flex-col gap-2 w-full md:w-1/4">
           <label className="text-xs text-gray-500">Semester</label>
           <select

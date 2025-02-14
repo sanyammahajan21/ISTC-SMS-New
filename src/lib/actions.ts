@@ -23,6 +23,9 @@ export const createSubject = async (
     await prisma.subject.create({
       data: {
         name: data.name,
+        maxMarks: data.maxMarks,
+        subjectCode: data.subjectCode,
+        type: data.type,
         teachers: {
           connect: data.teachers?.map((teacherId) => ({ id: teacherId })) || [],
         },
@@ -31,7 +34,7 @@ export const createSubject = async (
       },
     });
 
-    revalidatePath("/list/subjects");
+    // revalidatePath("/list/subjects");
     return { success: true, error: false };
   } catch (err) {
     console.error("Error creating subject:", err);
@@ -50,6 +53,9 @@ export const updateSubject = async (
       },
       data: {
         name: data.name,
+        maxMarks: data.maxMarks,
+        subjectCode: data.subjectCode,
+        type: data.type,
         teachers: {
           set: data.teachers.map((teacherId) => ({ id: teacherId })),
         },
@@ -150,7 +156,7 @@ export const createTeacher = async (
   try {
     const user = await clerkClient.users.createUser({
       username: data.username,
-      password: data.password,
+      password: data.password || "",
       name: data.name,
       publicMetadata:{role:"teacher"}
     });
@@ -160,8 +166,8 @@ export const createTeacher = async (
         id: user.id,
         username: data.username,
         name: data.name,
-        email: data.email || null,
-        phone: data.phone || null,
+        email: data.email || "",
+        phone: data.phone || "",
         division: data.division,
         subjects: {
           connect: data.subjects?.map((subjectId: string) => ({
@@ -202,8 +208,8 @@ export const updateTeacher = async (
         ...(data.password !== "" && { password: data.password }),
         username: data.username,
         name: data.name,
-        email: data.email || null,
-        phone: data.phone || null,
+        email: data.email || undefined,
+        phone: data.phone || undefined,
         division: data.division,
         subjects: {
           set: data.subjects?.map((subjectId: string) => ({
@@ -249,7 +255,7 @@ export const createRegistrar = async (
   try {
     const user = await clerkClient.users.createUser({
       username: data.username,
-      password: data.password,
+      password: data.password || "",
       firstName: data.name,
       lastName: data.surname,
       publicMetadata:{role:"registrar"}
@@ -262,7 +268,7 @@ export const createRegistrar = async (
         name: data.name,
         surname: data.surname,
         email: data.email || null,
-        phone: data.phone || null,
+        phone: data.phone || "",
         address: data.address,
         bloodType: data.bloodType,
         sex: data.sex,
@@ -362,6 +368,7 @@ export const createStudent = async (
       fatherName: data.fatherName,
       motherName: data.motherName,
 
+
       publicMetadata:{role:"student"}
     });
 
@@ -369,12 +376,13 @@ export const createStudent = async (
       data: {
         id: user.id,
         username: data.username,
+        password: data.password||"",
         name: data.name,
         fatherName: data.fatherName,
         motherName: data.motherName,
         address: data.address,
         birthday:new Date(data.birthday),
-        phone: data.phone || null,
+        phone: data.phone || "",
         email: data.email,
         sex: data.sex,
         bloodType: data.bloodType,
@@ -414,6 +422,7 @@ export const updateStudent = async (
       data: {
         ...(data.password !== "" && { password: data.password }),
         username: data.username,
+        password: data.password,
         name: data.name,
         fatherName: data.fatherName,
         motherName: data.motherName,
