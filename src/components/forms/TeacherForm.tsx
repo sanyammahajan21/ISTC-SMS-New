@@ -3,7 +3,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import InputField from "../InputField";
-import Image from "next/image";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { teacherSchema, TeacherSchema } from "@/lib/formValidationSchemas";
 import { useFormState } from "react-dom";
@@ -29,6 +28,9 @@ const TeacherForm = ({
   } = useForm<TeacherSchema>({
     resolver: zodResolver(teacherSchema),
   });
+  
+  const [img] = useState<any>();
+
   const [state, formAction] = useFormState(
     type === "create" ? createTeacher : updateTeacher,
     {
@@ -139,7 +141,7 @@ const TeacherForm = ({
           </select>
           {errors.subjects?.message && (
             <p className="text-xs text-red-400">
-              {errors.subjects.message.toString()}
+              {errors.subjects?.message.toString()}
             </p>
           )}
         </div>
