@@ -28,7 +28,7 @@ const TeacherForm = ({
   } = useForm<TeacherSchema>({
     resolver: zodResolver(teacherSchema),
   });
-  
+
   const [img] = useState<any>();
 
   const [state, formAction] = useFormState(
@@ -40,8 +40,9 @@ const TeacherForm = ({
   );
 
   const onSubmit = handleSubmit((data) => {
+    console.log("hello");
     console.log(data);
-    formAction({ ...data,});
+    formAction({ ...data, img: img?.secure_url });
   });
 
   const router = useRouter();
@@ -153,7 +154,7 @@ const TeacherForm = ({
             {...register("branches")}
             defaultValue={data?.branches}
           >
-            {subjects.map((branch: { id: number; name: string }) => (
+            {branches.map((branch: { id: number; name: string }) => (
               <option value={branch.id} key={branch.id}>
                 {branch.name}
               </option>
