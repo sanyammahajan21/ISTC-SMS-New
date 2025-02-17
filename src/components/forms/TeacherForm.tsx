@@ -5,6 +5,7 @@ import { useForm } from "react-hook-form";
 import InputField from "../InputField";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { teacherSchema, TeacherSchema } from "@/lib/formValidationSchemas";
+import { useFormState } from "react-dom";
 import { createTeacher, updateTeacher } from "@/lib/actions";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
@@ -54,10 +55,7 @@ const TeacherForm = ({
     }
   }, [state, router, type, setOpen]);
 
-  const subjects = relatedData?.subjects || [];
-
-  const branches = relatedData?.branches || [];
-
+  const { subjects, branches } = relatedData;
 
   return (
     <form className="flex flex-col gap-8" onSubmit={onSubmit}>
@@ -172,7 +170,7 @@ const TeacherForm = ({
       {state.error && (
         <span className="text-red-500">Something went wrong!</span>
       )}
-      <button type="submit" className="bg-blue-400 text-white p-2 rounded-md">
+      <button className="bg-blue-400 text-white p-2 rounded-md">
         {type === "create" ? "Create" : "Update"}
       </button>
     </form>
