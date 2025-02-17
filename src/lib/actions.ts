@@ -222,6 +222,12 @@ export const updateTeacher = async (
           set: data.subjects?.map((subjectId: string) => ({
             id: parseInt(subjectId),
           })),
+          
+        },
+        branches: {
+          connect: data.branches?.map((branchId: string) => ({
+            id: parseInt(branchId),
+          })),
         },
       },
     });
