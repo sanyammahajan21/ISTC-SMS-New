@@ -52,7 +52,7 @@ const TeacherForm = ({
     }
   }, [state, router, type, setOpen]);
 
-  const { subjects } = relatedData;
+  const { subjects, branches } = relatedData;
 
   return (
     <form className="flex flex-col gap-8" onSubmit={onSubmit}>
@@ -69,13 +69,6 @@ const TeacherForm = ({
           defaultValue={data?.username}
           register={register}
           error={errors?.username}
-        />
-        <InputField
-          label="Email"
-          name="email"
-          defaultValue={data?.email}
-          register={register}
-          error={errors?.email}
         />
         <InputField
           label="Password"
@@ -97,6 +90,21 @@ const TeacherForm = ({
           register={register}
           error={errors.name}
         />
+        
+        <InputField
+          label="Email"
+          name="email"
+          defaultValue={data?.email}
+          register={register}
+          error={errors?.email}
+        />
+        <InputField
+          label="Division"
+          name="division"
+          defaultValue={data?.division}
+          register={register}
+          error={errors?.division}
+        />
         <InputField
           label="Phone"
           name="phone"
@@ -116,22 +124,6 @@ const TeacherForm = ({
           />
         )}
         <div className="flex flex-col gap-2 w-full md:w-1/4">
-          <label className="text-xs text-gray-500">Division</label>
-          <select
-            className="ring-[1.5px] ring-gray-300 p-2 rounded-md text-sm w-full"
-            {...register("division")}
-            defaultValue={data?.division}
-          >
-            <option value="ISTC">ISTC</option>
-            <option value="LIBRARY">LIBRARY</option>
-          </select>
-          {errors.division?.message && (
-            <p className="text-xs text-red-400">
-              {errors.division.message.toString()}
-            </p>
-          )}
-        </div>
-        <div className="flex flex-col gap-2 w-full md:w-1/4">
           <label className="text-xs text-gray-500">Subjects</label>
           <select
             multiple
@@ -148,6 +140,25 @@ const TeacherForm = ({
           {errors.subjects?.message && (
             <p className="text-xs text-red-400">
               {errors.subjects.message.toString()}
+            </p>
+          )}
+        </div>
+        <div className="flex flex-col gap-2 w-full md:w-1/4">
+          <label className="text-xs text-gray-500">Branches</label>
+          <select
+            className="ring-[1.5px] ring-gray-300 p-2 rounded-md text-sm w-full"
+            {...register("branches")}
+            defaultValue={data?.branches}
+          >
+            {subjects.map((branch: { id: number; name: string }) => (
+              <option value={branch.id} key={branch.id}>
+                {branch.name}
+              </option>
+            ))}
+          </select>
+          {errors.branches?.message && (
+            <p className="text-xs text-red-400">
+              {errors.branches.message.toString()}
             </p>
           )}
         </div>

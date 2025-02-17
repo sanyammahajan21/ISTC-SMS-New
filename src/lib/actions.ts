@@ -175,6 +175,11 @@ export const createTeacher = async (
             id: parseInt(subjectId),
           })),
         },
+        branches: {
+          connect: data.branches?.map((branchId: string) => ({
+            id: parseInt(branchId),
+          })),
+        },
       },
     });
 

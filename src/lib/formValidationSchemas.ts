@@ -43,10 +43,10 @@ export const teacherSchema = z.object({
     .optional()
     .or(z.literal("")),
   phone: z.string().optional(),
-  address: z.string(),
-  division: z.enum(["ISTC","LIBRARY"],{message:"Division is required!"}),
-  bloodType: z.string().min(1, { message: "Blood Type is required!" }),
-  subjects: z.array(z.string()).optional(), // subject ids
+  address: z.string().optional(),
+  division: z.string().optional(),
+  subjects: z.array(z.string()).optional(), 
+  branches: z.array(z.string()).optional(),
 });
 
 export type TeacherSchema = z.infer<typeof teacherSchema>;
