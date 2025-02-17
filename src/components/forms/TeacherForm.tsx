@@ -3,7 +3,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import InputField from "../InputField";
-import { Dispatch, SetStateAction, useEffect, useState } from "react";
+import { Dispatch, SetStateAction, useEffect} from "react";
 import { teacherSchema, TeacherSchema } from "@/lib/formValidationSchemas";
 import { useFormState } from "react-dom";
 import { createTeacher, updateTeacher } from "@/lib/actions";
@@ -30,24 +30,24 @@ const TeacherForm = ({
   });
 
   const [state, formAction] = useFormState(
-    type === "create" ? createTeacher : updateTeacher,
-    {
-      success: false,
-      error: false,
-    }
-  );
+      type === "create" ? createTeacher : updateTeacher,
+      {
+        success: false,
+        error: false,
+      }
+    );
 
-  const onSubmit = handleSubmit((data) => {
-    console.log("hello");
-    console.log(data);
-    formAction({ ...data, img: img?.secure_url });
-  });
+    const onSubmit = handleSubmit((data) => {
+      console.log("hello");
+      console.log(data);
+      formAction({ ...data });
+    });
 
   const router = useRouter();
 
   useEffect(() => {
     if (state.success) {
-      toast(`Teacher has been ${type === "create" ? "created" : "updated"}!`);
+      toast(`Teaqcher has been ${type === "create" ? "created" : "updated"}!`);
       setOpen(false);
       router.refresh();
     }
