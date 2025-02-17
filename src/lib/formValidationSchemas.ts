@@ -26,7 +26,7 @@ export const branchSchema = z.object({
 export type BranchSchema = z.infer<typeof branchSchema>;
 
 export const teacherSchema = z.object({
-  id: z.string().optional(),
+  id: z.string(),
   username: z
     .string()
     .min(3, { message: "Username must be at least 3 characters long!" })
@@ -34,7 +34,6 @@ export const teacherSchema = z.object({
   password: z
     .string()
     .min(8, { message: "Password must be at least 8 characters long!" })
-    .optional()
     .or(z.literal("")),
   name: z.string().min(1, { message: "Name is required!" }),
   email: z
