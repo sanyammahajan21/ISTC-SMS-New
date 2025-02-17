@@ -29,8 +29,6 @@ const TeacherForm = ({
     resolver: zodResolver(teacherSchema),
   });
 
-  const [img] = useState<any>();
-
   const [state, formAction] = useFormState(
     type === "create" ? createTeacher : updateTeacher,
     {
