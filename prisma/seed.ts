@@ -1,5 +1,5 @@
 import { subjectsData } from "@/lib/data";
-import { Day, PrismaClient, UserSex } from "@prisma/client";
+import {PrismaClient, SubjectType} from "@prisma/client";
 const prisma = new PrismaClient();
 
 async function main() {
@@ -38,15 +38,38 @@ async function main() {
   }
 
   // SUBJECT
-  // for (let i = 1; i <= 6; i++) {
-  //   await prisma.subject.create({
-  //     data: {
-  //       name: `${i}S`, 
-  //       semesterId: i, 
-  //       capacity: Math.floor(Math.random() * (20 - 15 + 1)) + 15,
-  //     },
-  //   });
-  // }
+  const subjects = [
+    {
+      name: "Mathematics",
+      subjectCode: "MATH101",
+      type: SubjectType.THEORY, // Use enum instead of string
+      maxMarks: 100,
+      branchId: 1,
+      semesterId: 1,
+    },
+    {
+      name: "Physics",
+      subjectCode: "PHY102",
+      type: SubjectType.THEORY,
+      maxMarks: 100,
+      branchId: 1,
+      semesterId: 1,
+    },
+    {
+      name: "Computer Science",
+      subjectCode: "CS103",
+      type: SubjectType.THEORY,
+      maxMarks: 100,
+      branchId: 2,
+      semesterId: 2,
+    },
+  ];
+
+  for (const subject of subjects) {
+    await prisma.subject.create({
+      data: subject,
+    });
+  }
 
 //   // TEACHER
 //   for (let i = 1; i <= 15; i++) {
