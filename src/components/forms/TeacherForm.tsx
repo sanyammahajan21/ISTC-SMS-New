@@ -42,7 +42,7 @@ const TeacherForm = ({
   const onSubmit = handleSubmit((data) => {
     console.log("hello");
     console.log(data);
-    formAction({ ...data, img: img?.secure_url });
+    formAction({ ...data });
   });
 
   const router = useRouter();
@@ -55,7 +55,10 @@ const TeacherForm = ({
     }
   }, [state, router, type, setOpen]);
 
-  const { subjects, branches } = relatedData;
+  const subjects = relatedData?.subjects || [];
+
+  const branches = relatedData?.branches || [];
+
 
   return (
     <form className="flex flex-col gap-8" onSubmit={onSubmit}>

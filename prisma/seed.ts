@@ -1,3 +1,4 @@
+import { subjectsData } from "@/lib/data";
 import { Day, PrismaClient, UserSex } from "@prisma/client";
 const prisma = new PrismaClient();
 
@@ -36,23 +37,16 @@ async function main() {
     });
   }
 
-//   // SUBJECT
-//   const courseData = [
-//     { name: "Mathematics" },
-//     { name: "Science" },
-//     { name: "English" },
-//     { name: "History" },
-//     { name: "Geography" },
-//     { name: "Physics" },
-//     { name: "Chemistry" },
-//     { name: "Biology" },
-//     { name: "Computer Science" },
-//     { name: "Art" },
-//   ];
-
-//   for (const course of courseData) {
-//     await prisma.course.create({ data: course });
-//   }
+  // SUBJECT
+  // for (let i = 1; i <= 6; i++) {
+  //   await prisma.subject.create({
+  //     data: {
+  //       name: `${i}S`, 
+  //       semesterId: i, 
+  //       capacity: Math.floor(Math.random() * (20 - 15 + 1)) + 15,
+  //     },
+  //   });
+  // }
 
 //   // TEACHER
 //   for (let i = 1; i <= 15; i++) {
