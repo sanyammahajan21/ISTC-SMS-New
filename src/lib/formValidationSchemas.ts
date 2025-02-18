@@ -2,15 +2,13 @@ import { z } from "zod";
 
 export const subjectSchema = z.object({
   id: z.coerce.number().optional(),
-  name: z.string().min(1, { message: "Subject name is required!" }),
-  maxMarks : z.coerce.number()
-  .min(0, { message: "Marks cannot be negative" })
-  .max(100, {message : "Maximum marks allotted cannot excced 100"}),
+  name: z.string().min(1, { message: "Subject Name is required!" }),
   type: z.enum(["THEORY", "PRACTICAL"], { message: "Type is required!" }),
-  subjectCode: z.string().min(1, { message: "Subject code is required!" }),
-  semesterId: z.coerce.number().min(1, { message: "Semester is required!" }),
-  branchId: z.coerce.number().min(1, { message: "Branch name is required!" }),
   teachers: z.array(z.string()), //teacher ids
+  subjectCode: z.string(),
+  maxMarks: z.coerce.number(),
+  branchId: z.coerce.number().min(1, { message: "branch name is required!" }),
+  semesterId: z.coerce.number().min(1, { message: "semester name is required!" }),
 });
 
 export type SubjectSchema = z.infer<typeof subjectSchema>;

@@ -3,17 +3,8 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import InputField from "../InputField";
-import { subjectSchema, SubjectSchema ,
-  branchSchema,
-  BranchSchema,
-  
- } from "@/lib/formValidationSchemas";
-import { createSubject,
-   updateSubject,
-   createBranch,
-    updateBranch,
-    
-  } from "@/lib/actions";
+import { subjectSchema, SubjectSchema } from "@/lib/formValidationSchemas";
+import { createSubject, updateSubject } from "@/lib/actions";
 import { useFormState } from "react-dom";
 import { Dispatch, SetStateAction, useEffect } from "react";
 import { toast } from "react-toastify";
@@ -64,12 +55,12 @@ const SubjectForm = ({
   }, [state, router, type, setOpen]);
 
   const { teachers } = relatedData;
-  const branches = relatedData?.branches || [];
-  const semesters = relatedData?.semesters || [];
+  const { semesters, branches } = relatedData;
+
   return (
     <form className="flex flex-col gap-8" onSubmit={onSubmit}>
       <h1 className="text-xl font-semibold">
-        {type === "create" ? "Create a new Subject" : "Update the Subject"}
+        {type === "create" ? "Create a new subject" : "Update the subject"}
       </h1>
 
       <div className="flex justify-between flex-wrap gap-4">
@@ -81,14 +72,14 @@ const SubjectForm = ({
           error={errors?.name}
         />
         <InputField
-          label="Maximun marks"
+          label="Maximum Marks"
           name="maxMarks"
           defaultValue={data?.maxMarks}
           register={register}
           error={errors?.maxMarks}
         />
-        <InputField
-          label="Subject code"
+         <InputField
+          label="Subject Code"
           name="subjectCode"
           defaultValue={data?.subjectCode}
           register={register}
@@ -118,6 +109,28 @@ const SubjectForm = ({
           {errors.type?.message && (
             <p className="text-xs text-red-400">
               {errors.type.message.toString()}
+            </p>
+          )}
+        </div>
+        <div className="flex flex-col gap-2 w-full md:w-1/4">
+          <label className="text-xs text-gray-500">Teachers</label>
+          <select
+            multiple
+            className="ring-[1.5px] ring-gray-300 p-2 rounded-md text-sm w-full"
+            {...register("teachers")}
+            defaultValue={data?.teachers}
+          >
+            {teachers.map(
+              (teacher: { id: string; name: string; surname: string }) => (
+                <option value={teacher.id} key={teacher.id}>
+                  {teacher.name }
+                </option>
+              )
+            )}
+          </select>
+          {errors.teachers?.message && (
+            <p className="text-xs text-red-400">
+              {errors.teachers.message.toString()}
             </p>
           )}
         </div>

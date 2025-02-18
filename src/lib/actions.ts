@@ -14,7 +14,6 @@ import prisma from "./prisma";
 import { clerkClient } from "@clerk/nextjs/server";
 
 type CurrentState = { success: boolean; error: boolean };
-
 export const createSubject = async (
   currentState: CurrentState,
   data: SubjectSchema
@@ -23,22 +22,22 @@ export const createSubject = async (
     await prisma.subject.create({
       data: {
         name: data.name,
-        maxMarks: data.maxMarks,
-        subjectCode: data.subjectCode,
         type: data.type,
-        teachers: {
-          connect: data.teachers?.map((teacherId) => ({ id: teacherId })) || [],
-        },
-        semesterId: data.semesterId,
+        subjectCode:  data.subjectCode,
+        maxMarks:  data.maxMarks,
         branchId: data.branchId,
+        semesterId: data.semesterId,
+        teachers: {
+          connect: data.teachers.map((teacherId) => ({ id: teacherId })),
+        },
       },
     });
 
     // revalidatePath("/list/subjects");
     return { success: true, error: false };
   } catch (err) {
-    console.error("Error creating subject:", err);
-    return { success: false, error: true, message: (err as Error).message };
+    console.log(err);
+    return { success: false, error: true };
   }
 };
 
@@ -53,14 +52,14 @@ export const updateSubject = async (
       },
       data: {
         name: data.name,
-        maxMarks: data.maxMarks,
-        subjectCode: data.subjectCode,
         type: data.type,
+        subjectCode:  data.subjectCode,
+        maxMarks:  data.maxMarks,
+        branchId: data.branchId,
+        semesterId: data.semesterId,
         teachers: {
           set: data.teachers.map((teacherId) => ({ id: teacherId })),
         },
-        semesterId: data.semesterId,
-        branchId: data.branchId,
       },
     });
 
@@ -91,6 +90,7 @@ export const deleteSubject = async (
     return { success: false, error: true };
   }
 };
+
 
 export const createBranch = async (
   currentState: CurrentState,

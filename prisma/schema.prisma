@@ -95,9 +95,9 @@ model Branch {
 model Subject {
   id          Int         @id @default(autoincrement())
   name        String      @unique
-  subjectCode String
+  subjectCode String?
   type        SubjectType
-  maxMarks    Int
+  maxMarks    Int?
   branchId    Int
   branch      Branch      @relation(fields: [branchId], references: [id])
   semesterId  Int?

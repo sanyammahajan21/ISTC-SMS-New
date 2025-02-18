@@ -98,9 +98,9 @@ CREATE TABLE `Branch` (
 CREATE TABLE `Subject` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
     `name` VARCHAR(191) NOT NULL,
-    `subjectCode` VARCHAR(191) NOT NULL,
+    `subjectCode` VARCHAR(191) NULL,
     `type` ENUM('THEORY', 'PRACTICAL') NOT NULL,
-    `maxMarks` INTEGER NOT NULL,
+    `maxMarks` INTEGER NULL,
     `branchId` INTEGER NOT NULL,
     `semesterId` INTEGER NULL,
 
