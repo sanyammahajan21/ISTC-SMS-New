@@ -156,8 +156,9 @@ export const createTeacher = async (
   try {
     const user = await clerkClient.users.createUser({
       username: data.username,
-      password: data.password || "",
-      name: data.name,
+      password: data.password,
+      firstName: data.name,
+      lastName: data.surname,
       publicMetadata:{role:"teacher"}
     });
 
@@ -165,19 +166,18 @@ export const createTeacher = async (
       data: {
         id: user.id,
         username: data.username,
-        password: data.password || "",
         name: data.name,
-        email: data.email || "",
-        phone: data.phone || "",
-        division: data.division,
+        surname: data.surname,
+        email: data.email || null,
+        phone: data.phone || null,
+        address: data.address,
+        img: data.img || null,
+        bloodType: data.bloodType,
+        sex: data.sex,
+        birthday: data.birthday,
         subjects: {
           connect: data.subjects?.map((subjectId: string) => ({
             id: parseInt(subjectId),
-          })),
-        },
-        branches: {
-          connect: data.branches?.map((branchId: string) => ({
-            id: parseInt(branchId),
           })),
         },
       },
@@ -202,8 +202,8 @@ export const updateTeacher = async (
     const user = await clerkClient.users.updateUser(data.id, {
       username: data.username,
       ...(data.password !== "" && { password: data.password }),
-      name: data.name,
-
+      firstName: data.name,
+      lastName: data.surname,
     });
 
     await prisma.teacher.update({
@@ -214,19 +214,17 @@ export const updateTeacher = async (
         ...(data.password !== "" && { password: data.password }),
         username: data.username,
         name: data.name,
-        password: data.password || "",
-        email: data.email || "",
-        phone: data.phone || "",
-        division: data.division,
+        surname: data.surname,
+        email: data.email || null,
+        phone: data.phone || null,
+        address: data.address,
+        img: data.img || null,
+        bloodType: data.bloodType,
+        sex: data.sex,
+        birthday: data.birthday,
         subjects: {
           set: data.subjects?.map((subjectId: string) => ({
             id: parseInt(subjectId),
-          })),
-          
-        },
-        branches: {
-          connect: data.branches?.map((branchId: string) => ({
-            id: parseInt(branchId),
           })),
         },
       },

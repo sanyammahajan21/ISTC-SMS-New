@@ -37,17 +37,21 @@ model Student {
 }
 
 model Teacher {
-  id        String     @id @default(uuid())
-  username  String     @unique
+  id        String    @id @default(uuid())
+  username  String    @unique
   name      String
-  password  String
-  division  String?
-  phone     String?
-  email     String?     
-  createdAt DateTime   @default(now())
-  subjects  Subject[]
-  lectures  Lectures[]
-  branches  Branch[]
+  surname   String
+  email     String?   @unique
+  phone     String?   @unique
+  address   String
+  img       String?
+  bloodType String
+  sex       UserSex
+  createdAt DateTime  @default(now())
+  subjects  Subject[] 
+  lectures   Lectures[]  
+  branches   Branch[]  
+  birthday  DateTime
 }
 
 model Registrar {

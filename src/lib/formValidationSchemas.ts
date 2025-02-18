@@ -4,8 +4,8 @@ export const subjectSchema = z.object({
   id: z.coerce.number().optional(),
   name: z.string().min(1, { message: "Subject name is required!" }),
   maxMarks : z.coerce.number()
-  .min(0, { message: "number cannot be negative" })
-  .max(100, {message : "Max marks allotted cannot excced 100"}),
+  .min(0, { message: "Marks cannot be negative" })
+  .max(100, {message : "Maximum marks allotted cannot excced 100"}),
   type: z.enum(["THEORY", "PRACTICAL"], { message: "Type is required!" }),
   subjectCode: z.string().min(1, { message: "Subject code is required!" }),
   semesterId: z.coerce.number().min(1, { message: "Semester is required!" }),
@@ -26,7 +26,7 @@ export const branchSchema = z.object({
 export type BranchSchema = z.infer<typeof branchSchema>;
 
 export const teacherSchema = z.object({
-  id: z.string(),
+  id: z.string().optional(),
   username: z
     .string()
     .min(3, { message: "Username must be at least 3 characters long!" })
@@ -34,20 +34,26 @@ export const teacherSchema = z.object({
   password: z
     .string()
     .min(8, { message: "Password must be at least 8 characters long!" })
+    .optional()
     .or(z.literal("")),
-  name: z.string().min(1, { message: "Name is required!" }),
+  name: z.string().min(1, { message: "First name is required!" }),
+  surname: z.string().min(1, { message: "Last name is required!" }),
   email: z
     .string()
     .email({ message: "Invalid email address!" })
     .optional()
     .or(z.literal("")),
   phone: z.string().optional(),
-  division: z.string().optional(),
-  subjects: z.array(z.string()).optional(), 
-  branches: z.array(z.string()).optional(),
+  address: z.string(),
+  img: z.string().optional(),
+  bloodType: z.string().min(1, { message: "Blood Type is required!" }),
+  birthday: z.coerce.date({ message: "Birthday is required!" }),
+  sex: z.enum(["MALE", "FEMALE"], { message: "Sex is required!" }),
+  subjects: z.array(z.string()).optional(), // subject ids
 });
 
 export type TeacherSchema = z.infer<typeof teacherSchema>;
+
 
 export const registrarSchema = z.object({
   id: z.string().optional(),
