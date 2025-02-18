@@ -77,6 +77,7 @@ const StudentListPage = async ({
       <td className="hidden md:table-cell">{item.username}</td>
       <td className="hidden md:table-cell">{item.branch.name[0]}</td>
       <td className="hidden md:table-cell">{item.phone}</td>
+      <td className="hidden md:table-cell">{item.address}</td>
       <td>
         <div className="flex items-center gap-2">
           <Link href={`/list/students/${item.id}`}>
@@ -108,13 +109,16 @@ const StudentListPage = async ({
       if (value !== undefined) {
         switch (key) {
           case "teacherId":
-            query.branch = {
-              lectures: {
-                some: {
-                  teacherId: value,
+            // Admin or Registrar will see all students, but teachers will be filtered
+            if (role === "teacher") {
+              query.branch = {
+                lectures: {
+                  some: {
+                    teacherId: value,
+                  },
                 },
-              },
-            };
+              };
+            }
             break;
           case "search":
             query.name = { contains: value, mode: "insensitive" };
@@ -125,7 +129,8 @@ const StudentListPage = async ({
       }
     }
   }
-
+  
+  // Perform the transaction
   const [data, count] = await prisma.$transaction([
     prisma.student.findMany({
       where: query,
@@ -137,7 +142,6 @@ const StudentListPage = async ({
     }),
     prisma.student.count({ where: query }),
   ]);
-
   return (
     <div className="bg-white p-4 rounded-md flex-1 m-4 mt-0">
       {/* TOP */}

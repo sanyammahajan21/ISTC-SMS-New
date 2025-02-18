@@ -6,6 +6,8 @@ import { existsSync } from "fs";
 import path from "path";
 import os from "os";
 import { NextRequest } from "next/server";
+import { EmailAddress } from "@clerk/nextjs/server";
+import { UserSex } from "@prisma/client/wasm";
 
 export async function POST(req: NextRequest) {
   try {
@@ -44,6 +46,10 @@ export async function POST(req: NextRequest) {
       "Mother Name": string;
       Birthday: Date,
       Phone: string,
+      Email: string,
+      Address: string,
+      "Blood Type" : string,
+      Sex : UserSex,
     }>(sheet);
 
     if (!studentData.every((row) => row.Name && row.RollNo && row["Father Name"] && row["Mother Name"])) {
@@ -58,6 +64,9 @@ export async function POST(req: NextRequest) {
       password: "defaultPassword", // or generate a password
       birthday: new Date(row.Birthday), // or set an appropriate date
       phone: row.Phone ? String(row.Phone) : "",// or set an appropriate phone number
+      email: row.Email,
+      address: row.Address,
+      bloodType: row["Blood Type"],
       branchId,
       semesterId,
     }));
