@@ -39,19 +39,15 @@ model Student {
 model Teacher {
   id        String    @id @default(uuid())
   username  String    @unique
+  password  String
   name      String
-  surname   String
   email     String?   @unique
   phone     String?   @unique
-  address   String
-  img       String?
-  bloodType String
-  sex       UserSex
+  division  String?
   createdAt DateTime  @default(now())
   subjects  Subject[] 
   lectures   Lectures[]  
   branches   Branch[]  
-  birthday  DateTime
 }
 
 model Registrar {

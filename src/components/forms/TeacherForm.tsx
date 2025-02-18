@@ -43,7 +43,7 @@ const TeacherForm = ({
 
   const onSubmit = handleSubmit((data) => {
     console.log(data);
-    formAction({ ...data, img: img?.secure_url });
+    formAction({ ...data});
   });
 
   const router = useRouter();
@@ -56,7 +56,7 @@ const TeacherForm = ({
     }
   }, [state, router, type, setOpen]);
 
-  const { subjects } = relatedData;
+  const { subjects, branches } = relatedData;
 
   return (
     <form className="flex flex-col gap-8" onSubmit={onSubmit}>
@@ -95,18 +95,11 @@ const TeacherForm = ({
       </span>
       <div className="flex justify-between flex-wrap gap-4">
         <InputField
-          label="First Name"
+          label="Name"
           name="name"
           defaultValue={data?.name}
           register={register}
           error={errors.name}
-        />
-        <InputField
-          label="Last Name"
-          name="surname"
-          defaultValue={data?.surname}
-          register={register}
-          error={errors.surname}
         />
         <InputField
           label="Phone"
@@ -116,26 +109,11 @@ const TeacherForm = ({
           error={errors.phone}
         />
         <InputField
-          label="Address"
-          name="address"
-          defaultValue={data?.address}
+          label="Division"
+          name="division"
+          defaultValue={data?.division}
           register={register}
-          error={errors.address}
-        />
-        <InputField
-          label="Blood Type"
-          name="bloodType"
-          defaultValue={data?.bloodType}
-          register={register}
-          error={errors.bloodType}
-        />
-        <InputField
-          label="Birthday"
-          name="birthday"
-          defaultValue={data?.birthday.toISOString().split("T")[0]}
-          register={register}
-          error={errors.birthday}
-          type="date"
+          error={errors.division}
         />
         {data && (
           <InputField
@@ -147,22 +125,7 @@ const TeacherForm = ({
             hidden
           />
         )}
-        <div className="flex flex-col gap-2 w-full md:w-1/4">
-          <label className="text-xs text-gray-500">Sex</label>
-          <select
-            className="ring-[1.5px] ring-gray-300 p-2 rounded-md text-sm w-full"
-            {...register("sex")}
-            defaultValue={data?.sex}
-          >
-            <option value="MALE">Male</option>
-            <option value="FEMALE">Female</option>
-          </select>
-          {errors.sex?.message && (
-            <p className="text-xs text-red-400">
-              {errors.sex.message.toString()}
-            </p>
-          )}
-        </div>
+        
         <div className="flex flex-col gap-2 w-full md:w-1/4">
           <label className="text-xs text-gray-500">Subjects</label>
           <select
@@ -183,25 +146,26 @@ const TeacherForm = ({
             </p>
           )}
         </div>
-        <CldUploadWidget
-          uploadPreset="school"
-          onSuccess={(result, { widget }) => {
-            setImg(result.info);
-            widget.close();
-          }}
-        >
-          {({ open }) => {
-            return (
-              <div
-                className="text-xs text-gray-500 flex items-center gap-2 cursor-pointer"
-                onClick={() => open()}
-              >
-                <Image src="/upload.png" alt="" width={28} height={28} />
-                <span>Upload a photo</span>
-              </div>
-            );
-          }}
-        </CldUploadWidget>
+        <div className="flex flex-col gap-2 w-full md:w-1/4">
+          <label className="text-xs text-gray-500">Branch</label>
+          <select
+            multiple
+            className="ring-[1.5px] ring-gray-300 p-2 rounded-md text-sm w-full"
+            {...register("branches")}
+            defaultValue={data?.branches}
+          >
+            {branches.map((branch: { id: number; name: string }) => (
+              <option value={branch.id} key={branch.id}>
+                {branch.name}
+              </option>
+            ))}
+          </select>
+          {errors.branches?.message && (
+            <p className="text-xs text-red-400">
+              {errors.branches.message.toString()}
+            </p>
+          )}
+        </div>
       </div>
       {state.error && (
         <span className="text-red-500">Something went wrong!</span>

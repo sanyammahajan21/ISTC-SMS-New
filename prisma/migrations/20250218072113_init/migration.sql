@@ -34,16 +34,12 @@ CREATE TABLE `Student` (
 CREATE TABLE `Teacher` (
     `id` VARCHAR(191) NOT NULL,
     `username` VARCHAR(191) NOT NULL,
+    `password` VARCHAR(191) NOT NULL,
     `name` VARCHAR(191) NOT NULL,
-    `surname` VARCHAR(191) NOT NULL,
     `email` VARCHAR(191) NULL,
     `phone` VARCHAR(191) NULL,
-    `address` VARCHAR(191) NOT NULL,
-    `img` VARCHAR(191) NULL,
-    `bloodType` VARCHAR(191) NOT NULL,
-    `sex` ENUM('MALE', 'FEMALE', 'PREFER_NOT_TO_SAY') NOT NULL,
+    `division` VARCHAR(191) NULL,
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
-    `birthday` DATETIME(3) NOT NULL,
 
     UNIQUE INDEX `Teacher_username_key`(`username`),
     UNIQUE INDEX `Teacher_email_key`(`email`),
