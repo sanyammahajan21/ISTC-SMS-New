@@ -465,73 +465,101 @@ export const deleteStudent = async (
     return { success: false, error: true };
   }
 };
-export const createExam = async (
-  currentState: CurrentState,
-  data: ExamSchema
-) => {
-  try {
-    await prisma.exam.create({
-      data: {
-        subjectId: data.subjectId,
-        examDate: data.examDate,
-        startTime: data.startTime,
-        endTime: data.endTime,
-        semesterId: data.semesterId,
-        branchId: data.branchId,
-      },
-    });
 
-    revalidatePath("/list/exams");
-    return { success: true, error: false };
+export const getAllExams = async () => {
+  try {
+    const exams = await prisma.exam.findMany();
+    return { success: true, data: exams }; // ✅ Wrap the response
   } catch (err) {
     console.log(err);
-    return { success: false, error: true };
+    return { success: false, data: [] }; // ✅ Handle errors properly
   }
 };
+
+
+export const getAllSemesters = async () => {
+  try {
+    const semesters = await prisma.semester.findMany();
+    return { success: true, data: semesters };
+  } catch (err) {
+    console.log(err);
+    return { success: false, data: [] };
+  }
+};
+
+export const getAllBranches = async () => {
+  try {
+    const branches = await prisma.branch.findMany();
+    return { success: true, data: branches };
+  } catch (err) {
+    console.log(err);
+    return { success: false, data: [] };
+  }
+};
+
+export const getExams = async () => {
+  try {
+    const exams = await prisma.exam.findMany({
+      include: {
+        subject: true,
+        semester: true,
+        branch: true,
+      },
+    });
+    return { success: true, data: exams };
+  } catch (error) {
+    return { success: false, error: "Failed to fetch exams" };
+  }
+};
+
+export async function createExam(data: {
+  subjectId: number;
+  examDate: Date;
+  startTime: Date;
+  endTime: Date;
+  semesterId: number;
+  branchId: number;
+}) {
+  try {
+    const exam = await prisma.exam.create({ data });
+    return { success: true, data: exam };
+  } catch (error) {
+    console.error("Error creating exam:", error);
+    return { success: false, error: "Failed to create exam" };
+  }
+}
+
 export const updateExam = async (
-  currentState: CurrentState,
-  data: ExamSchema
+  id: number,
+  data: Partial<{
+    subjectId: number;
+    examDate: Date;
+    startTime: Date;
+    endTime: Date;
+    semesterId: number;
+    branchId: number;
+  }>
 ) => {
   try {
-    await prisma.exam.update({
-      where: {
-        id: data.id,
-      },
-      data: {
-        subjectId: data.subjectId,
-        examDate: data.examDate,
-        duration: data.duration,
-        semesterId: data.semesterId,
-        branchId: data.branchId,
-      },
+    const updatedExam = await prisma.exam.update({
+      where: { id },
+      data,
     });
-
-    revalidatePath("/list/exams");
-    return { success: true, error: false };
-  } catch (err) {
-    console.log(err);
-    return { success: false, error: true };
+    return { success: true, data: updatedExam };
+  } catch (error) {
+    return { success: false, error: "Failed to update exam" };
   }
 };
-export const deleteExam = async (
-  currentState: CurrentState,
-  data: FormData
-) => {
-  const id = data.get("id") as string;
+
+export const deleteExam = async (id: number) => {
   try {
-    await prisma.exam.delete({
-      where: {
-        id: parseInt(id),
-      },
-    });
-
-    revalidatePath("/list/exams");
-    return { success: true, error: false };
-  } catch (err) {
-    console.log(err);
-    return { success: false, error: true };
+    await prisma.exam.delete({ where: { id } });
+    return { success: true };
+  } catch (error) {
+    return { success: false, error: "Failed to delete exam" };
   }
 };
+
 export const createAnnouncement = async (
   currentState: CurrentState,
   data: AnnouncementSchema
