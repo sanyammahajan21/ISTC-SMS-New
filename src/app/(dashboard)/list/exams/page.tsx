@@ -1,186 +1,284 @@
-import FormContainer from "@/components/FormContainer";
-import Pagination from "@/components/Pagination";
-import Table from "@/components/Table";
-import TableSearch from "@/components/TableSearch";
-import prisma from "@/lib/prisma";
-import { ITEM_PER_PAGE } from "@/lib/settings";
-import { Branch, Exam, Prisma, Subject, Teacher } from "@prisma/client";
-import Image from "next/image";
-import { auth } from "@clerk/nextjs/server";
+"use client";
 
-type ExamList = Exam & {
-  lectures: {
-    subject: Subject;
-    branch: Branch;
-    teacher: Teacher;
-  };
-};
+import { useEffect, useState } from "react";
+import {
+  getAllExams,
+  createExam,
+  updateExam,
+  deleteExam,
+  getAllSemesters,
+  getAllBranches,
+} from "@/lib/actions";
 
-const ExamListPage = async ({
-  searchParams,
-}: {
-  searchParams: { [key: string]: string | undefined };
-}) => {
+interface Exam {
+  id?: number;
+  subjectId: number;
+  examDate: Date;
+  startTime: Date;
+  endTime: Date;
+  semesterId: number;
+  branchId: number;
+}
 
-const { userId, sessionClaims } = auth();
-const role = (sessionClaims?.metadata as { role?: string })?.role;
-const currentUserId = userId;
+interface Semester {
+  id: number;
+  level: number;
+}
 
+interface Branch {
+  id: number;
+  name: string;
+}
 
-const columns = [
-  {
-    header: "Subject Name",
-    accessor: "name",
-  },
-  {
-    header: "Branch",
-    accessor: "branch",
-  },
-  {
-    header: "Teacher",
-    accessor: "teacher",
-    className: "hidden md:table-cell",
-  },
-  {
-    header: "Date",
-    accessor: "date",
-    className: "hidden md:table-cell",
-  },
-  ...(role === "registrar" || role === "teacher"
-    ? [
-        {
-          header: "Actions",
-          accessor: "action",
-        },
-      ]
-    : []),
-];
+export default function ExamPage() {
+  const [exams, setExams] = useState<Exam[]>([]);
+  const [semesters, setSemesters] = useState<Semester[]>([]);
+  const [branches, setBranches] = useState<Branch[]>([]);
+  const [selectedSemester, setSelectedSemester] = useState<number | "">("");
+  const [selectedBranch, setSelectedBranch] = useState<number | "">("");
+  const [form, setForm] = useState<Partial<Exam>>({
+    subjectId: 0,
+    examDate: new Date(),
+    startTime: new Date(),
+    endTime: new Date(),
+    semesterId: 0,
+    branchId: 0,
+  });
 
-const renderRow = (item: ExamList) => (
-  <tr
-    key={item.id}
-    className="border-b border-gray-200 even:bg-slate-50 text-sm hover:bg-lamaPurpleLight"
-  >
-    <td className="flex items-center gap-4 p-4">{item.lectures.subject.name}</td>
-    <td>{item.lectures.branch.name}</td>
-    <td className="hidden md:table-cell">
-      {item.lectures.teacher.name }
-    </td>
-    <td className="hidden md:table-cell">
-      {new Intl.DateTimeFormat("en-US").format(item.startTime)}
-    </td>
-    <td>
-      <div className="flex items-center gap-2">
-        {(role === "registrar" || role === "teacher") && (
-          <>
-            <FormContainer table="exam" type="update" data={item} />
-            <FormContainer table="exam" type="delete" id={item.id} />
-          </>
-        )}
-      </div>
-    </td>
-  </tr>
-);
+  useEffect(() => {
+    async function fetchData() {
+      const examsResponse = await getAllExams();
+      const semestersResponse = await getAllSemesters();
+      const branchesResponse = await getAllBranches();
 
-  const { page, ...queryParams } = searchParams;
-
-  const p = page ? parseInt(page) : 1;
-
-  // URL PARAMS CONDITION
-
-  const query: Prisma.ExamWhereInput = {};
-
-  query.lectures = {};
-  if (queryParams) {
-    for (const [key, value] of Object.entries(queryParams)) {
-      if (value !== undefined) {
-        switch (key) {
-          case "branchId":
-            query.lectures.branchId = parseInt(value);
-            break;
-          case "teacherId":
-            query.lectures.teacherId = value;
-            break;
-          case "search":
-            query.lectures.subject = {
-              name: { contains: value, mode: "insensitive" },
-            };
-            break;
-          default:
-            break;
-        }
-      }
+      if (examsResponse?.success) setExams(examsResponse?.data ?? []);
+      if (semestersResponse?.success)
+        setSemesters(semestersResponse?.data ?? []);
+      if (branchesResponse?.success) setBranches(branchesResponse?.data ?? []);
     }
-  }
+    fetchData();
+  }, []);
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
+    const { name, value } = e.target;
+    setForm((prev) => ({
+      ...prev,
+      [name]: ["subjectId", "semesterId", "branchId"].includes(name)
+        ? Number(value) || 0
+        : value,
+    }));
+  };
+  const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setForm((prev) => ({
+      ...prev,
+      [name]: value ? new Date(value) : new Date(),
+    }));
+  };
 
-  // ROLE CONDITIONS
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
 
-  switch (role) {
-    case "admin":
-      break;
-    case "teacher":
-      query.lectures.teacherId = currentUserId!;
-      break;
-    case "student":
-      query.lectures.branch = {
-        students: {
-          some: {
-            id: currentUserId!,
-          },
-        },
-      };
-      break;
-    case "registrar":
-      break;
+    if (
+      !form.subjectId ||
+      !form.examDate ||
+      !form.startTime ||
+      !form.endTime ||
+      !form.semesterId ||
+      !form.branchId
+    ) {
+      alert("Please fill in all fields.");
+      return;
+    }
 
-    default:
-      break;
-  }
+    const payload: Exam = {
+      subjectId: form.subjectId!,
+      examDate: new Date(form.examDate!),
+      startTime: new Date(form.startTime!),
+      endTime: new Date(form.endTime!),
+      semesterId: form.semesterId!,
+      branchId: form.branchId!,
+    };
 
-  const [data, count] = await prisma.$transaction([
-    prisma.exam.findMany({
-      where: query,
-      include: {
-        lectures: {
-          select: {
-            subject: { select: { name: true } },
-            teacher: { select: { name: true} },
-            branch: { select: { name: true } },
-          },
-        },
-      },
-      take: ITEM_PER_PAGE,
-      skip: ITEM_PER_PAGE * (p - 1),
-    }),
-    prisma.exam.count({ where: query }),
-  ]);
+    if (form.id) {
+      await updateExam(form.id, payload);
+    } else {
+      await createExam(payload);
+    }
+
+    const response = await getAllExams();
+    if (response?.success) setExams(response?.data ?? []);
+
+    setForm({
+      subjectId: 0,
+      examDate: new Date(),
+      startTime: new Date(),
+      endTime: new Date(),
+      semesterId: 0,
+      branchId: 0,
+    });
+  };
 
   return (
-    <div className="bg-white p-4 rounded-md flex-1 m-4 mt-0">
-      {/* TOP */}
-      <div className="flex items-center justify-between">
-        <h1 className="hidden md:block text-lg font-semibold">All Exams</h1>
-        <div className="flex flex-col md:flex-row items-center gap-4 w-full md:w-auto">
-          <TableSearch />
-          <div className="flex items-center gap-4 self-end">
-            <button className="w-8 h-8 flex items-center justify-center rounded-full bg-lamaYellow">
-              <Image src="/filter.png" alt="" width={14} height={14} />
-            </button>
-            <button className="w-8 h-8 flex items-center justify-center rounded-full bg-lamaYellow">
-              <Image src="/sort.png" alt="" width={14} height={14} />
-            </button>
-            {(role === "registrar" || role === "teacher") && (
-              <FormContainer table="exam" type="create" />
-            )}
-          </div>
+    <div className="w-full mx-auto p-4">
+      <h1 className="text-2xl font-bold mb-4">Manage Exams</h1>
+
+      <form
+        onSubmit={handleSubmit}
+        className="bg-gray-100 p-4 rounded-md shadow-md mb-6"
+      >
+        <div className="gap-4">
+          <input
+            type="number"
+            name="subjectId"
+            value={form.subjectId || 0}
+            onChange={handleChange}
+            placeholder="Subject ID"
+            className="p-2 border rounded-md"
+            required
+          />
+
+          <input
+            type="date"
+            name="examDate"
+            placeholder="Exam Date"
+            value={form.examDate?.toISOString().split("T")[0] || ""}
+            onChange={handleDateChange}
+            className="p-2 border rounded-md"
+            required
+          />
+
+          <input
+            type="time"
+            name="startTime"
+            placeholder="Start Time"
+            value={form.startTime?.toISOString().substring(11, 16) || ""}
+            onChange={handleDateChange}
+            className="p-2 border rounded-md"
+            required
+          />
+
+          <input
+            type="time"
+            name="endTime"
+            placeholder="End Time"
+            value={form.endTime?.toISOString().substring(11, 16) || ""}
+            onChange={handleDateChange}
+            className="p-2 border rounded-md"
+            required
+          />
+
+          <select
+            name="semesterId"
+            value={form.semesterId}
+            onChange={handleChange}
+            className="p-2 border rounded-md"
+            required
+          >
+            <option value="">Select Semester</option>
+            {semesters.map((sem) => (
+              <option
+                key={sem.id}
+                value={sem.id}
+              >{`Semester ${sem.level}`}</option>
+            ))}
+          </select>
+
+          <select
+            name="branchId"
+            value={form.branchId}
+            onChange={handleChange}
+            className="p-2 border rounded-md"
+            required
+          >
+            <option value="">Select Branch</option>
+            {branches.map((branch) => (
+              <option key={branch.id} value={branch.id}>
+                {branch.name}
+              </option>
+            ))}
+          </select>
         </div>
+
+        <button
+          type="submit"
+          className="bg-blue-600 text-white p-2 rounded-md w-full mt-4"
+        >
+          {form.id ? "Update Exam" : "Add Exam"}
+        </button>
+      </form>
+      <h1 className="text-2xl font-bold mb-4">Exam Schedule</h1>
+
+      <div className="flex gap-4 mb-6">
+        <select
+          value={selectedSemester}
+          onChange={(e) => setSelectedSemester(Number(e.target.value) || "")}
+          className="p-2 border rounded-md"
+        >
+          <option value="">Select Semester</option>
+          {semesters.map((sem) => (
+            <option
+              key={sem.id}
+              value={sem.id}
+            >{`Semester ${sem.level}`}</option>
+          ))}
+        </select>
+
+        <select
+          value={selectedBranch}
+          onChange={(e) => setSelectedBranch(Number(e.target.value) || "")}
+          className="p-2 border rounded-md"
+        >
+          <option value="">Select Branch</option>
+          {branches.map((branch) => (
+            <option key={branch.id} value={branch.id}>
+              {branch.name}
+            </option>
+          ))}
+        </select>
       </div>
-      {/* LIST */}
-      <Table columns={columns} renderRow={renderRow} data={data} />
-      {/* PAGINATION */}
-      <Pagination page={p} count={count} />
+
+      {selectedSemester && selectedBranch && (
+        <div>
+          <h2 className="text-xl font-semibold mb-2">
+            {branches.find((b) => b.id === selectedBranch)?.name} - Semester{" "}
+            {semesters.find((s) => s.id === selectedSemester)?.level}
+          </h2>
+          <table className="w-full border-collapse border border-gray-300">
+            <thead>
+              <tr className="bg-gray-200">
+                <th className="p-2 border">Subject ID</th>
+                <th className="p-2 border">Exam Date</th>
+                <th className="p-2 border">Start Time</th>
+                <th className="p-2 border">End Time</th>
+              </tr>
+            </thead>
+            <tbody>
+              {exams
+                .filter(
+                  (exam) =>
+                    exam.branchId === selectedBranch &&
+                    exam.semesterId === selectedSemester
+                )
+                .map((exam) => (
+                  <tr key={exam.id} className="border">
+                    <td className="p-2 border">{exam.subjectId}</td>
+                    <td className="p-2 border">
+                      {new Date(exam.examDate).toISOString().split("T")[0]}
+                    </td>
+                    <td className="p-2 border">
+                      {new Date(exam.startTime).toISOString().substring(11, 16)}
+                    </td>
+                    <td className="p-2 border">
+                      {new Date(exam.endTime).toISOString().substring(11, 16)}
+                    </td>
+                  </tr>
+                ))}
+            </tbody>
+          </table>
+        </div>
+      )}
     </div>
   );
-};
-
-export default ExamListPage;
+}
