@@ -70,11 +70,32 @@ export default function ExamPage() {
     }));
   };
   const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setForm((prev) => ({
-      ...prev,
-      [name]: value ? new Date(value) : new Date(),
-    }));
+    const { name, value, type } = e.target;
+    if (!value) return; // Prevent empty values
+
+    setForm((prev) => {
+      let updatedDate;
+
+      if (type === "date") {
+        // If it's a date input, update only the date part
+        const existingTime =
+          prev[name] instanceof Date
+            ? prev[name].toTimeString().split(" ")[0]
+            : "00:00:00";
+        updatedDate = new Date(`${value}T${existingTime}`);
+      } else if (type === "time") {
+        // If it's a time input, update only the time part
+        const existingDate =
+          prev[name] instanceof Date
+            ? prev[name].toISOString().split("T")[0]
+            : new Date().toISOString().split("T")[0];
+        updatedDate = new Date(`${existingDate}T${value}`);
+      }
+
+      if (isNaN(updatedDate.getTime())) return prev; // Prevent invalid dates
+
+      return { ...prev, [name]: updatedDate };
+    });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -143,7 +164,11 @@ export default function ExamPage() {
             type="date"
             name="examDate"
             placeholder="Exam Date"
-            value={form.examDate?.toISOString().split("T")[0] || ""}
+            value={
+              form.examDate instanceof Date && !isNaN(form.examDate)
+                ? form.examDate.toISOString().split("T")[0]
+                : ""
+            }
             onChange={handleDateChange}
             className="p-2 border rounded-md"
             required
@@ -153,7 +178,11 @@ export default function ExamPage() {
             type="time"
             name="startTime"
             placeholder="Start Time"
-            value={form.startTime?.toISOString().substring(11, 16) || ""}
+            value={
+              form.startTime instanceof Date && !isNaN(form.startTime)
+                ? form.startTime.toTimeString().substring(0, 5) 
+                : ""
+            }
             onChange={handleDateChange}
             className="p-2 border rounded-md"
             required
@@ -163,7 +192,11 @@ export default function ExamPage() {
             type="time"
             name="endTime"
             placeholder="End Time"
-            value={form.endTime?.toISOString().substring(11, 16) || ""}
+            value={
+              form.endTime instanceof Date && !isNaN(form.endTime)
+                ? form.endTime.toTimeString().substring(0, 5) 
+                : ""
+            }
             onChange={handleDateChange}
             className="p-2 border rounded-md"
             required
@@ -268,10 +301,10 @@ export default function ExamPage() {
                       {new Date(exam.examDate).toISOString().split("T")[0]}
                     </td>
                     <td className="p-2 border">
-                      {new Date(exam.startTime).toISOString().substring(11, 16)}
+                      {new Date(exam.startTime).toTimeString().substring(0, 5)}
                     </td>
                     <td className="p-2 border">
-                      {new Date(exam.endTime).toISOString().substring(11, 16)}
+                      {new Date(exam.endTime).toTimeString().substring(0, 5)}
                     </td>
                   </tr>
                 ))}

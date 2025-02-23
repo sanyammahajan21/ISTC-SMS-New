@@ -559,6 +559,23 @@ export const deleteExam = async (id: number) => {
     return { success: false, error: "Failed to delete exam" };
   }
 };
+export const fetchSubjects = async () => {
+  try {
+    const subjects = await prisma.subject.findMany({
+      include: {
+        teachers: true,
+        branch: true,   
+        semester: true, 
+      },
+    });
+
+    return { success: true, data: subjects, error: false };
+  } catch (err) {
+    console.log(err);
+    return { success: false, data: [], error: true };
+  }
+};
+
 
 export const createAnnouncement = async (
   currentState: CurrentState,
