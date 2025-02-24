@@ -40,7 +40,7 @@ interface Subject {
 }
 
 interface ExamPageProps {
-  role?: string;
+  role?: string; // Add role as a prop
 }
 
 export default function ExamPage({ role }: ExamPageProps) {
@@ -58,6 +58,8 @@ export default function ExamPage({ role }: ExamPageProps) {
     semesterId: 0,
     branchId: 0,
   });
+
+  // Fetch initial data (exams, semesters, branches)
   useEffect(() => {
     async function fetchData() {
       const examsResponse = await getAllExams();
@@ -72,10 +74,26 @@ export default function ExamPage({ role }: ExamPageProps) {
     fetchData();
   }, []);
 
+  // Fetch subjects when selectedSemester or selectedBranch changes (for Exam Schedule)
+  useEffect(() => {
+    if (selectedSemester && selectedBranch) {
+      fetchSubjects(selectedSemester, selectedBranch).then((response) => {
+        if (response?.success) {
+          setSubjects(response?.data ?? []);
+          console.log("Fetched Subjects for Exam Schedule:", response.data); // Debugging
+        }
+      });
+    }
+  }, [selectedSemester, selectedBranch]);
+
+  // Fetch subjects when form.semesterId or form.branchId changes (for Create Exam)
   useEffect(() => {
     if (form.semesterId && form.branchId) {
       fetchSubjects(form.semesterId, form.branchId).then((response) => {
-        if (response?.success) setSubjects(response?.data ?? []);
+        if (response?.success) {
+          setSubjects(response?.data ?? []);
+          console.log("Fetched Subjects for Create Exam:", response.data); // Debugging
+        }
       });
     }
   }, [form.semesterId, form.branchId]);
@@ -91,22 +109,26 @@ export default function ExamPage({ role }: ExamPageProps) {
         ? Number(value) || 0
         : value,
     }));
+    console.log("Form Updated:", { [name]: value }); // Debugging
   };
 
+  // Handle date and time input changes
   const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, type } = e.target;
-    if (!value) return;
+    if (!value) return; // Prevent empty values
 
     setForm((prev) => {
       let updatedDate;
 
       if (type === "date") {
+        // Update only the date part
         const existingTime =
           prev[name] instanceof Date
             ? prev[name].toTimeString().split(" ")[0]
             : "00:00:00";
         updatedDate = new Date(`${value}T${existingTime}`);
       } else if (type === "time") {
+        // Update only the time part
         const existingDate =
           prev[name] instanceof Date
             ? prev[name].toISOString().split("T")[0]
@@ -164,6 +186,7 @@ export default function ExamPage({ role }: ExamPageProps) {
     });
   };
 
+  // Handle updating an exam
   const handleUpdateExam = (exam: Exam) => {
     setForm({
       id: exam.id,
@@ -186,112 +209,113 @@ export default function ExamPage({ role }: ExamPageProps) {
 
   return (
     <div className="w-full mx-auto p-4">
+      <h1 className="text-2xl font-bold mb-4">Manage Exams</h1>
+
       {(role === "registrar") && (
         <form
-        onSubmit={handleSubmit}
-        className="bg-gray-100 p-4 rounded-md shadow-md mb-6"
+          onSubmit={handleSubmit}
+          className="bg-gray-100 p-4 rounded-md shadow-md mb-6"
         >
-        <h1 className="text-2xl font-bold mb-4">{form.id ? "Update an Existing Exam" : "Add a new Exam In Datesheet"}</h1>
-        <div className="gap-4">
-          <select
-            name="semesterId"
-            value={form.semesterId}
-            onChange={handleChange}
-            className="p-2 border rounded-md"
-            required
+          <div className="gap-4">
+            <select
+              name="semesterId"
+              value={form.semesterId}
+              onChange={handleChange}
+              className="p-2 border rounded-md"
+              required
+            >
+              <option value="">Select Semester</option>
+              {semesters.map((sem) => (
+                <option
+                  key={sem.id}
+                  value={sem.id}
+                >{`Semester ${sem.level}`}</option>
+              ))}
+            </select>
+
+            <select
+              name="branchId"
+              value={form.branchId}
+              onChange={handleChange}
+              className="p-2 border rounded-md"
+              required
+            >
+              <option value="">Select Branch</option>
+              {branches.map((branch) => (
+                <option key={branch.id} value={branch.id}>
+                  {branch.name}
+                </option>
+              ))}
+            </select>
+
+            <select
+              name="subjectId"
+              value={form.subjectId || 0}
+              onChange={handleChange}
+              className="p-2 border rounded-md"
+              required
+            >
+              <option value="">Select Subject</option>
+              {subjects.map((subject) => (
+                <option key={subject.id} value={subject.id}>
+                  {subject.name} ({subject.subjectCode})
+                </option>
+              ))}
+            </select>
+
+            <input
+              type="date"
+              name="examDate"
+              placeholder="Exam Date"
+              value={
+                form.examDate instanceof Date && !isNaN(form.examDate)
+                  ? form.examDate.toISOString().split("T")[0]
+                  : ""
+              }
+              onChange={handleDateChange}
+              className="p-2 border rounded-md"
+              required
+            />
+
+            <input
+              type="time"
+              name="startTime"
+              placeholder="Start Time"
+              value={
+                form.startTime instanceof Date && !isNaN(form.startTime)
+                  ? form.startTime.toTimeString().substring(0, 5)
+                  : ""
+              }
+              onChange={handleDateChange}
+              className="p-2 border rounded-md"
+              required
+            />
+            <input
+              type="time"
+              name="endTime"
+              placeholder="End Time"
+              value={
+                form.endTime instanceof Date && !isNaN(form.endTime)
+                  ? form.endTime.toTimeString().substring(0, 5)
+                  : ""
+              }
+              onChange={handleDateChange}
+              className="p-2 border rounded-md"
+              required
+            />
+          </div>
+
+          <button
+            type="submit"
+            className="bg-blue-600 text-white p-2 rounded-md w-full mt-4"
           >
-            <option value="">Select Semester</option>
-            {semesters.map((sem) => (
-              <option
-                key={sem.id}
-                value={sem.id}
-              >{`Semester ${sem.level}`}</option>
-            ))}
-          </select>
-
-          <select
-            name="branchId"
-            value={form.branchId}
-            onChange={handleChange}
-            className="p-2 border rounded-md"
-            required
-          >
-            <option value="">Select Branch</option>
-            {branches.map((branch) => (
-              <option key={branch.id} value={branch.id}>
-                {branch.name}
-              </option>
-            ))}
-          </select>
-
-          <select
-            name="subjectId"
-            value={form.subjectId || 0}
-            onChange={handleChange}
-            className="p-2 border rounded-md"
-            required
-          >
-            <option value="">Select Subject</option>
-            {subjects.map((subject) => (
-              <option key={subject.id} value={subject.id}>
-                {subject.name} ({subject.subjectCode})
-              </option>
-            ))}
-          </select>
-
-          <input
-            type="date"
-            name="examDate"
-            placeholder="Exam Date"
-            value={
-              form.examDate instanceof Date && !isNaN(form.examDate)
-                ? form.examDate.toISOString().split("T")[0]
-                : ""
-            }
-            onChange={handleDateChange}
-            className="p-2 border rounded-md"
-            required
-          />
-
-          <input
-            type="time"
-            name="startTime"
-            placeholder="Start Time"
-            value={
-              form.startTime instanceof Date && !isNaN(form.startTime)
-                ? form.startTime.toTimeString().substring(0, 5)
-                : ""
-            }
-            onChange={handleDateChange}
-            className="p-2 border rounded-md"
-            required
-          />
-
-          <input
-            type="time"
-            name="endTime"
-            placeholder="End Time"
-            value={
-              form.endTime instanceof Date && !isNaN(form.endTime)
-                ? form.endTime.toTimeString().substring(0, 5)
-                : ""
-            }
-            onChange={handleDateChange}
-            className="p-2 border rounded-md"
-            required
-          />
-        </div>
-
-        <button
-          type="submit"
-          className="bg-blue-600 text-white p-2 rounded-md w-full mt-4"
-        >
-          {form.id ? "Update Exam" : "Add Exam"}
-        </button>
-      </form>
+            {form.id ? "Update Exam" : "Add Exam"}
+          </button>
+        </form>
       )}
 
       <h1 className="text-2xl font-bold mb-4">Exam Schedule</h1>
+
       <div className="flex gap-4 mb-6">
         <select
           value={selectedSemester}
