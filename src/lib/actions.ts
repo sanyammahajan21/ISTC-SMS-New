@@ -559,13 +559,17 @@ export const deleteExam = async (id: number) => {
     return { success: false, error: "Failed to delete exam" };
   }
 };
-export const fetchSubjects = async () => {
+export const fetchSubjects = async (semesterId: number, branchId: number) => {
   try {
     const subjects = await prisma.subject.findMany({
+      where: {
+        semesterId: semesterId,
+        branchId: branchId,
+      },
       include: {
         teachers: true,
-        branch: true,   
-        semester: true, 
+        branch: true,
+        semester: true,
       },
     });
 
