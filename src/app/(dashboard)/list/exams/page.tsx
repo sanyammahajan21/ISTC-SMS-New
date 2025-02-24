@@ -8,6 +8,7 @@ import {
   deleteExam,
   getAllSemesters,
   getAllBranches,
+  fetchSubjects,
 } from "@/lib/actions";
 
 interface Exam {
@@ -30,10 +31,19 @@ interface Branch {
   name: string;
 }
 
+interface Subject {
+  id: number;
+  name: string;
+  subjectCode: string;
+  semesterId: number;
+  branchId: number;
+}
+
 export default function ExamPage() {
   const [exams, setExams] = useState<Exam[]>([]);
   const [semesters, setSemesters] = useState<Semester[]>([]);
   const [branches, setBranches] = useState<Branch[]>([]);
+  const [subjects, setSubjects] = useState<Subject[]>([]);
   const [selectedSemester, setSelectedSemester] = useState<number | "">("");
   const [selectedBranch, setSelectedBranch] = useState<number | "">("");
   const [form, setForm] = useState<Partial<Exam>>({
@@ -58,6 +68,13 @@ export default function ExamPage() {
     }
     fetchData();
   }, []);
+  useEffect(() => {
+    if (form.semesterId && form.branchId) {
+      fetchSubjects(form.semesterId, form.branchId).then((response) => {
+        if (response?.success) setSubjects(response?.data ?? []);
+      });
+    }
+  }, [form.semesterId, form.branchId]);
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
@@ -71,20 +88,19 @@ export default function ExamPage() {
   };
   const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, type } = e.target;
-    if (!value) return; // Prevent empty values
+    if (!value) return; 
 
     setForm((prev) => {
       let updatedDate;
 
       if (type === "date") {
-        // If it's a date input, update only the date part
         const existingTime =
           prev[name] instanceof Date
             ? prev[name].toTimeString().split(" ")[0]
             : "00:00:00";
         updatedDate = new Date(`${value}T${existingTime}`);
       } else if (type === "time") {
-        // If it's a time input, update only the time part
+        // Update only the time part
         const existingDate =
           prev[name] instanceof Date
             ? prev[name].toISOString().split("T")[0]
@@ -92,12 +108,13 @@ export default function ExamPage() {
         updatedDate = new Date(`${existingDate}T${value}`);
       }
 
-      if (isNaN(updatedDate.getTime())) return prev; // Prevent invalid dates
+      if (isNaN(updatedDate.getTime())) return prev;
 
       return { ...prev, [name]: updatedDate };
     });
   };
 
+  //form submission
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -141,6 +158,28 @@ export default function ExamPage() {
     });
   };
 
+  // updating an exam
+  const handleUpdateExam = (exam: Exam) => {
+    setForm({
+      id: exam.id,
+      subjectId: exam.subjectId,
+      examDate: new Date(exam.examDate),
+      startTime: new Date(exam.startTime),
+      endTime: new Date(exam.endTime),
+      semesterId: exam.semesterId,
+      branchId: exam.branchId,
+    });
+  };
+
+  // deleting an exam
+  const handleDeleteExam = async (examId: number) => {
+    if (window.confirm("Are you sure you want to delete this exam?")) {
+      await deleteExam(examId);
+      const response = await getAllExams();
+      if (response?.success) setExams(response?.data ?? []);
+    }
+  };
+
   return (
     <div className="w-full mx-auto p-4">
       <h1 className="text-2xl font-bold mb-4">Manage Exams</h1>
@@ -150,58 +189,6 @@ export default function ExamPage() {
         className="bg-gray-100 p-4 rounded-md shadow-md mb-6"
       >
         <div className="gap-4">
-          <input
-            type="number"
-            name="subjectId"
-            value={form.subjectId || 0}
-            onChange={handleChange}
-            placeholder="Subject ID"
-            className="p-2 border rounded-md"
-            required
-          />
-
-          <input
-            type="date"
-            name="examDate"
-            placeholder="Exam Date"
-            value={
-              form.examDate instanceof Date && !isNaN(form.examDate)
-                ? form.examDate.toISOString().split("T")[0]
-                : ""
-            }
-            onChange={handleDateChange}
-            className="p-2 border rounded-md"
-            required
-          />
-
-          <input
-            type="time"
-            name="startTime"
-            placeholder="Start Time"
-            value={
-              form.startTime instanceof Date && !isNaN(form.startTime)
-                ? form.startTime.toTimeString().substring(0, 5) 
-                : ""
-            }
-            onChange={handleDateChange}
-            className="p-2 border rounded-md"
-            required
-          />
-
-          <input
-            type="time"
-            name="endTime"
-            placeholder="End Time"
-            value={
-              form.endTime instanceof Date && !isNaN(form.endTime)
-                ? form.endTime.toTimeString().substring(0, 5) 
-                : ""
-            }
-            onChange={handleDateChange}
-            className="p-2 border rounded-md"
-            required
-          />
-
           <select
             name="semesterId"
             value={form.semesterId}
@@ -232,6 +219,63 @@ export default function ExamPage() {
               </option>
             ))}
           </select>
+
+          <select
+            name="subjectId"
+            value={form.subjectId || 0}
+            onChange={handleChange}
+            className="p-2 border rounded-md"
+            required
+          >
+            <option value="">Select Subject</option>
+            {subjects.map((subject) => (
+              <option key={subject.id} value={subject.id}>
+                {subject.name} ({subject.subjectCode})
+              </option>
+            ))}
+          </select>
+
+          <input
+            type="date"
+            name="examDate"
+            placeholder="Exam Date"
+            value={
+              form.examDate instanceof Date && !isNaN(form.examDate)
+                ? form.examDate.toISOString().split("T")[0]
+                : ""
+            }
+            onChange={handleDateChange}
+            className="p-2 border rounded-md"
+            required
+          />
+
+          <input
+            type="time"
+            name="startTime"
+            placeholder="Start Time"
+            value={
+              form.startTime instanceof Date && !isNaN(form.startTime)
+                ? form.startTime.toTimeString().substring(0, 5)
+                : ""
+            }
+            onChange={handleDateChange}
+            className="p-2 border rounded-md"
+            required
+          />
+
+          <input
+            type="time"
+            name="endTime"
+            placeholder="End Time"
+            value={
+              form.endTime instanceof Date && !isNaN(form.endTime)
+                ? form.endTime.toTimeString().substring(0, 5)
+                : ""
+            }
+            onChange={handleDateChange}
+            className="p-2 border rounded-md"
+            required
+          />
         </div>
 
         <button
@@ -241,6 +285,8 @@ export default function ExamPage() {
           {form.id ? "Update Exam" : "Add Exam"}
         </button>
       </form>
+
+      {/* Exam Schedule Table */}
       <h1 className="text-2xl font-bold mb-4">Exam Schedule</h1>
 
       <div className="flex gap-4 mb-6">
@@ -281,10 +327,12 @@ export default function ExamPage() {
           <table className="w-full border-collapse border border-gray-300">
             <thead>
               <tr className="bg-gray-200">
-                <th className="p-2 border">Subject ID</th>
+                <th className="p-2 border">Subject Code</th>
+                <th className="p-2 border">Subject Name</th>
                 <th className="p-2 border">Exam Date</th>
                 <th className="p-2 border">Start Time</th>
                 <th className="p-2 border">End Time</th>
+                <th className="p-2 border">Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -294,20 +342,38 @@ export default function ExamPage() {
                     exam.branchId === selectedBranch &&
                     exam.semesterId === selectedSemester
                 )
-                .map((exam) => (
-                  <tr key={exam.id} className="border">
-                    <td className="p-2 border">{exam.subjectId}</td>
-                    <td className="p-2 border">
-                      {new Date(exam.examDate).toISOString().split("T")[0]}
-                    </td>
-                    <td className="p-2 border">
-                      {new Date(exam.startTime).toTimeString().substring(0, 5)}
-                    </td>
-                    <td className="p-2 border">
-                      {new Date(exam.endTime).toTimeString().substring(0, 5)}
-                    </td>
-                  </tr>
-                ))}
+                .map((exam) => {
+                  const subject = subjects.find((sub) => sub.id === exam.subjectId);
+                  return (
+                    <tr key={exam.id} className="border">
+                      <td className="p-2 border">{subject?.subjectCode || "N/A"}</td>
+                      <td className="p-2 border">{subject?.name || "N/A"}</td>
+                      <td className="p-2 border">
+                        {new Date(exam.examDate).toISOString().split("T")[0]}
+                      </td>
+                      <td className="p-2 border">
+                        {new Date(exam.startTime).toTimeString().substring(0, 5)}
+                      </td>
+                      <td className="p-2 border">
+                        {new Date(exam.endTime).toTimeString().substring(0, 5)}
+                      </td>
+                      <td className="p-2 border flex gap-2">
+                        <button
+                          onClick={() => handleUpdateExam(exam)}
+                          className="bg-yellow-500 text-white p-1 rounded-md"
+                        >
+                          Update
+                        </button>
+                        <button
+                          onClick={() => handleDeleteExam(exam.id!)}
+                          className="bg-red-500 text-white p-1 rounded-md"
+                        >
+                          Delete
+                        </button>
+                      </td>
+                    </tr>
+                  );
+                })}
             </tbody>
           </table>
         </div>
