@@ -1,185 +1,390 @@
 "use client";
 
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import InputField from "../InputField";
-import { examSchema, ExamSchema } from "@/lib/formValidationSchemas"; 
-import { createExam, updateExam } from "@/lib/actions";
-import { useFormState } from "react-dom";
-import { Dispatch, SetStateAction, useEffect } from "react";
-import { toast } from "react-toastify";
-import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import {
+  getAllExams,
+  createExam,
+  updateExam,
+  deleteExam,
+  getAllSemesters,
+  getAllBranches,
+  fetchSubjects,
+} from "@/lib/actions";
 
-const ExamForm = ({
-  type,
-  data,
-  setOpen,
-  relatedData,
-}: {
-  type: "create" | "update";
-  data?: any;
-  setOpen: Dispatch<SetStateAction<boolean>>;
-  relatedData?: any;
-}) => {
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<ExamSchema>({
-    resolver: zodResolver(examSchema),
-    defaultValues: {
-      examDate: data?.examDate,
-      startTime: data?.startTime,
-      endTime: data?.endTime,
-      branchId: data?.branchId,
-      semesterId: data?.semesterId,
-      subjectId: data?.subjectId,
-    },
+interface Exam {
+  id?: number;
+  subjectId: number;
+  examDate: Date;
+  startTime: Date;
+  endTime: Date;
+  semesterId: number;
+  branchId: number;
+}
+
+interface Semester {
+  id: number;
+  level: number;
+}
+
+interface Branch {
+  id: number;
+  name: string;
+}
+
+interface Subject {
+  id: number;
+  name: string;
+  subjectCode: string;
+  semesterId: number;
+  branchId: number;
+}
+
+interface ExamPageProps {
+  role?: string;
+}
+
+export default function ExamPage({ role }: ExamPageProps) {
+  const [exams, setExams] = useState<Exam[]>([]);
+  const [semesters, setSemesters] = useState<Semester[]>([]);
+  const [branches, setBranches] = useState<Branch[]>([]);
+  const [subjects, setSubjects] = useState<Subject[]>([]);
+  const [selectedSemester, setSelectedSemester] = useState<number | "">("");
+  const [selectedBranch, setSelectedBranch] = useState<number | "">("");
+  const [form, setForm] = useState<Partial<Exam>>({
+    subjectId: 0,
+    examDate: new Date(),
+    startTime: new Date(),
+    endTime: new Date(),
+    semesterId: 0,
+    branchId: 0,
   });
+  useEffect(() => {
+    async function fetchData() {
+      const examsResponse = await getAllExams();
+      const semestersResponse = await getAllSemesters();
+      const branchesResponse = await getAllBranches();
 
-  const [state, formAction] = useFormState(
-    type === "create" ? createExam : updateExam,
-    {
-      success: false,
-      error: false,
+      if (examsResponse?.success) setExams(examsResponse?.data ?? []);
+      if (semestersResponse?.success)
+        setSemesters(semestersResponse?.data ?? []);
+      if (branchesResponse?.success) setBranches(branchesResponse?.data ?? []);
     }
-  );
-
-  const onSubmit = handleSubmit((data) => {
-    console.log(data);
-    formAction(data);
-  });
-
-  const router = useRouter();
+    fetchData();
+  }, []);
 
   useEffect(() => {
-    if (state.success) {
-      toast(`Exam has been ${type === "create" ? "created" : "updated"}!`);
-      setOpen(false);
-      router.refresh();
+    if (form.semesterId && form.branchId) {
+      fetchSubjects(form.semesterId, form.branchId).then((response) => {
+        if (response?.success) setSubjects(response?.data ?? []);
+      });
     }
-  }, [state, router, type, setOpen]);
+  }, [form.semesterId, form.branchId]);
 
-  const { subjects, branches, semesters } = relatedData;
+  // Handle form input changes
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
+    const { name, value } = e.target;
+    setForm((prev) => ({
+      ...prev,
+      [name]: ["subjectId", "semesterId", "branchId"].includes(name)
+        ? Number(value) || 0
+        : value,
+    }));
+  };
+
+  const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value, type } = e.target;
+    if (!value) return;
+
+    setForm((prev) => {
+      let updatedDate;
+
+      if (type === "date") {
+        const existingTime =
+          prev[name] instanceof Date
+            ? prev[name].toTimeString().split(" ")[0]
+            : "00:00:00";
+        updatedDate = new Date(`${value}T${existingTime}`);
+      } else if (type === "time") {
+        const existingDate =
+          prev[name] instanceof Date
+            ? prev[name].toISOString().split("T")[0]
+            : new Date().toISOString().split("T")[0];
+        updatedDate = new Date(`${existingDate}T${value}`);
+      }
+
+      if (isNaN(updatedDate.getTime())) return prev; // Prevent invalid dates
+
+      return { ...prev, [name]: updatedDate };
+    });
+  };
+
+  // Handle form submission
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (
+      !form.subjectId ||
+      !form.examDate ||
+      !form.startTime ||
+      !form.endTime ||
+      !form.semesterId ||
+      !form.branchId
+    ) {
+      alert("Please fill in all fields.");
+      return;
+    }
+
+    const payload: Exam = {
+      subjectId: form.subjectId!,
+      examDate: new Date(form.examDate!),
+      startTime: new Date(form.startTime!),
+      endTime: new Date(form.endTime!),
+      semesterId: form.semesterId!,
+      branchId: form.branchId!,
+    };
+
+    if (form.id) {
+      await updateExam(form.id, payload);
+    } else {
+      await createExam(payload);
+    }
+
+    const response = await getAllExams();
+    if (response?.success) setExams(response?.data ?? []);
+
+    setForm({
+      subjectId: 0,
+      examDate: new Date(),
+      startTime: new Date(),
+      endTime: new Date(),
+      semesterId: 0,
+      branchId: 0,
+    });
+  };
+
+  const handleUpdateExam = (exam: Exam) => {
+    setForm({
+      id: exam.id,
+      subjectId: exam.subjectId,
+      examDate: new Date(exam.examDate),
+      startTime: new Date(exam.startTime),
+      endTime: new Date(exam.endTime),
+      semesterId: exam.semesterId,
+      branchId: exam.branchId,
+    });
+  };
+
+  const handleDeleteExam = async (examId: number) => {
+    if (window.confirm("Are you sure you want to delete this exam?")) {
+      await deleteExam(examId);
+      const response = await getAllExams();
+      if (response?.success) setExams(response?.data ?? []);
+    }
+  };
 
   return (
-    <form className="flex flex-col gap-8" onSubmit={onSubmit}>
-      <h1 className="text-xl font-semibold">
-        {type === "create" ? "Create a new exam" : "Update the exam"}
-      </h1>
-
-      <div className="flex justify-between flex-wrap gap-4">
-      <InputField
-          label="Exam Date"
-          name="examDate"
-          defaultValue={data?.examDate}
-          register={register}
-          error={errors?.examDate}
-          type="datetime-local"
-        />
-        <InputField
-          label="Start Date"
-          name="startTime"
-          defaultValue={data?.startTime}
-          register={register}
-          error={errors?.startTime}
-          type="datetime-local"
-        />
-        <InputField
-          label="End Date"
-          name="endTime"
-          defaultValue={data?.endTime}
-          register={register}
-          error={errors?.endTime}
-          type="datetime-local"
-        />
-        {data && (
-          <InputField
-            label="Id"
-            name="id"
-            defaultValue={data?.id}
-            register={register}
-            error={errors?.id}
-            hidden
-          />
-        )}
-
-        {/* Branch Dropdown */}
-        <div className="flex flex-col gap-2 w-full md:w-1/4">
-          <label className="text-xs text-gray-500">Branch</label>
+    <div className="w-full mx-auto p-4">
+      {(role === "registrar") && (
+        <form
+        onSubmit={handleSubmit}
+        className="bg-gray-100 p-4 rounded-md shadow-md mb-6"
+        >
+        <h1 className="text-2xl font-bold mb-4">{form.id ? "Update an Existing Exam" : "Add a new Exam In Datesheet"}</h1>
+        <div className="gap-4">
           <select
-            className="ring-[1.5px] ring-gray-300 p-2 rounded-md text-sm w-full"
-            {...register("branchId")}
-            defaultValue={data?.branchId}
+            name="semesterId"
+            value={form.semesterId}
+            onChange={handleChange}
+            className="p-2 border rounded-md"
+            required
+          >
+            <option value="">Select Semester</option>
+            {semesters.map((sem) => (
+              <option
+                key={sem.id}
+                value={sem.id}
+              >{`Semester ${sem.level}`}</option>
+            ))}
+          </select>
+
+          <select
+            name="branchId"
+            value={form.branchId}
+            onChange={handleChange}
+            className="p-2 border rounded-md"
+            required
           >
             <option value="">Select Branch</option>
-            {branches.map((branch: { id: number; name: string }) => (
-              <option value={branch.id} key={branch.id}>
+            {branches.map((branch) => (
+              <option key={branch.id} value={branch.id}>
                 {branch.name}
               </option>
             ))}
           </select>
-          {errors.branchId?.message && (
-            <p className="text-xs text-red-400">
-              {errors.branchId.message.toString()}
-            </p>
-          )}
-        </div>
 
-        {/* Semester Dropdown */}
-        <div className="flex flex-col gap-2 w-full md:w-1/4">
-          <label className="text-xs text-gray-500">Semester</label>
           <select
-            className="ring-[1.5px] ring-gray-300 p-2 rounded-md text-sm w-full"
-            {...register("semesterId")}
-            defaultValue={data?.semesterId}
-          >
-            <option value="">Select Semester</option>
-            {semesters.map((semester: { id: number; level: number }) => (
-              <option value={semester.id} key={semester.id}>
-                Semester {semester.level}
-              </option>
-            ))}
-          </select>
-          {errors.semesterId?.message && (
-            <p className="text-xs text-red-400">
-              {errors.semesterId.message.toString()}
-            </p>
-          )}
-        </div>
-
-        {/* subjects Dropdown */}
-        <div className="flex flex-col gap-2 w-full md:w-1/4">
-          <label className="text-xs text-gray-500">subjects</label>
-          <select
-            className="ring-[1.5px] ring-gray-300 p-2 rounded-md text-sm w-full"
-            {...register("subjectId")}
-            defaultValue={data?.subjectsId}
+            name="subjectId"
+            value={form.subjectId || 0}
+            onChange={handleChange}
+            className="p-2 border rounded-md"
+            required
           >
             <option value="">Select Subject</option>
-            {subjects.map((subject: { id: number; name: string }) => (
-              <option value={subject.id} key={subject.id}>
-                {subject.name}
+            {subjects.map((subject) => (
+              <option key={subject.id} value={subject.id}>
+                {subject.name} ({subject.subjectCode})
               </option>
             ))}
           </select>
-          {errors.subjectId?.message && (
-            <p className="text-xs text-red-400">
-              {errors.subjectId.message.toString()}
-            </p>
-          )}
-        </div>
-      </div>
 
-      {state.error && (
-        <span className="text-red-500">Something went wrong!</span>
+          <input
+            type="date"
+            name="examDate"
+            placeholder="Exam Date"
+            value={
+              form.examDate instanceof Date && !isNaN(form.examDate)
+                ? form.examDate.toISOString().split("T")[0]
+                : ""
+            }
+            onChange={handleDateChange}
+            className="p-2 border rounded-md"
+            required
+          />
+
+          <input
+            type="time"
+            name="startTime"
+            placeholder="Start Time"
+            value={
+              form.startTime instanceof Date && !isNaN(form.startTime)
+                ? form.startTime.toTimeString().substring(0, 5)
+                : ""
+            }
+            onChange={handleDateChange}
+            className="p-2 border rounded-md"
+            required
+          />
+
+          <input
+            type="time"
+            name="endTime"
+            placeholder="End Time"
+            value={
+              form.endTime instanceof Date && !isNaN(form.endTime)
+                ? form.endTime.toTimeString().substring(0, 5)
+                : ""
+            }
+            onChange={handleDateChange}
+            className="p-2 border rounded-md"
+            required
+          />
+        </div>
+
+        <button
+          type="submit"
+          className="bg-blue-600 text-white p-2 rounded-md w-full mt-4"
+        >
+          {form.id ? "Update Exam" : "Add Exam"}
+        </button>
+      </form>
       )}
 
-      <button className="bg-blue-400 text-white p-2 rounded-md">
-        {type === "create" ? "Create" : "Update"}
-      </button>
-    </form>
-  );
-};
+      <h1 className="text-2xl font-bold mb-4">Exam Schedule</h1>
+      <div className="flex gap-4 mb-6">
+        <select
+          value={selectedSemester}
+          onChange={(e) => setSelectedSemester(Number(e.target.value) || "")}
+          className="p-2 border rounded-md"
+        >
+          <option value="">Select Semester</option>
+          {semesters.map((sem) => (
+            <option
+              key={sem.id}
+              value={sem.id}
+            >{`Semester ${sem.level}`}</option>
+          ))}
+        </select>
 
-export default ExamForm;
+        <select
+          value={selectedBranch}
+          onChange={(e) => setSelectedBranch(Number(e.target.value) || "")}
+          className="p-2 border rounded-md"
+        >
+          <option value="">Select Branch</option>
+          {branches.map((branch) => (
+            <option key={branch.id} value={branch.id}>
+              {branch.name}
+            </option>
+          ))}
+        </select>
+      </div>
+
+      {selectedSemester && selectedBranch && (
+        <div>
+          <h2 className="text-xl font-semibold mb-2">
+            {branches.find((b) => b.id === selectedBranch)?.name} - Semester{" "}
+            {semesters.find((s) => s.id === selectedSemester)?.level}
+          </h2>
+          <table className="w-full border-collapse border border-gray-300">
+            <thead>
+              <tr className="bg-gray-200">
+                <th className="p-2 border">Subject Code</th>
+                <th className="p-2 border">Subject Name</th>
+                <th className="p-2 border">Exam Date</th>
+                <th className="p-2 border">Start Time</th>
+                <th className="p-2 border">End Time</th>
+                {(role === "registrar" || role === "admin") && (
+                  <th className="p-2 border">Actions</th>
+                )}
+              </tr>
+            </thead>
+            <tbody>
+              {exams
+                .filter(
+                  (exam) =>
+                    exam.branchId === selectedBranch &&
+                    exam.semesterId === selectedSemester
+                )
+                .map((exam) => {
+                  const subject = subjects.find((sub) => sub.id === exam.subjectId);
+                  return (
+                    <tr key={exam.id} className="border">
+                      <td className="p-2 border">{subject?.subjectCode || "N/A"}</td>
+                      <td className="p-2 border">{subject?.name || "N/A"}</td>
+                      <td className="p-2 border">
+                        {new Date(exam.examDate).toISOString().split("T")[0]}
+                      </td>
+                      <td className="p-2 border">
+                        {new Date(exam.startTime).toTimeString().substring(0, 5)}
+                      </td>
+                      <td className="p-2 border">
+                        {new Date(exam.endTime).toTimeString().substring(0, 5)}
+                      </td>
+                      {(role === "registrar") && (
+                        <td className="p-2 border flex gap-2">
+                          <button
+                            onClick={() => handleUpdateExam(exam)}
+                            className="bg-yellow-500 text-white p-1 rounded-md"
+                          >
+                            Update
+                          </button>
+                          <button
+                            onClick={() => handleDeleteExam(exam.id!)}
+                            className="bg-red-500 text-white p-1 rounded-md"
+                          >
+                            Delete
+                          </button>
+                        </td>
+                      )}
+                    </tr>
+                  );
+                })}
+            </tbody>
+          </table>
+        </div>
+      )}
+    </div>
+  );
+}
