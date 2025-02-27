@@ -10,7 +10,8 @@ import {
   getAllBranches,
   fetchSubjects,
 } from "@/lib/actions";
-
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable"; 
 interface Exam {
   id?: number;
   subjectId: number;
@@ -40,7 +41,7 @@ interface Subject {
 }
 
 interface ExamPageProps {
-  role?: string; // Add role as a prop
+  role?: string; 
 }
 
 export default function ExamPage({ role }: ExamPageProps) {
@@ -58,8 +59,6 @@ export default function ExamPage({ role }: ExamPageProps) {
     semesterId: 0,
     branchId: 0,
   });
-
-  // Fetch initial data (exams, semesters, branches)
   useEffect(() => {
     async function fetchData() {
       const examsResponse = await getAllExams();
@@ -73,32 +72,27 @@ export default function ExamPage({ role }: ExamPageProps) {
     }
     fetchData();
   }, []);
-
-  // Fetch subjects when selectedSemester or selectedBranch changes (for Exam Schedule)
   useEffect(() => {
     if (selectedSemester && selectedBranch) {
       fetchSubjects(selectedSemester, selectedBranch).then((response) => {
         if (response?.success) {
           setSubjects(response?.data ?? []);
-          console.log("Fetched Subjects for Exam Schedule:", response.data); // Debugging
+          console.log("Fetched Subjects:", response.data); 
         }
       });
     }
   }, [selectedSemester, selectedBranch]);
 
-  // Fetch subjects when form.semesterId or form.branchId changes (for Create Exam)
   useEffect(() => {
     if (form.semesterId && form.branchId) {
       fetchSubjects(form.semesterId, form.branchId).then((response) => {
         if (response?.success) {
           setSubjects(response?.data ?? []);
-          console.log("Fetched Subjects for Create Exam:", response.data); // Debugging
+          console.log("Fetched Subjects for Create Exam:", response.data); 
         }
       });
     }
   }, [form.semesterId, form.branchId]);
-
-  // Handle form input changes
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
@@ -109,10 +103,8 @@ export default function ExamPage({ role }: ExamPageProps) {
         ? Number(value) || 0
         : value,
     }));
-    console.log("Form Updated:", { [name]: value }); // Debugging
+    console.log("Form Updated:", { [name]: value }); 
   };
-
-  // Handle date and time input changes
   const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, type } = e.target;
     if (!value) return; // Prevent empty values
@@ -141,8 +133,6 @@ export default function ExamPage({ role }: ExamPageProps) {
       return { ...prev, [name]: updatedDate };
     });
   };
-
-  // Handle form submission
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -160,9 +150,31 @@ export default function ExamPage({ role }: ExamPageProps) {
 
     const payload: Exam = {
       subjectId: form.subjectId!,
-      examDate: new Date(form.examDate!),
-      startTime: new Date(form.startTime!),
-      endTime: new Date(form.endTime!),
+      examDate: new Date(
+        Date.UTC(
+          form.examDate.getFullYear(),
+          form.examDate.getMonth(),
+          form.examDate.getDate()
+        )
+      ),
+      startTime: new Date(
+        Date.UTC(
+          form.startTime.getFullYear(),
+          form.startTime.getMonth(),
+          form.startTime.getDate(),
+          form.startTime.getHours(),
+          form.startTime.getMinutes()
+        )
+      ),
+      endTime: new Date(
+        Date.UTC(
+          form.endTime.getFullYear(),
+          form.endTime.getMonth(),
+          form.endTime.getDate(),
+          form.endTime.getHours(),
+          form.endTime.getMinutes()
+        )
+      ),
       semesterId: form.semesterId!,
       branchId: form.branchId!,
     };
@@ -185,8 +197,6 @@ export default function ExamPage({ role }: ExamPageProps) {
       branchId: 0,
     });
   };
-
-  // Handle updating an exam
   const handleUpdateExam = (exam: Exam) => {
     setForm({
       id: exam.id,
@@ -198,7 +208,6 @@ export default function ExamPage({ role }: ExamPageProps) {
       branchId: exam.branchId,
     });
   };
-
   const handleDeleteExam = async (examId: number) => {
     if (window.confirm("Are you sure you want to delete this exam?")) {
       await deleteExam(examId);
@@ -206,16 +215,58 @@ export default function ExamPage({ role }: ExamPageProps) {
       if (response?.success) setExams(response?.data ?? []);
     }
   };
+  const downloadSchedulePDF = async (exams: Exam[], branchName: string, semesterLevel: number) => {
+    const doc = new jsPDF();
+  
+    const headerImage = "/docLogo.png";
+    const img = new Image();
+    img.src = headerImage;
+  
+    await new Promise((resolve) => {
+      img.onload = resolve;
+    });
+  
+    const imgWidth = 800;
+    const imgHeight = 100;
+    const aspectRatio = imgWidth / imgHeight;
+    const pdfImageWidth = 180;
+    const pdfImageHeight = pdfImageWidth / aspectRatio;
+    const x = (doc.internal.pageSize.getWidth() - pdfImageWidth) / 2;
+    const y = 10;
+  
+    doc.addImage(img, "PNG", x, y, pdfImageWidth, pdfImageHeight);
+  
+    doc.setFontSize(18);
+    doc.text(`Exam Datesheet - ${branchName} - Semester ${semesterLevel}`, 50, y + pdfImageHeight + 10);
+  
+    const tableData = exams.map((exam) => {
+      const subject = subjects.find((sub) => sub.id === exam.subjectId);
+      return [
+        subject?.subjectCode || "N/A",
+        subject?.name || "N/A",
+        new Date(exam.examDate).toLocaleDateString(),
+        new Date(exam.startTime).toLocaleTimeString(),
+        new Date(exam.endTime).toLocaleTimeString(),
+      ];
+    });
+  
+    autoTable(doc, {
+      head: [["Subject Code", "Subject Name", "Exam Date", "Start Time", "End Time"]],
+      body: tableData,
+      startY: y + pdfImageHeight + 20,
+    });
+  
+    doc.save(`Exam_Schedule_${branchName}_Semester_${semesterLevel}.pdf`);
+  };
 
   return (
     <div className="w-full mx-auto p-4">
-      <h1 className="text-2xl font-bold mb-4">Manage Exams</h1>
-
       {(role === "registrar") && (
         <form
           onSubmit={handleSubmit}
           className="bg-gray-100 p-4 rounded-md shadow-md mb-6"
         >
+          <h1 className="text-2xl font-bold mb-4">Manage Exams</h1>
           <div className="gap-4">
             <select
               name="semesterId"
@@ -232,7 +283,6 @@ export default function ExamPage({ role }: ExamPageProps) {
                 >{`Semester ${sem.level}`}</option>
               ))}
             </select>
-
             <select
               name="branchId"
               value={form.branchId}
@@ -247,7 +297,6 @@ export default function ExamPage({ role }: ExamPageProps) {
                 </option>
               ))}
             </select>
-
             <select
               name="subjectId"
               value={form.subjectId || 0}
@@ -262,7 +311,6 @@ export default function ExamPage({ role }: ExamPageProps) {
                 </option>
               ))}
             </select>
-
             <input
               type="date"
               name="examDate"
@@ -276,7 +324,6 @@ export default function ExamPage({ role }: ExamPageProps) {
               className="p-2 border rounded-md"
               required
             />
-
             <input
               type="time"
               name="startTime"
@@ -313,8 +360,7 @@ export default function ExamPage({ role }: ExamPageProps) {
           </button>
         </form>
       )}
-
-      <h1 className="text-2xl font-bold mb-4">Exam Schedule</h1>
+      <h1 className="text-2xl font-bold mb-4">Exam Datesheet</h1>
 
       <div className="flex gap-4 mb-6">
         <select
@@ -330,7 +376,6 @@ export default function ExamPage({ role }: ExamPageProps) {
             >{`Semester ${sem.level}`}</option>
           ))}
         </select>
-
         <select
           value={selectedBranch}
           onChange={(e) => setSelectedBranch(Number(e.target.value) || "")}
@@ -372,21 +417,25 @@ export default function ExamPage({ role }: ExamPageProps) {
                     exam.semesterId === selectedSemester
                 )
                 .map((exam) => {
-                  const subject = subjects.find((sub) => sub.id === exam.subjectId);
+                  const subject = subjects.find(
+                    (sub) => sub.id === exam.subjectId
+                  );
                   return (
                     <tr key={exam.id} className="border">
-                      <td className="p-2 border">{subject?.subjectCode || "N/A"}</td>
+                      <td className="p-2 border">
+                        {subject?.subjectCode || "N/A"}
+                      </td>
                       <td className="p-2 border">{subject?.name || "N/A"}</td>
                       <td className="p-2 border">
-                        {new Date(exam.examDate).toISOString().split("T")[0]}
+                      {new Date(exam.examDate).toISOString().split("T")[0]}
                       </td>
                       <td className="p-2 border">
-                        {new Date(exam.startTime).toTimeString().substring(0, 5)}
+                      {new Date(exam.startTime).toISOString().substring(11, 16)}
                       </td>
                       <td className="p-2 border">
-                        {new Date(exam.endTime).toTimeString().substring(0, 5)}
+                      {new Date(exam.endTime).toISOString().substring(11, 16)}
                       </td>
-                      {(role === "registrar") && (
+                      {(role === "registrar" || role === "admin") && (
                         <td className="p-2 border flex gap-2">
                           <button
                             onClick={() => handleUpdateExam(exam)}
@@ -407,6 +456,24 @@ export default function ExamPage({ role }: ExamPageProps) {
                 })}
             </tbody>
           </table>
+          <div className="mt-4">
+            <button
+              onClick={() =>
+                downloadSchedulePDF(
+                  exams.filter(
+                    (exam) =>
+                      exam.branchId === selectedBranch &&
+                      exam.semesterId === selectedSemester
+                  ),
+                  branches.find((b) => b.id === selectedBranch)?.name || "N/A",
+                  semesters.find((s) => s.id === selectedSemester)?.level || 0
+                )
+              }
+              className="bg-green-500 text-white p-2 rounded-md"
+            >
+              Download Schedule as PDF
+            </button>
+          </div>
         </div>
       )}
     </div>
