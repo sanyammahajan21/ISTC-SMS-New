@@ -8,7 +8,7 @@ const EventCalendarContainer = async ({
 }) => {
   const { date } = searchParams;
   return (
-    <div className="bg-white p-4 rounded-md">
+    <div className="bg-blue p-4 rounded-md">
       <EventCalendar />
       
       <div className="flex flex-col gap-4">

@@ -1,4 +1,3 @@
-
 import { currentUser } from "@clerk/nextjs/server";
 import Image from "next/image";
 import Link from "next/link";
@@ -59,7 +58,7 @@ const menuItems = [
         icon: "/exam.png",
         label: "Exams",
         href: "/list/exams",
-        visible: [ "teacher", "registrar"],
+        visible: ["teacher", "registrar"],
       },
       {
         icon: "/result.png",
@@ -71,7 +70,7 @@ const menuItems = [
         icon: "/attendance.png",
         label: "Attendance",
         href: "/list/attendance",
-        visible: [ "teacher"],
+        visible: ["teacher"],
       },
       {
         icon: "/announcement.png",
@@ -116,27 +115,43 @@ const menuItems = [
 const Menu = async () => {
   const user = await currentUser();
   const role = user?.publicMetadata.role as string;
+  
   return (
-    <div className="mt-4 text-sm">
+    <div className="mt-6 text-sm">
       {menuItems.map((i) => (
-        <div className="flex flex-col gap-2" key={i.title}>
-          <span className="hidden lg:block text-gray-400 font-light my-4">
-            {i.title}
-          </span>
-          {i.items.map((item) => {
-            if (item.visible.includes(role)) {
-              return (
-                <Link
-                  href={item.href}
-                  key={item.label}
-                  className="flex items-center justify-center lg:justify-start gap-4 text-gray-500 py-2 md:px-2 rounded-md hover:bg-lamaSkyLight"
-                >
-                  <Image src={item.icon} alt="" width={20} height={20} />
-                  <span className="hidden lg:block">{item.label}</span>
-                </Link>
-              );
-            }
-          })}
+        <div className="flex flex-col mb-8" key={i.title}>
+          {i.title && (
+            <div className="hidden lg:block px-4 mb-3">
+              <span className="text-gray-500 font-semibold text-xs tracking-widest uppercase inline-block after:content-[''] after:block after:w-8 after:h-0.5 after:bg-blue-500 after:mt-1">
+                {i.title}
+              </span>
+            </div>
+          )}
+          <div className="space-y-1">
+            {i.items.map((item) => {
+              if (item.visible.includes(role)) {
+                return (
+                  <Link
+                    href={item.href}
+                    key={item.label}
+                    className="flex items-center justify-center lg:justify-start gap-3 text-gray-600 hover:text-blue-600 py-3 px-4 rounded-lg hover:bg-blue-50 hover:shadow-sm transition-all duration-200 border-l-2 border-transparent hover:border-l-2 hover:border-blue-500"
+                  >
+                    <div className="w-6 h-6 relative flex-shrink-0 p-1 bg-gray-100 rounded-md group-hover:bg-blue-100">
+                      <Image
+                        src={item.icon}
+                        alt=""
+                        fill
+                        className="object-contain opacity-80"
+                      />
+                    </div>
+                    <span className="hidden lg:block font-medium text-sm relative after:absolute after:content-[''] after:bg-blue-500 after:h-0.5 after:w-0 after:left-0 after:-bottom-0.5 after:transition-all hover:after:w-full">
+                      {item.label}
+                    </span>
+                  </Link>
+                );
+              }
+            })}
+          </div>
         </div>
       ))}
     </div>
