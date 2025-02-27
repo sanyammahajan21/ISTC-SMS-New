@@ -5,17 +5,33 @@ import { auth } from "@clerk/nextjs/server";
 const TeacherPage = () => {
   const { userId } = auth();
   return (
-    <div className="flex-1 p-4 flex gap-4 flex-col xl:flex-row">
-      {/* LEFT */}
-      <div className="w-full xl:w-2/3">
-        <div className="h-full bg-white p-4 rounded-md">
-          <h1 className="text-xl font-semibold">Schedule</h1>
-          <BigCalendarContainer type="teacherId" id={userId!} />
-        </div>
+    <div className="p-6 bg-blue-80">
+      {/* Header Section */}
+      <div className="mb-8">
+        <h1 className="text-3xl font-bold text-gray-800 mb-2 font-mono">TEACHER DASHBOARD</h1>
+        <div className="h-1 w-24 bg-blue-700"></div>
       </div>
-      {/* RIGHT */}
-      <div className="w-full xl:w-1/3 flex flex-col gap-8">
-        <Announcements />
+      
+      <div className="flex flex-col lg:flex-row gap-6">
+        {/* Main Content - Left Column */}
+        <div className="w-full lg:w-8/12 flex flex-col gap-6">
+          {/* Schedule Section */}
+          <div className="bg-white p-4 rounded-lg shadow-md">
+            <h2 className="text-lg font-semibold mb-6 text-white text-center bg-blue-500 p-2 rounded-md">Schedule</h2>
+            <div className="h-[450px]">
+              <BigCalendarContainer type="teacherId" id={userId!} />
+            </div>
+          </div>
+        </div>
+        
+        {/* Sidebar - Right Column */}
+        <div className="w-full lg:w-4/12 flex flex-col gap-6">
+          {/* Announcements Section */}
+          <div className="bg-white p-4 rounded-lg shadow-md">
+            <h2 className="text-lg font-semibold mb-2 text-white text-center bg-blue-500 p-2 rounded-md">Announcements</h2>
+            <Announcements />
+          </div>
+        </div>
       </div>
     </div>
   );
