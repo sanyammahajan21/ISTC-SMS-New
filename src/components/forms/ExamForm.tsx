@@ -245,8 +245,8 @@ export default function ExamPage({ role }: ExamPageProps) {
         subject?.subjectCode || "N/A",
         subject?.name || "N/A",
         new Date(exam.examDate).toLocaleDateString(),
-        new Date(exam.startTime).toLocaleTimeString(),
-        new Date(exam.endTime).toLocaleTimeString(),
+        new Date(exam.startTime).toISOString().substring(11, 16),
+        new Date(exam.endTime).toISOString().substring(11, 16),
       ];
     });
   

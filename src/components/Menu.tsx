@@ -52,7 +52,7 @@ const menuItems = [
         icon: "/lesson.png",
         label: "Lectures",
         href: "/list/lectures",
-        visible: ["teacher"],
+        visible: ["teacher", "registrar"],
       },
       {
         icon: "/exam.png",
@@ -64,7 +64,7 @@ const menuItems = [
         icon: "/result.png",
         label: "Results",
         href: "/list/results",
-        visible: ["teacher"],
+        visible: ["teacher", "registrar"],
       },
       {
         icon: "/attendance.png",
@@ -86,30 +86,30 @@ const menuItems = [
       },
     ],
   },
-  {
-    title: "OTHER",
-    visible: ["teacher", "student", "registrar"],
-    items: [
-      {
-        icon: "/profile.png",
-        label: "Profile",
-        href: "/profile",
-        visible: ["teacher", "student", "registrar"],
-      },
-      // {
-      //   icon: "/setting.png",
-      //   label: "Settings",
-      //   href: "/settings",
-      //   visible: ["admin", "teacher", "student", "registrar"],
-      // },
-      {
-        icon: "/logout.png",
-        label: "Logout",
-        href: "/logout",
-        visible: ["admin", "teacher", "student", "registrar"],
-      },
-    ],
-  },
+  // {
+  //   title: "OTHER",
+  //   visible: ["teacher", "student", "registrar"],
+  //   items: [
+  //     {
+  //       icon: "/profile.png",
+  //       label: "Profile",
+  //       href: "/profile",
+  //       visible: ["teacher", "student", "registrar"],
+  //     },
+  //     // {
+  //     //   icon: "/setting.png",
+  //     //   label: "Settings",
+  //     //   href: "/settings",
+  //     //   visible: ["admin", "teacher", "student", "registrar"],
+  //     // },
+  //     {
+  //       icon: "/logout.png",
+  //       label: "Logout",
+  //       href: "/logout",
+  //       visible: ["admin", "teacher", "student", "registrar"],
+  //     },
+  //   ],
+  // },
 ];
 
 const Menu = async () => {
