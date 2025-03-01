@@ -82,7 +82,7 @@ export const studentSchema = z.object({
     .min(8, { message: "Password must be at least 8 characters long!" })
     .optional()
     .or(z.literal("")),
-  name: z.string().min(1, { message: "First name is required!" }),
+  name: z.string().min(1, { message: "Name is required!" }),
   fatherName: z.string().min(1, { message: "Father Name is required!" }),
   address: z.string(),
   motherName: z.string().min(1, { message: "Mother Name is required!" }),
@@ -97,7 +97,7 @@ export const studentSchema = z.object({
   img: z.string().optional(),
   sex: z.enum(["MALE", "FEMALE"], { message: "Sex is required!" }),
   semesterId: z.coerce.number().min(1, { message: "Semester is required!" }),
-  branchId: z.coerce.number().min(1, { message: "branch name is required!" }),
+  branchId: z.coerce.number().min(1, { message: "Branch Name is required!" }),
 });
 
 export type StudentSchema = z.infer<typeof studentSchema>;
@@ -123,3 +123,15 @@ export const announcementSchema = z.object({
 });
 
 export type AnnouncementSchema = z.infer<typeof announcementSchema>;
+
+export const resultSchema = z.object({
+  id: z.coerce.number().optional(),
+  sessionalExam: z.string().optional(),
+  endTerm: z.string().optional(),
+  overallMark: z.string().optional(),
+  grade: z.string().optional(),
+  studentId: z.string().min(1, { message: "Student is required!" }),
+  examId: z.coerce.number().min(1, { message: "Exam is required!" }),
+});
+
+export type ResultSchema = z.infer<typeof resultSchema>;

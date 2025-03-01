@@ -9,6 +9,7 @@ import {
   SubjectSchema,
   TeacherSchema,
   AnnouncementSchema,
+  ResultSchema,
 } from "./formValidationSchemas";
 import prisma from "./prisma";
 import { clerkClient } from "@clerk/nextjs/server";

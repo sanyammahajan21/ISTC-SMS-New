@@ -21,7 +21,7 @@ const AdminPage = ({
         <div className="w-full lg:w-8/12 flex flex-col gap-6">
           {/* User Cards Section */}
           <div className="bg-white p-4 rounded-lg shadow-md">
-          <h2 className="text-lg font-semibold mb-6 text-white text-center bg-blue-500 p-2 rounded-md">System Users</h2>
+          <h2 className="text-lg font-semibold mb-6 text-white text-center bg-green-500 p-2 rounded-md">System Users</h2>
             
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
               <UserCard type="admin" />
