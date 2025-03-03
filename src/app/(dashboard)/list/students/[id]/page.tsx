@@ -2,9 +2,10 @@ import Announcements from "@/components/Announcements";
 import BigCalendarContainer from "@/components/BigCalendarContainer";
 import FormContainer from "@/components/FormContainer";
 import StudentAttendanceCard from "@/components/StudentAttendanceCard";
+import StudentResultCard from "@/components/StudentResultCard";
 import prisma from "@/lib/prisma";
 import { auth } from "@clerk/nextjs/server";
-import {  Branch, Student } from "@prisma/client";
+import {  Branch, Student, Result } from "@prisma/client";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -21,11 +22,13 @@ const SingleStudentPage = async ({
   const student:
     | (Student & {
         branch: Branch & { _count: { lectures: number } };
+        results: Result[];
       })
     | null = await prisma.student.findUnique({
     where: { id },
     include: {
       branch: { include: { _count: { select: { lectures: true } } } },
+      results: true,
     },
   });
 
@@ -142,8 +145,9 @@ const SingleStudentPage = async ({
         </div>
         {/* BOTTOM */}
         <div className="mt-4 bg-white rounded-md p-4 h-[800px]">
-          <h1>Student&apos;s Schedule</h1>
-          <BigCalendarContainer type="branchId" id={student.branch.id} />
+          <h1>Student&apos;s Results</h1>
+          {/* <BigCalendarContainer type="branchId" id={student.branch.id} /> */}
+          <StudentResultCard student={student} results={student.results} />
         </div>
       </div>
       {/* RIGHT */}

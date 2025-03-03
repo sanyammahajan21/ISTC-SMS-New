@@ -162,7 +162,8 @@ model Result {
   exam          Exam?   @relation(fields: [examId], references: [id])
   studentId     String
   student       Student @relation(fields: [studentId], references: [id])
-  subjects      Subject[]
+  subjectId   Int?
+  subject     Subject?      @relation(fields: [subjectId], references: [id])
 }
 
 model Attendance {

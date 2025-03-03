@@ -4,12 +4,12 @@ import Table from "@/components/Table";
 import TableSearch from "@/components/TableSearch";
 import prisma from "@/lib/prisma";
 import { ITEM_PER_PAGE } from "@/lib/settings";
-import { Result, Exam, Student, Prisma,  } from "@prisma/client";
+import { Result, Exam, Student, Prisma, Subject } from "@prisma/client";
 import Image from "next/image";
 
 import { auth } from "@clerk/nextjs/server";
 
-type ResultList = Result & { student: Student; exam: Exam };
+type ResultList = Result & { student: Student; exam: Exam, subject: Subject };
 
 const ResultListPage = async ({
   searchParams,
@@ -35,6 +35,11 @@ const ResultListPage = async ({
       accessor: "overallMark",
       className: "hidden md:table-cell",
     },
+    {
+      header: "Subject",
+      accessor: "subject",
+      className: "hidden md:table-cell",
+    },
     ...(role === "registrar" || role === "teacher"
       ? [
           {
@@ -54,6 +59,7 @@ const ResultListPage = async ({
       <td className="hidden md:table-cell">{item.student.name}</td>
       <td className="hidden md:table-cell">{item.examId}</td>
       <td className="hidden md:table-cell">{item.overallMark}</td>
+      <td className="hidden md:table-cell">{item.subject}</td>
       <td>
         <div className="flex items-center gap-2">
           {(role === "registrar" || role === "teacher") && (
@@ -116,6 +122,7 @@ const ResultListPage = async ({
       include: {
         student: { select: { name: true } },
         exam: { select: { id: true } },
+        subject: { select: { name: true } },
       },
       take: ITEM_PER_PAGE,
       skip: ITEM_PER_PAGE * (p - 1),
@@ -127,6 +134,7 @@ const ResultListPage = async ({
     ...item,
     student: item.student,
     exam: item.exam,
+    subject: item.subject,
   }));
 
   return (

@@ -92,7 +92,10 @@ const FormContainer = async ({ table, type, data, id }: FormContainerProps) => {
         const resultExams = await prisma.exam.findMany({
           select: { id: true,  },
         });
-          relatedData = { students: resultStudents, exams: resultExams};
+        const resultSubjects = await prisma.subject.findMany({
+          select: { id: true, name: true },
+        });
+          relatedData = { students: resultStudents, exams: resultExams, subjects: resultSubjects };
         break;
 
       default:

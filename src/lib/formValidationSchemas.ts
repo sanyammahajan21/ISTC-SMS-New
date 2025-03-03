@@ -132,7 +132,7 @@ export const resultSchema = z.object({
   grade: z.string().optional(),
   studentId: z.string().min(1, { message: "Student is required!" }),
   examId: z.coerce.number().min(1, { message: "Exam is required!" }),
-  
+  subjectId: z.coerce.number().min(1, { message: "Subject is required!" }),
 });
 
 export type ResultSchema = z.infer<typeof resultSchema>;
