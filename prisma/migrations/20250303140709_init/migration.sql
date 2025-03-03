@@ -152,8 +152,8 @@ CREATE TABLE `ExamSchedule` (
 CREATE TABLE `Result` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
     `sessionalExam` VARCHAR(191) NULL,
-    `endTerm` VARCHAR(191) NULL,
-    `overallMark` VARCHAR(191) NOT NULL,
+    `endTerm` INTEGER NULL,
+    `overallMark` INTEGER NOT NULL,
     `grade` VARCHAR(191) NOT NULL,
     `examId` INTEGER NULL,
     `studentId` VARCHAR(191) NOT NULL,
