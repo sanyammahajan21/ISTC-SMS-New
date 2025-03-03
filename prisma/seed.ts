@@ -20,11 +20,11 @@ async function main() {
   }
 
   // Create 4 Branches
-  const branches = ["A", "B", "C", "D"];
+  const branches = ["ECE", "MECH", "DIY", "ELECTRICAL"];
   for (let i = 0; i < branches.length; i++) {
     await prisma.branch.create({
       data: {
-        name: `Branch ${branches[i]}`,
+        name: `${branches[i]}`,
         capacity: Math.floor(Math.random() * (30 - 20 + 1)) + 20,
         semesterId: (i % 4) + 1, // Assign branches to semesters
       },
@@ -47,8 +47,8 @@ async function main() {
     await prisma.subject.create({
       data: {
         ...subject,
-        branchId: Math.floor(Math.random() * 4) + 1, // Assign subjects to random branches
-        semesterId: Math.floor(Math.random() * 8) + 1, // Assign subjects to random semesters
+        branchId: 1, // Assign subjects to random branches
+        semesterId: 1, // Assign subjects to random semesters
       },
     });
   }
@@ -74,40 +74,6 @@ async function main() {
     });
   }
 
-  // Create 100 Students
-  for (let i = 1; i <= 100; i++) {
-    await prisma.student.create({
-      data: {
-        id: `student${i}`,
-        username: `student${i}`,
-        password: `password${i}`,
-        name: `Student Name ${i}`,
-        fatherName: `Father Name ${i}`,
-        motherName: `Mother Name ${i}`,
-        birthday: new Date(new Date().setFullYear(new Date().getFullYear() - 18)),
-        phone: `123-456-789${i}`,
-        email: `student${i}@example.com`,
-        sex: i % 2 === 0 ? UserSex.MALE : UserSex.FEMALE,
-        bloodType: i % 4 === 0 ? "A+" : "B+",
-        branchId: Math.floor(Math.random() * 4) + 1, // Assign random branches
-        semesterId: Math.floor(Math.random() * 8) + 1, // Assign random semesters
-      },
-    });
-  }
-
-  // Create Exams
-  for (let i = 1; i <= 20; i++) {
-    await prisma.exam.create({
-      data: {
-        subjectId: Math.floor(Math.random() * subjects.length) + 1, // Assign random subjects
-        examDate: new Date(new Date().setDate(new Date().getDate() + i)),
-        startTime: new Date(new Date().setHours(9, 0, 0)),
-        endTime: new Date(new Date().setHours(12, 0, 0)),
-        semesterId: Math.floor(Math.random() * 8) + 1, // Assign random semesters
-        branchId: Math.floor(Math.random() * 4) + 1, // Assign random branches
-      },
-    });
-  }
 
   console.log("Seeding completed successfully.");
 }
