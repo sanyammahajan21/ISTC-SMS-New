@@ -147,7 +147,7 @@ const SingleStudentPage = async ({
         </div>
         {/* BOTTOM */}
         <div className="mt-4 bg-white rounded-md p-4 h-[800px]">
-          <h1>Student&apos;s Results</h1>
+          <h1 className="text-xl center">Student&apos;s Results</h1>
           {/* <BigCalendarContainer type="branchId" id={student.branch.id} /> */}
           <StudentResultCard student={student} results={student.results} />
         </div>
