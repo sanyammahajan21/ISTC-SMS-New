@@ -665,6 +665,7 @@ export const createResult = async (
         grade: data.grade??"",
         studentId: data.studentId,
         examId: data.examId,
+        subjectId: data.subjectId,
       },
     });
 
@@ -694,6 +695,7 @@ export const updateResult = async (
         grade: data.grade,
         studentId: data.studentId,
         examId: data.examId,
+        subjectId: data.subjectId,
       },
     });
 

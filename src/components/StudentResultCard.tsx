@@ -1,5 +1,4 @@
 import React from "react";
-import prisma from "@/lib/prisma";
 
 interface Student {
   id: string;
@@ -7,7 +6,8 @@ interface Student {
 }
 
 interface Result {
-  subject: string;
+  subjectId: number; // Subject ID
+  subject: { name: string }; // Directly fetch subject name from Prisma
   sessionalExam: string;
   endTerm: string;
   overallMark: string;
@@ -41,7 +41,9 @@ const StudentResultCard: React.FC<StudentResultCardProps> = ({ student, results 
           <tbody>
             {results.map((result, index) => (
               <tr key={index} className="text-sm text-gray-800 border-t">
-                <td className="p-2 border">{result.subject}</td>
+                {/* Directly show subject name */}
+                <td className="p-2 border">{result.subject?.name || "Unknown Subject"}</td>
+
                 <td className={`p-2 border ${result.sessionalExam === "-" ? "text-gray-400" : "text-gray-800"}`}>
                   {result.sessionalExam}
                 </td>

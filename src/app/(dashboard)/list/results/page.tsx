@@ -37,7 +37,7 @@ const ResultListPage = async ({
     },
     {
       header: "Subject",
-      accessor: "subject",
+      accessor: "subject.name",
       className: "hidden md:table-cell",
     },
     ...(role === "registrar" || role === "teacher"
@@ -59,7 +59,7 @@ const ResultListPage = async ({
       <td className="hidden md:table-cell">{item.student.name}</td>
       <td className="hidden md:table-cell">{item.examId}</td>
       <td className="hidden md:table-cell">{item.overallMark}</td>
-      <td className="hidden md:table-cell">{item.subject}</td>
+      <td className="hidden md:table-cell">{item.subject.name}</td>
       <td>
         <div className="flex items-center gap-2">
           {(role === "registrar" || role === "teacher") && (

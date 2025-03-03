@@ -5,7 +5,7 @@ import StudentAttendanceCard from "@/components/StudentAttendanceCard";
 import StudentResultCard from "@/components/StudentResultCard";
 import prisma from "@/lib/prisma";
 import { auth } from "@clerk/nextjs/server";
-import {  Branch, Student, Result } from "@prisma/client";
+import {  Branch, Student, Result, Subject } from "@prisma/client";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -22,13 +22,15 @@ const SingleStudentPage = async ({
   const student:
     | (Student & {
         branch: Branch & { _count: { lectures: number } };
-        results: Result[];
+        results: (Result & { subject: Subject })[];
       })
     | null = await prisma.student.findUnique({
     where: { id },
     include: {
       branch: { include: { _count: { select: { lectures: true } } } },
-      results: true,
+      results: {
+        include: { subject: true },
+      }
     },
   });
 
@@ -59,7 +61,7 @@ const SingleStudentPage = async ({
                   {student.name}
                 </h1>
                 
-                {role === "admin" && (
+                {role === "admin" || role === "registrar" && (
                   <FormContainer table="student" type="update" data={student} />
                 )}
               </div>
