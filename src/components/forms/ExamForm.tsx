@@ -11,13 +11,14 @@ import {
   fetchSubjects,
 } from "@/lib/actions";
 import jsPDF from "jspdf";
-import autoTable from "jspdf-autotable"; 
+import autoTable from "jspdf-autotable";
+
 interface Exam {
   id?: number;
   subjectId: number;
   examDate: Date;
   startTime: Date;
-  endTime: Date;
+  endTime: Date; // Stored in the database
   semesterId: number;
   branchId: number;
 }
@@ -41,7 +42,7 @@ interface Subject {
 }
 
 interface ExamPageProps {
-  role?: string; 
+  role?: string;
 }
 
 export default function ExamPage({ role }: ExamPageProps) {
@@ -55,10 +56,11 @@ export default function ExamPage({ role }: ExamPageProps) {
     subjectId: 0,
     examDate: new Date(),
     startTime: new Date(),
-    endTime: new Date(),
+    endTime: new Date(), 
     semesterId: 0,
     branchId: 0,
   });
+  const [duration, setDuration] = useState<string>("50"); 
   useEffect(() => {
     async function fetchData() {
       const examsResponse = await getAllExams();
@@ -72,23 +74,27 @@ export default function ExamPage({ role }: ExamPageProps) {
     }
     fetchData();
   }, []);
+
   useEffect(() => {
     if (selectedSemester && selectedBranch) {
       fetchSubjects(selectedSemester, selectedBranch).then((response) => {
         if (response?.success) {
           setSubjects(response?.data ?? []);
-          console.log("Fetched Subjects:", response.data); 
+        } else {
+          console.error("Failed to fetch subjects:", response?.error);
         }
       });
+    } else {
+      setSubjects([]); 
     }
   }, [selectedSemester, selectedBranch]);
-
   useEffect(() => {
     if (form.semesterId && form.branchId) {
       fetchSubjects(form.semesterId, form.branchId).then((response) => {
         if (response?.success) {
           setSubjects(response?.data ?? []);
-          console.log("Fetched Subjects for Create Exam:", response.data); 
+        } else {
+          console.error("Failed to fetch subjects:", response?.error);
         }
       });
     }
@@ -103,24 +109,21 @@ export default function ExamPage({ role }: ExamPageProps) {
         ? Number(value) || 0
         : value,
     }));
-    console.log("Form Updated:", { [name]: value }); 
   };
   const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, type } = e.target;
-    if (!value) return; // Prevent empty values
+    if (!value) return;
 
     setForm((prev) => {
       let updatedDate;
 
       if (type === "date") {
-        // Update only the date part
         const existingTime =
           prev[name] instanceof Date
             ? prev[name].toTimeString().split(" ")[0]
             : "00:00:00";
         updatedDate = new Date(`${value}T${existingTime}`);
       } else if (type === "time") {
-        // Update only the time part
         const existingDate =
           prev[name] instanceof Date
             ? prev[name].toISOString().split("T")[0]
@@ -128,11 +131,21 @@ export default function ExamPage({ role }: ExamPageProps) {
         updatedDate = new Date(`${existingDate}T${value}`);
       }
 
-      if (isNaN(updatedDate.getTime())) return prev; // Prevent invalid dates
+      if (isNaN(updatedDate.getTime())) return prev;
 
       return { ...prev, [name]: updatedDate };
     });
   };
+  const calculateEndTime = (startTime: Date, duration: string): Date => {
+    const endTime = new Date(startTime);
+    if (duration === "50") {
+      endTime.setMinutes(endTime.getMinutes() + 50);
+    } else if (duration === "90") {
+      endTime.setMinutes(endTime.getMinutes() + 90);
+    }
+    return endTime;
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -140,13 +153,13 @@ export default function ExamPage({ role }: ExamPageProps) {
       !form.subjectId ||
       !form.examDate ||
       !form.startTime ||
-      !form.endTime ||
       !form.semesterId ||
       !form.branchId
     ) {
       alert("Please fill in all fields.");
       return;
     }
+    const endTime = calculateEndTime(form.startTime, duration);
 
     const payload: Exam = {
       subjectId: form.subjectId!,
@@ -168,11 +181,11 @@ export default function ExamPage({ role }: ExamPageProps) {
       ),
       endTime: new Date(
         Date.UTC(
-          form.endTime.getFullYear(),
-          form.endTime.getMonth(),
-          form.endTime.getDate(),
-          form.endTime.getHours(),
-          form.endTime.getMinutes()
+          endTime.getFullYear(),
+          endTime.getMonth(),
+          endTime.getDate(),
+          endTime.getHours(),
+          endTime.getMinutes()
         )
       ),
       semesterId: form.semesterId!,
@@ -187,15 +200,14 @@ export default function ExamPage({ role }: ExamPageProps) {
 
     const response = await getAllExams();
     if (response?.success) setExams(response?.data ?? []);
-
-    setForm({
+    setForm((prev) => ({
       subjectId: 0,
       examDate: new Date(),
       startTime: new Date(),
       endTime: new Date(),
-      semesterId: 0,
-      branchId: 0,
-    });
+      semesterId: prev.semesterId, 
+      branchId: prev.branchId, 
+    }));
   };
   const handleUpdateExam = (exam: Exam) => {
     setForm({
@@ -215,17 +227,21 @@ export default function ExamPage({ role }: ExamPageProps) {
       if (response?.success) setExams(response?.data ?? []);
     }
   };
-  const downloadSchedulePDF = async (exams: Exam[], branchName: string, semesterLevel: number) => {
+  const availableSubjects = subjects.filter(
+    (subject) => !exams.some((exam) => exam.subjectId === subject.id)
+  );
+
+  const downloadCompleteDatesheet = async () => {
     const doc = new jsPDF();
-  
+
     const headerImage = "/docLogo.png";
     const img = new Image();
     img.src = headerImage;
-  
+
     await new Promise((resolve) => {
       img.onload = resolve;
     });
-  
+
     const imgWidth = 800;
     const imgHeight = 100;
     const aspectRatio = imgWidth / imgHeight;
@@ -233,12 +249,82 @@ export default function ExamPage({ role }: ExamPageProps) {
     const pdfImageHeight = pdfImageWidth / aspectRatio;
     const x = (doc.internal.pageSize.getWidth() - pdfImageWidth) / 2;
     const y = 10;
-  
+
     doc.addImage(img, "PNG", x, y, pdfImageWidth, pdfImageHeight);
-  
+
+    let startY = y + pdfImageHeight + 20;
+
+    branches.forEach((branch) => {
+      semesters.forEach((semester) => {
+        const filteredExams = exams.filter(
+          (exam) =>
+            exam.branchId === branch.id && exam.semesterId === semester.id
+        );
+
+        if (filteredExams.length > 0) {
+          doc.setFontSize(18);
+          doc.text(
+            `Exam Datesheet - ${branch.name} - Semester ${semester.level}`,
+            10,
+            startY
+          );
+
+          const tableData = filteredExams.map((exam) => {
+            const subject = subjects.find((sub) => sub.id === exam.subjectId);
+            return [
+              subject?.subjectCode || "N/A",
+              subject?.name || "N/A",
+              new Date(exam.examDate).toLocaleDateString(),
+              new Date(exam.startTime).toISOString().substring(11, 16),
+              new Date(exam.endTime).toISOString().substring(11, 16),
+            ];
+          });
+
+          autoTable(doc, {
+            head: [["Subject Code", "Subject Name", "Exam Date", "Start Time", "End Time"]],
+            body: tableData,
+            startY: startY + 10,
+          });
+
+          startY = doc.previousAutoTable.finalY + 20;
+        }
+      });
+    });
+
+    doc.save("Complete_Datesheet.pdf");
+  };
+  const downloadSchedulePDF = async (
+    exams: Exam[],
+    branchName: string,
+    semesterLevel: number
+  ) => {
+    const doc = new jsPDF();
+
+    const headerImage = "/docLogo.png";
+    const img = new Image();
+    img.src = headerImage;
+
+    await new Promise((resolve) => {
+      img.onload = resolve;
+    });
+
+    const imgWidth = 800;
+    const imgHeight = 100;
+    const aspectRatio = imgWidth / imgHeight;
+    const pdfImageWidth = 180;
+    const pdfImageHeight = pdfImageWidth / aspectRatio;
+    const x = (doc.internal.pageSize.getWidth() - pdfImageWidth) / 2;
+    const y = 10;
+
+    doc.addImage(img, "PNG", x, y, pdfImageWidth, pdfImageHeight);
+
     doc.setFontSize(18);
-    doc.text(`Exam Datesheet - ${branchName} - Semester ${semesterLevel}`, 50, y + pdfImageHeight + 10);
-  
+    doc.text(
+      `Exam Datesheet - ${branchName} - Semester ${semesterLevel}`,
+      50,
+      y + pdfImageHeight + 10
+    );
+
     const tableData = exams.map((exam) => {
       const subject = subjects.find((sub) => sub.id === exam.subjectId);
       return [
@@ -249,19 +335,20 @@ export default function ExamPage({ role }: ExamPageProps) {
         new Date(exam.endTime).toISOString().substring(11, 16),
       ];
     });
-  
+
     autoTable(doc, {
       head: [["Subject Code", "Subject Name", "Exam Date", "Start Time", "End Time"]],
       body: tableData,
       startY: y + pdfImageHeight + 20,
     });
-  
+
     doc.save(`Exam_Schedule_${branchName}_Semester_${semesterLevel}.pdf`);
   };
 
+
   return (
     <div className="w-full mx-auto p-4">
-      {(role === "registrar") && (
+      {role === "registrar" && (
         <form
           onSubmit={handleSubmit}
           className="bg-gray-100 p-4 rounded-md shadow-md mb-6"
@@ -305,7 +392,7 @@ export default function ExamPage({ role }: ExamPageProps) {
               required
             >
               <option value="">Select Subject</option>
-              {subjects.map((subject) => (
+              {availableSubjects.map((subject) => (
                 <option key={subject.id} value={subject.id}>
                   {subject.name} ({subject.subjectCode})
                 </option>
@@ -337,19 +424,16 @@ export default function ExamPage({ role }: ExamPageProps) {
               className="p-2 border rounded-md"
               required
             />
-            <input
-              type="time"
-              name="endTime"
-              placeholder="End Time"
-              value={
-                form.endTime instanceof Date && !isNaN(form.endTime)
-                  ? form.endTime.toTimeString().substring(0, 5)
-                  : ""
-              }
-              onChange={handleDateChange}
+            <select
+              name="duration"
+              value={duration}
+              onChange={(e) => setDuration(e.target.value)}
               className="p-2 border rounded-md"
               required
-            />
+            >
+              <option value="50">50 Minutes</option>
+              <option value="90">1 Hour 30 Minutes</option>
+            </select>
           </div>
 
           <button
@@ -388,6 +472,12 @@ export default function ExamPage({ role }: ExamPageProps) {
             </option>
           ))}
         </select>
+        <button
+          onClick={downloadCompleteDatesheet}
+          className="bg-green-500 text-white p-2 rounded-md ml-auto"
+        >
+          Download Complete Datesheet
+        </button>
       </div>
 
       {selectedSemester && selectedBranch && (
@@ -427,13 +517,15 @@ export default function ExamPage({ role }: ExamPageProps) {
                       </td>
                       <td className="p-2 border">{subject?.name || "N/A"}</td>
                       <td className="p-2 border">
-                      {new Date(exam.examDate).toISOString().split("T")[0]}
+                        {new Date(exam.examDate).toISOString().split("T")[0]}
                       </td>
                       <td className="p-2 border">
-                      {new Date(exam.startTime).toISOString().substring(11, 16)}
+                        {new Date(exam.startTime)
+                          .toISOString()
+                          .substring(11, 16)}
                       </td>
                       <td className="p-2 border">
-                      {new Date(exam.endTime).toISOString().substring(11, 16)}
+                        {new Date(exam.endTime).toISOString().substring(11, 16)}
                       </td>
                       {(role === "registrar" || role === "admin") && (
                         <td className="p-2 border flex gap-2">
