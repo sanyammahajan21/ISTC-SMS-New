@@ -86,10 +86,11 @@ const StudentListPage = async ({
                         </button>
           </Link>
           {(role === "admin" || role === "registrar") && (
-            // <button className="w-7 h-7 flex items-center justify-center rounded-full bg-lamaPurple">
-            //   <Image src="/delete.png" alt="" width={16} height={16} />
-            // </button>
-            <FormContainer table="student" type="delete" id={item.id} />
+            <button className="w-7 h-7 flex items-center justify-center rounded-full bg-lamaPurple">
+              {/* <Image src="/delete.png" alt="" width={16} height={16} /> */}
+              <FormContainer table="student" type="delete" id={item.id} />
+            </button>
+           
           )}
         </div>
       </td>
@@ -162,7 +163,7 @@ const StudentListPage = async ({
           </div>
           
           <div className="flex items-center gap-3 self-end">
-            {/* <button className="flex items-center justify-center p-2 rounded-md bg-blue-50 hover:bg-blue-100 transition-colors">
+            <button className="flex items-center justify-center p-2 rounded-md bg-blue-50 hover:bg-blue-100 transition-colors">
               <Image src="/filter.png" alt="Filter" width={16} height={16} />
               <span className="ml-2 text-sm font-medium text-blue-700 hidden md:inline">Filter</span>
             </button>
@@ -170,7 +171,7 @@ const StudentListPage = async ({
             <button className="flex items-center justify-center p-2 rounded-md bg-blue-50 hover:bg-blue-100 transition-colors">
               <Image src="/sort.png" alt="Sort" width={16} height={16} />
               <span className="ml-2 text-sm font-medium text-blue-700 hidden md:inline">Sort</span>
-            </button> */}
+            </button>
             
             {(role === "admin" || role === "registrar") && (
               <FormContainer table="student" type="create" />
