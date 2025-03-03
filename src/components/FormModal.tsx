@@ -8,6 +8,7 @@ import {
   deleteTeacher,
   deleteRegistrar,
   deleteAnnouncement,
+  deleteResult,
 } from "@/lib/actions";
 import dynamic from "next/dynamic";
 import { PlusCircle, Edit, Trash2, X } from "lucide-react"; // Import Lucide icons
@@ -25,8 +26,7 @@ const deleteActionMap = {
   exam: deleteExam,
 // TODO: OTHER DELETE ACTIONS
   registrar: deleteRegistrar,
-  assignment: deleteSubject,
-  result: deleteSubject,
+  result: deleteResult,
   attendance: deleteSubject,
   announcement: deleteAnnouncement,
 };

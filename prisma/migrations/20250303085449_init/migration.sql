@@ -193,6 +193,15 @@ CREATE TABLE `_SubjectToTeacher` (
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
+CREATE TABLE `_ResultToSubject` (
+    `A` INTEGER NOT NULL,
+    `B` INTEGER NOT NULL,
+
+    UNIQUE INDEX `_ResultToSubject_AB_unique`(`A`, `B`),
+    INDEX `_ResultToSubject_B_index`(`B`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
 CREATE TABLE `_AnnouncementToBranch` (
     `A` INTEGER NOT NULL,
     `B` INTEGER NOT NULL,
@@ -266,6 +275,12 @@ ALTER TABLE `_SubjectToTeacher` ADD CONSTRAINT `_SubjectToTeacher_A_fkey` FOREIG
 
 -- AddForeignKey
 ALTER TABLE `_SubjectToTeacher` ADD CONSTRAINT `_SubjectToTeacher_B_fkey` FOREIGN KEY (`B`) REFERENCES `Teacher`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `_ResultToSubject` ADD CONSTRAINT `_ResultToSubject_A_fkey` FOREIGN KEY (`A`) REFERENCES `Result`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `_ResultToSubject` ADD CONSTRAINT `_ResultToSubject_B_fkey` FOREIGN KEY (`B`) REFERENCES `Subject`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `_AnnouncementToBranch` ADD CONSTRAINT `_AnnouncementToBranch_A_fkey` FOREIGN KEY (`A`) REFERENCES `Announcement`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;

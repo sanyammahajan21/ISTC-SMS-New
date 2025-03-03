@@ -104,6 +104,7 @@ model Subject {
   semester    Semester?   @relation(fields: [semesterId], references: [id])
   teachers    Teacher[]
   lectures    Lectures[]
+  results     Result[]
   exams       Exam[]
 }
 
@@ -161,6 +162,7 @@ model Result {
   exam          Exam?   @relation(fields: [examId], references: [id])
   studentId     String
   student       Student @relation(fields: [studentId], references: [id])
+  subjects      Subject[]
 }
 
 model Attendance {
