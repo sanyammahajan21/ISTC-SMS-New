@@ -92,6 +92,13 @@ const StudentListPage = async ({
             </button>
            
           )}
+          {(role === "teacher" || role === "registrar") && (
+            <button className="w-7 h-7 flex items-center justify-center rounded-full bg-lamaPurple">
+              {/* <Image src="/delete.png" alt="" width={16} height={16} /> */}
+              <FormContainer table="result" type="create" id={item.id} />
+            </button>
+           
+          )}
         </div>
       </td>
     </tr>

@@ -139,9 +139,9 @@ const ResultForm = ({
             {...register("examId")}
             defaultValue={data?.examId}
           >
-            {exams.map((exam: { id: number; name: string }) => (
+            {exams.map((exam: { id: number; subject: string }) => (
               <option value={exam.id} key={exam.id}>
-                {exam.name}
+                {exam.subject}
               </option>
             ))}
           </select>
