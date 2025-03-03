@@ -155,8 +155,8 @@ model ExamSchedule {
 model Result {
   id            Int     @id @default(autoincrement())
   sessionalExam String?
-  endTerm       String?
-  overallMark   String
+  endTerm       Int?
+  overallMark   Int
   grade         String
   examId        Int?
   exam          Exam?   @relation(fields: [examId], references: [id])

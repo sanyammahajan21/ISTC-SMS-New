@@ -126,9 +126,20 @@ export type AnnouncementSchema = z.infer<typeof announcementSchema>;
 
 export const resultSchema = z.object({
   id: z.coerce.number().optional(),
-  sessionalExam: z.string().optional(),
-  endTerm: z.string().optional(),
-  overallMark: z.string().optional(),
+  sessionalExam: z.coerce
+  .string()
+  .min(0, { message: "Sessional Exam Marks must be atleast 0!"})
+  .max(100, { message: "Sessional Exam Marks must be atmost 100!" }),
+  endTerm: z.coerce
+  .number()
+  .min(0, { message: "End Term Marks must be atleast 0!" })
+  .max(100, { message: "End Term Marks must be atmost 100!" }),
+
+  overallMark: z.coerce
+  .number()
+  .min(0, { message: "Overall Marks must be atleast 0!" })
+  .max(100, { message: "Overall Marks must be atmost 100!" }),
+
   grade: z.string().optional(),
   studentId: z.string().min(1, { message: "Student is required!" }),
   examId: z.coerce.number().min(1, { message: "Exam is required!" }),

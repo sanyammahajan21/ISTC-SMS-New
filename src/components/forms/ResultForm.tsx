@@ -32,7 +32,8 @@ const ResultForm = ({
     handleSubmit,
     formState: { errors },
     setValue,
-    unregister, // Allows complete removal of sessionalExam field
+    watch,
+    unregister,
   } = useForm<ResultSchema>({
     resolver: zodResolver(resultSchema),
   });
@@ -45,10 +46,37 @@ const ResultForm = ({
     }
   );
 
-  // Determine initial state: If sessionalExam exists and is not "-"
   const [hasSessionalExam, setHasSessionalExam] = useState(
     data?.sessionalExam !== undefined && data?.sessionalExam !== "-"
   );
+
+  const router = useRouter();
+
+  // ✅ Function to calculate grade based on overall marks
+  const calculateGrade = (marks: number) => {
+    if (marks >= 90) return "A";
+    if (marks >= 80) return "B";
+    if (marks >= 70) return "C";
+    if (marks >= 60) return "D";
+    if (marks >= 50) return "E";
+    return "F"; // Fail
+  };
+
+  // ✅ Auto-update grade when overall marks change
+  useEffect(() => {
+    const overallMarks = watch("overallMark");
+    if (overallMarks !== undefined && overallMarks !== "") {
+      setValue("grade", calculateGrade(Number(overallMarks)));
+    }
+  }, [watch("overallMark"), setValue]);
+
+  useEffect(() => {
+    if (!hasSessionalExam) {
+      unregister("sessionalExam"); // Remove if unchecked
+    } else {
+      setValue("sessionalExam", data?.sessionalExam || ""); // Restore previous value if enabled
+    }
+  }, [hasSessionalExam, unregister, setValue, data]);
 
   const onSubmit = handleSubmit((formData) => {
     const finalData = {
@@ -58,8 +86,6 @@ const ResultForm = ({
     formAction(finalData);
   });
 
-  const router = useRouter();
-
   useEffect(() => {
     if (state.success) {
       toast(`Result has been ${type === "create" ? "created" : "updated"}!`);
@@ -67,14 +93,6 @@ const ResultForm = ({
       router.refresh();
     }
   }, [state, router, type, setOpen]);
-
-  useEffect(() => {
-    if (!hasSessionalExam) {
-      unregister("sessionalExam"); // Fully remove field from form
-    } else {
-      setValue("sessionalExam", data?.sessionalExam || ""); // Restore value if enabled
-    }
-  }, [hasSessionalExam, unregister, setValue, data]);
 
   const { students, exams, subjects } = relatedData;
 
@@ -96,7 +114,7 @@ const ResultForm = ({
       </div>
 
       <div className="flex justify-between flex-wrap gap-4">
-        {/* Render Sessional Exam Input ONLY if hasSessionalExam is true */}
+        {/* Sessional Exam */}
         {hasSessionalExam && (
           <InputField
             label="Sessional Exam"
@@ -107,6 +125,7 @@ const ResultForm = ({
           />
         )}
 
+        {/* End Term Exam */}
         <InputField
           label="End Term Exam"
           name="endTerm"
@@ -115,6 +134,7 @@ const ResultForm = ({
           error={errors.endTerm}
         />
 
+        {/* Overall Marks */}
         <InputField
           label="Overall Marks"
           name="overallMark"
@@ -123,12 +143,14 @@ const ResultForm = ({
           error={errors.overallMark}
         />
 
+        {/* Grade (Auto-filled) */}
         <InputField
           label="Grade"
           name="grade"
           defaultValue={data?.grade}
           register={register}
-          error={errors.endTerm}
+          error={errors.grade}
+          disabled // Prevent user from manually entering
         />
 
         {data && (
@@ -142,6 +164,7 @@ const ResultForm = ({
           />
         )}
 
+        {/* Student Selection */}
         <div className="flex flex-col gap-2 w-full md:w-1/4">
           <label className="text-xs text-gray-500">Student</label>
           <select
@@ -162,6 +185,7 @@ const ResultForm = ({
           )}
         </div>
 
+        {/* Exam Selection */}
         <div className="flex flex-col gap-2 w-full md:w-1/4">
           <label className="text-xs text-gray-500">Exam</label>
           <select
@@ -181,6 +205,8 @@ const ResultForm = ({
             </p>
           )}
         </div>
+
+        {/* Subject Selection */}
         <div className="flex flex-col gap-2 w-full md:w-1/4">
           <label className="text-xs text-gray-500">Subject</label>
           <select
@@ -200,13 +226,9 @@ const ResultForm = ({
             </p>
           )}
         </div>
-        
       </div>
 
-
-      {state.error && (
-        <span className="text-red-500">Something went wrong!</span>
-      )}
+      {state.error && <span className="text-red-500">Something went wrong!</span>}
 
       <button type="submit" className="bg-blue-400 text-white p-2 rounded-md">
         {type === "create" ? "Create" : "Update"}
