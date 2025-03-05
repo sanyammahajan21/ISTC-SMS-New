@@ -88,49 +88,48 @@ const TeacherListPage = async ({
       <td>
         <div className="flex items-center gap-2">
           <Link href={`/list/teachers/${item.id}`}>
-          <button className="w-7 h-7 flex items-center justify-center rounded-full  border-4 border-blue-400 bg-white ">
+            <button className="w-7 h-7 flex items-center justify-center rounded-full  border-4 border-blue-400 bg-white ">
               <Image src="/view.png" alt="" width={16} height={16} />
             </button>
           </Link>
           {(role === "admin" || role === "registrar") && (
-            // <button className="w-7 h-7 flex items-center justify-center rounded-full bg-lamaPurple">
-            //   <Image src="/delete.png" alt="" width={16} height={16} />
-            // </button>
             <FormContainer table="teacher" type="delete" id={item.id} />
           )}
         </div>
       </td>
     </tr>
   );
-  const { page, ...queryParams } = searchParams;
+
+  const { page, search, branchId, sort } = searchParams;
 
   const p = page ? parseInt(page) : 1;
-
-  // URL PARAMS CONDITION
-
+  
   const query: Prisma.TeacherWhereInput = {};
-
-  if (queryParams) {
-    for (const [key, value] of Object.entries(queryParams)) {
-      if (value !== undefined) {
-        switch (key) {
-          case "branchId":
-            query.lectures = {
-              some: {
-                branchId: parseInt(value),
-              },
-            };
-            break;
-          case "search":
-            query.name = { contains: value, mode: "insensitive" };
-            break;
-          default:
-            break;
-        }
-      }
-    }
+  
+  if (search) {
+    query.OR = [
+      { name: { contains: search.toLowerCase() } },
+      { email: { contains: search.toLowerCase() } },
+      { username: { contains: search.toLowerCase() } },
+    ];
   }
-
+  
+  if (branchId) {
+    query.branches = {
+      some: {
+        id: parseInt(branchId),
+      },
+    };
+  }
+  
+  const orderBy: Prisma.TeacherOrderByWithRelationInput = {};
+  
+  if (sort === "name") {
+    orderBy.name = "asc";
+  } else if (sort === "branch") {
+    orderBy.branches = { _count: "asc" };
+  }
+  
   const [data, count] = await prisma.$transaction([
     prisma.teacher.findMany({
       where: query,
@@ -140,13 +139,13 @@ const TeacherListPage = async ({
       },
       take: ITEM_PER_PAGE,
       skip: ITEM_PER_PAGE * (p - 1),
+      orderBy,
     }),
     prisma.teacher.count({ where: query }),
   ]);
 
   return (
     <div className="bg-white p-6 rounded-lg shadow-md flex-1 m-4 mt-0 border border-gray-100">
-      {/* Header Section */}
       <div className="flex flex-col md:flex-row items-start md:items-center justify-between mb-6">
         <div className="mb-4 md:mb-0">
           <h1 className="text-xl font-semibold text-gray-800 flex items-center">
@@ -157,38 +156,33 @@ const TeacherListPage = async ({
             View and manage faculty information
           </p>
         </div>
-        
         <div className="flex flex-col md:flex-row items-center gap-3 w-full md:w-auto">
           <div className="w-full md:w-auto mb-3 md:mb-0">
-            <TableSearch />
+            <TableSearch placeholder="Search teachers..." />
           </div>
-          
           <div className="flex items-center gap-3 self-end">
-            <button className="flex items-center justify-center p-2 rounded-md bg-blue-50 hover:bg-blue-100 transition-colors">
-              <Image src="/filter.png" alt="Filter" width={16} height={16} />
-              <span className="ml-2 text-sm font-medium text-blue-700 hidden md:inline">Filter</span>
-            </button>
-            
-            <button className="flex items-center justify-center p-2 rounded-md bg-blue-50 hover:bg-blue-100 transition-colors">
-              <Image src="/sort.png" alt="Sort" width={16} height={16} />
-              <span className="ml-2 text-sm font-medium text-blue-700 hidden md:inline">Sort</span>
-            </button>
-            
+            <Link href={`/list/teachers?branchId=${branchId || ""}&sort=name`}>
+              <button className="flex items-center justify-center p-2 rounded-md bg-blue-50 hover:bg-blue-100 transition-colors">
+                <Image src="/sort.png" alt="Sort" width={16} height={16} />
+                <span className="ml-2 text-sm font-medium text-blue-700 hidden md:inline">Sort by Name</span>
+              </button>
+            </Link>
+            <Link href={`/list/teachers?branchId=${branchId || ""}&sort=branch`}>
+              <button className="flex items-center justify-center p-2 rounded-md bg-blue-50 hover:bg-blue-100 transition-colors">
+                <Image src="/sort.png" alt="Sort" width={16} height={16} />
+                <span className="ml-2 text-sm font-medium text-blue-700 hidden md:inline">Sort by Branch</span>
+              </button>
+            </Link>
             {(role === "admin" || role === "registrar") && (
               <FormContainer table="teacher" type="create" />
             )}
           </div>
         </div>
       </div>
-      
-      {/* Table Section */}
       <div className="bg-gray-50 p-4 rounded-md border border-gray-100">
         <Table columns={columns} renderRow={renderRow} data={data} />
       </div>
-      
-      {/* Pagination */}
       <div className="mt-6 flex justify-between items-center">
-       
         <Pagination page={p} count={count} />
       </div>
     </div>

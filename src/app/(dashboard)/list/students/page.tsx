@@ -2,14 +2,13 @@ import FormContainer from "@/components/FormContainer";
 import Pagination from "@/components/Pagination";
 import Table from "@/components/Table";
 import TableSearch from "@/components/TableSearch";
-
 import prisma from "@/lib/prisma";
 import { ITEM_PER_PAGE } from "@/lib/settings";
 import { Branch, Prisma, Student } from "@prisma/client";
 import Image from "next/image";
 import Link from "next/link";
-
 import { auth } from "@clerk/nextjs/server";
+import Filters from "@/components/Filter";
 
 type StudentList = Student & { branch: Branch };
 
@@ -46,7 +45,7 @@ const StudentListPage = async ({
       accessor: "address",
       className: "hidden lg:table-cell",
     },
-    ...((role === "admin" || role === "registrar")
+    ...(role === "admin" || role === "registrar"
       ? [
           {
             header: "Actions",
@@ -81,78 +80,68 @@ const StudentListPage = async ({
       <td>
         <div className="flex items-center gap-2">
           <Link href={`/list/students/${item.id}`}>
-             <button className="w-7 h-7 flex items-center justify-center rounded-full  border-4 border-blue-400 bg-white ">
-                          <Image src="/view.png" alt="" width={16} height={16} />
-                        </button>
+            <button className="w-7 h-7 flex items-center justify-center rounded-full  border-4 border-blue-400 bg-white ">
+              <Image src="/view.png" alt="" width={16} height={16} />
+            </button>
           </Link>
           {(role === "admin" || role === "registrar") && (
-            <button className="w-7 h-7 flex items-center justify-center rounded-full bg-lamaPurple">
-              {/* <Image src="/delete.png" alt="" width={16} height={16} /> */}
-              <FormContainer table="student" type="delete" id={item.id} />
-            </button>
-           
+            <FormContainer table="student" type="delete" id={item.id} />
           )}
           {(role === "teacher" || role === "registrar") && (
-            <button className="w-7 h-7 flex items-center justify-center rounded-full bg-lamaPurple">
-              {/* <Image src="/delete.png" alt="" width={16} height={16} /> */}
-              <FormContainer table="result" type="create" id={item.id} />
-            </button>
-           
+            <FormContainer table="result" type="create" id={item.id} />
           )}
         </div>
       </td>
     </tr>
   );
 
-  const { page, ...queryParams } = searchParams;
+  const { page, search, branchId, semester } = searchParams;
 
   const p = page ? parseInt(page) : 1;
 
-  // URL PARAMS CONDITION
-
   const query: Prisma.StudentWhereInput = {};
 
-  if (queryParams) {
-    for (const [key, value] of Object.entries(queryParams)) {
-      if (value !== undefined) {
-        switch (key) {
-          case "teacherId":
-            // Admin or Registrar will see all students, but teachers will be filtered
-            if (role === "teacher") {
-              query.branch = {
-                lectures: {
-                  some: {
-                    teacherId: value,
-                  },
-                },
-              };
-            }
-            break;
-          case "search":
-            query.name = { contains: value, mode: "insensitive" };
-            break;
-          default:
-            break;
-        }
-      }
-    }
+  if (search) {
+    query.OR = [
+      { name: { contains: search.toLowerCase() } },
+      { email: { contains: search.toLowerCase() } },
+      { username: { contains: search.toLowerCase() } },
+    ];
   }
-  
-  // Perform the transaction
+
+  if (branchId) {
+    query.branch = {
+      id: parseInt(branchId),
+    };
+  }
+
+  if (semester) {
+    // Assuming `semester` is a relation to a `Semester` table
+    query.semester = {
+      id: parseInt(semester),
+    };
+  }
+
   const [data, count] = await prisma.$transaction([
     prisma.student.findMany({
       where: query,
       include: {
         branch: true,
+        semester: true, // Include the semester relation if it exists
       },
       take: ITEM_PER_PAGE,
       skip: ITEM_PER_PAGE * (p - 1),
     }),
     prisma.student.count({ where: query }),
   ]);
+
+  const branches = await prisma.branch.findMany();
+  const semesters = await prisma.semester.findMany({
+    select: { id: true, level: true },
+  });
+
   return (
     <div className="bg-white p-6 rounded-lg shadow-md flex-1 m-4 mt-0 border border-gray-100">
-      {/* Header Section */}
       <div className="flex flex-col md:flex-row items-start md:items-center justify-between mb-6">
         <div className="mb-4 md:mb-0">
           <h1 className="text-xl font-semibold text-gray-800 flex items-center">
@@ -163,36 +152,27 @@ const StudentListPage = async ({
             View and manage student information
           </p>
         </div>
-        
         <div className="flex flex-col md:flex-row items-center gap-3 w-full md:w-auto">
           <div className="w-full md:w-auto mb-3 md:mb-0">
-            <TableSearch />
+            <TableSearch placeholder="Search students..." />
           </div>
-          
           <div className="flex items-center gap-3 self-end">
-            <button className="flex items-center justify-center p-2 rounded-md bg-blue-50 hover:bg-blue-100 transition-colors">
-              <Image src="/filter.png" alt="Filter" width={16} height={16} />
-              <span className="ml-2 text-sm font-medium text-blue-700 hidden md:inline">Filter</span>
-            </button>
-            
-            <button className="flex items-center justify-center p-2 rounded-md bg-blue-50 hover:bg-blue-100 transition-colors">
-              <Image src="/sort.png" alt="Sort" width={16} height={16} />
-              <span className="ml-2 text-sm font-medium text-blue-700 hidden md:inline">Sort</span>
-            </button>
-            
+            <Filters
+              branches={branches}
+              semesters={semesters}
+              selectedBranchId={branchId}
+              selectedSemester={semester}
+            />
+
             {(role === "admin" || role === "registrar") && (
               <FormContainer table="student" type="create" />
             )}
           </div>
         </div>
       </div>
-      
-      {/* Table Section with Card Styling */}
       <div className="bg-gray-50 p-4 rounded-md border border-gray-100">
         <Table columns={columns} renderRow={renderRow} data={data} />
       </div>
-      
-      {/* Pagination with Better Styling */}
       <div className="mt-6 flex justify-center md:justify-end">
         <Pagination page={p} count={count} />
       </div>
