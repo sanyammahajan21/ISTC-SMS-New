@@ -12,6 +12,7 @@ import {
 } from "@/lib/actions";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
+import { toast } from "react-toastify";
 
 interface Exam {
   id?: number;
@@ -194,8 +195,12 @@ export default function ExamPage({ role }: ExamPageProps) {
 
     if (form.id) {
       await updateExam(form.id, payload);
+      toast(`Exam has been updated`);
     } else {
+      if (window.confirm("Are you sure you want to add this exam?")) {
       await createExam(payload);
+      toast(`Exam has been created`);
+      }
     }
 
     const response = await getAllExams();
