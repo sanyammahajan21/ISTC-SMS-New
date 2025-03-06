@@ -158,7 +158,7 @@ export const createTeacher = async (
     const user = await clerkClient.users.createUser({
       username: data.username,
       password: data.password,
-      name: data.name,
+      // name: data.name,
       publicMetadata:{role:"teacher"}
     });
 
@@ -269,7 +269,7 @@ export const createRegistrar = async (
     const user = await clerkClient.users.createUser({
       username: data.username,
       password: data.password || "",
-      name: data.name,
+      // name: data.name,
       publicMetadata:{role:"registrar"}
     });
 
