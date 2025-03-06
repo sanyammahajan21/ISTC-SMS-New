@@ -30,9 +30,9 @@ const RegistrarPage = ({
           
           {/* Analytics Section */}
           <div className="bg-white p-4 rounded-lg shadow-md">
-            <h2 className="text-lg font-semibold mb-2 text-white text-center bg-blue-500 p-2 rounded-md">Attendance</h2>
+            <h2 className="text-lg font-semibold mb-2 text-white text-center bg-blue-500 p-2 rounded-md">Notices</h2>
             <div className="h-[450px]">
-              <AttendanceChartContainer />
+              {/* <AttendanceChartContainer /> */}
             </div>
           </div>
         </div>
