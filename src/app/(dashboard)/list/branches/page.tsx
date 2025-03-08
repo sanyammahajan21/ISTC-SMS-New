@@ -31,11 +31,6 @@ const columns = [
     className: "hidden md:table-cell",
   },
   {
-    header: "Semester",
-    accessor: "semester",
-    className: "hidden md:table-cell",
-  },
-  {
     header: "Supervisor",
     accessor: "supervisor",
     className: "hidden md:table-cell",
@@ -57,7 +52,6 @@ const renderRow = (item: BranchList) => (
   >
     <td className="flex items-center gap-4 p-4">{item.name}</td>
     <td className="hidden md:table-cell">{item.capacity}</td>
-    <td className="hidden md:table-cell">{item.name[0]}</td>
     <td className="hidden md:table-cell">
       {item.supervisor?.name }
     </td>

@@ -20,7 +20,7 @@ async function main() {
   }
 
   // Create 4 Branches
-  const branches = ["ECE", "MECH", "DIY", "ELECTRICAL"];
+  const branches = ["ELectronics", "Mechanical", "Die and Mould Making", "Mechatronics"];
   for (let i = 0; i < branches.length; i++) {
     await prisma.branch.create({
       data: {
