@@ -3,7 +3,7 @@ import Pagination from "@/components/Pagination";
 import Table from "@/components/Table";
 import TableSearch from "@/components/TableSearch";
 import prisma from "@/lib/prisma";
-import { Class, Prisma, Subject, Teacher } from "@prisma/client";
+import { Branch, Prisma, Subject, Teacher } from "@prisma/client";
 import Image from "next/image";
 import Link from "next/link";
 import { ITEM_PER_PAGE } from "@/lib/settings";
@@ -37,16 +37,6 @@ const TeacherListPage = async ({
       header: "Branches",
       accessor: "branches",
       className: "hidden md:table-cell",
-    },
-    {
-      header: "Phone",
-      accessor: "phone",
-      className: "hidden lg:table-cell",
-    },
-    {
-      header: "Address",
-      accessor: "address",
-      className: "hidden lg:table-cell",
     },
     ...(role === "admin" || role === "registrar"
       ? [
@@ -83,8 +73,6 @@ const TeacherListPage = async ({
       <td className="hidden md:table-cell">
         {item.branches.map((branchItem) => branchItem.name).join(",")}
       </td>
-      <td className="hidden md:table-cell">{item.phone}</td>
-      <td className="hidden md:table-cell">{item.address}</td>
       <td>
         <div className="flex items-center gap-2">
           <Link href={`/list/teachers/${item.id}`}>

@@ -3,17 +3,17 @@
 import React from "react";
 import { jsPDF } from "jspdf";
 import html2canvas from "html2canvas";
-import * as XLSX from "xlsx"; // ✅ SheetJS for Excel
+import * as XLSX from "xlsx";
 
 
 interface StudentResultDownloadProps {
-  role: "teacher" | "registrar"; // ✅ Role-based access
+  role: "teacher" | "registrar";
 }
 
 const StudentResultDownload: React.FC<StudentResultDownloadProps> = ({ role }) => {
-  // ✅ Function to Generate PDF (For Registrars)
+
   const generatePDF = async () => {
-    const response = await fetch("/api/results"); // Fetch all results from Prisma
+    const response = await fetch("/api/results"); 
     const data = await response.json();
 
     const pdf = new jsPDF();
@@ -37,7 +37,6 @@ const StudentResultDownload: React.FC<StudentResultDownloadProps> = ({ role }) =
     pdf.save("All_Students_Results.pdf");
   };
 
-  // ✅ Function to Generate Excel (For Teachers)
   const generateExcel = async () => {
     try {
       console.log("Fetching results...");
@@ -51,7 +50,6 @@ const StudentResultDownload: React.FC<StudentResultDownloadProps> = ({ role }) =
         return;
       }
   
-      // ✅ Extract unique subject names
       const allSubjects = new Set<string>();
       data.forEach((student: any) => {
         student.results.forEach((result: any) => {
@@ -59,24 +57,21 @@ const StudentResultDownload: React.FC<StudentResultDownloadProps> = ({ role }) =
         });
       });
   
-      const subjectList = Array.from(allSubjects); // Convert Set to Array
-  
-      // ✅ Prepare the worksheet data (Each student is a row)
+      const subjectList = Array.from(allSubjects); 
+
       const worksheetData = data.map((student: any) => {
         const row: any = {
           StudentID: student.id,
           Name: student.name,
         };
-  
-        // Initialize subject columns with empty values
+
         subjectList.forEach((subject) => {
           row[`${subject} Sessional`] = "-";
           row[`${subject} EndTerm`] = "-";
           row[`${subject} Overall`] = "-";
           row[`${subject} Grade`] = "-";
         });
-  
-        // Populate student marks under the correct subject columns
+
         student.results.forEach((result: any) => {
           const subject = result.subject.name;
           row[`${subject} Sessional`] = result.sessionalExam;
@@ -87,13 +82,11 @@ const StudentResultDownload: React.FC<StudentResultDownloadProps> = ({ role }) =
   
         return row;
       });
-  
-      // ✅ Create worksheet and workbook
+
       const worksheet = XLSX.utils.json_to_sheet(worksheetData);
       const workbook = XLSX.utils.book_new();
       XLSX.utils.book_append_sheet(workbook, worksheet, "Results");
-  
-      // ✅ Save file
+
       XLSX.writeFile(workbook, "All_Students_Results.xlsx");
     } catch (error) {
       console.error("Excel Download Error:", error);
