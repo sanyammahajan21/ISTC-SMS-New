@@ -184,6 +184,13 @@ model Announcement {
   branchId  Int?
   branches  Branch[] // Link announcements to multiple branches
 }
+model Notice {
+    id        Int      @id @default(autoincrement())
+    title     String
+    fileUrl   String
+    uploadedBy String
+    timestamp DateTime @default(now())
+}
 
 enum SubjectType {
   THEORY
@@ -196,15 +203,3 @@ enum UserSex {
   PREFER_NOT_TO_SAY
 }
 
-enum Day {
-  MONDAY
-  TUESDAY
-  WEDNESDAY
-  THURSDAY
-  FRIDAY
-}
-
-enum Division {
-  ISTC
-  LIBRARY
-}

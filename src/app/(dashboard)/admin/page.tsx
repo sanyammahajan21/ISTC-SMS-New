@@ -1,6 +1,7 @@
 import Announcements from "@/components/Announcements";
 import AttendanceChartContainer from "@/components/AttendanceChartContainer";
 import EventCalendarContainer from "@/components/EventCalendarContainer";
+import Notices from "@/components/Notices";
 import UserCard from "@/components/UserCard";
 
 const AdminPage = ({
@@ -35,7 +36,8 @@ const AdminPage = ({
             <div className="bg-white p-4 rounded-lg shadow-md">
             <h2 className="text-lg font-semibold mb-2 text-white text-center bg-blue-500 p-2 rounded-md">Attendance</h2>
             <div className="h-[450px]">
-              <AttendanceChartContainer />
+              {/* <AttendanceChartContainer /> */}
+              <Notices/>
             </div>
           </div>
         </div>
