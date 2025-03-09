@@ -203,11 +203,3 @@ enum UserSex {
   PREFER_NOT_TO_SAY
 }
 
-enum Day {
-  MONDAY
-  TUESDAY
-  WEDNESDAY
-  THURSDAY
-  FRIDAY
-}
-
