@@ -11,6 +11,9 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import CharacterCertificate from "@/components/charactercertificate";
+import MigrationCertificate from "@/components/migrationcertificate"
+import MarksSheetCertificate from "@/components/Marksheet";
+import DiplomaGenerator from "@/components/diplomait";
 
 const SingleStudentPage = async ({
   params: { id },
@@ -158,6 +161,9 @@ const SingleStudentPage = async ({
               Student&apos;s Teachers
             </Link>
             <CharacterCertificate student={student} />
+            <MigrationCertificate student={student} />
+            <MarksSheetCertificate student={student} />
+            <DiplomaGenerator student={student}/>
             {/* <Link
               className="p-3 rounded-md bg-pink-50"
               href={`/list/exams?branchId=${student.branch.id}`}
