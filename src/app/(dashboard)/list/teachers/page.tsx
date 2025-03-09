@@ -80,9 +80,12 @@ const TeacherListPage = async ({
               <Image src="/view.png" alt="" width={16} height={16} />
             </button>
           </Link>
-          {(role === "admin" || role === "registrar") && (
+          {(role === "registrar" || role === 'admin') && (
+          <>
+            <FormContainer table="teacher" type="update" data={item} />
             <FormContainer table="teacher" type="delete" id={item.id} />
-          )}
+          </>
+        )}
         </div>
       </td>
     </tr>

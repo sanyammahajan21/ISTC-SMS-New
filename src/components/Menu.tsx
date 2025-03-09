@@ -48,12 +48,12 @@ const menuItems = [
         href: "/list/branches",
         visible: ["registrar", "teacher"],
       },
-      {
-        icon: "/lesson.png",
-        label: "Lectures",
-        href: "/list/lectures",
-        visible: ["teacher", "registrar"],
-      },
+      // {
+      //   icon: "/lesson.png",
+      //   label: "Lectures",
+      //   href: "/list/lectures",
+      //   visible: ["teacher", "registrar"],
+      // },
       {
         icon: "/exam.png",
         label: "Exams",
@@ -66,12 +66,12 @@ const menuItems = [
         href: "/list/results",
         visible: ["teacher", "registrar"],
       },
-      {
-        icon: "/attendance.png",
-        label: "Attendance",
-        href: "/list/attendance",
-        visible: ["teacher"],
-      },
+      // {
+      //   icon: "/attendance.png",
+      //   label: "Attendance",
+      //   href: "/list/attendance",
+      //   visible: ["teacher"],
+      // },
       {
         icon: "/announcement.png",
         label: "Announcements",
