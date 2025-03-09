@@ -164,7 +164,7 @@ model Result {
   student       Student @relation(fields: [studentId], references: [id])
   subjectId   Int?
   subject     Subject?      @relation(fields: [subjectId], references: [id])
-}
+}                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     
 
 model Attendance {
   id         Int      @id @default(autoincrement())
