@@ -63,7 +63,8 @@ model Semester {
   id       Int       @id @default(autoincrement())
   level    Int       @unique
   students Student[]
-  branches Branch[]
+  branchId   Int      // foreign key to Branch
+  branch     Branch   @relation(fields: [branchId], references: [id])
   subjects Subject[]
   exams    Exam[]
 }
@@ -85,8 +86,7 @@ model Branch {
   supervisor    Teacher?       @relation(fields: [supervisorId], references: [id])
   lectures      Lectures[]
   students      Student[]
-  semesterId    Int?
-  semester      Semester?      @relation(fields: [semesterId], references: [id])
+  semesters      Semester[]      
   announcements Announcement[]
   subjects      Subject[]
   Exam          Exam[]

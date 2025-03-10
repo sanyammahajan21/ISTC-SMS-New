@@ -17,8 +17,9 @@ export const branchSchema = z.object({
   id: z.coerce.number().optional(),
   name: z.string().min(1, { message: "Branch name is required!" }),
   capacity: z.coerce.number().min(1, { message: "Capacity name is required!" }),
-  semesterId: z.coerce.number().optional(),
+  subjects: z.array(z.number()).optional(),
   supervisorId: z.coerce.string().optional(),
+  semesters: z.array(z.string()).optional(),
 });
 
 export type BranchSchema = z.infer<typeof branchSchema>;

@@ -123,25 +123,24 @@ const BranchForm = ({
           )}
         </div>
         <div className="flex flex-col gap-2 w-full md:w-1/4">
-          <label className="text-xs text-gray-500">Semester</label>
+          <label className="text-xs text-gray-500">Semesters</label>
           <select
+            multiple
             className="ring-[1.5px] ring-gray-300 p-2 rounded-md text-sm w-full"
-            {...register("semesterId")}
-            defaultValue={data?.semesterId}
+            {...register("semesters")}
+            defaultValue={data?.semesters}
           >
-            {semesters.map((semester: { id: number; level: number }) => (
-              <option
-                value={semester.id}
-                key={semester.id}
-                selected={data && semester.id === data.semesterId}
-              >
-                {semester.level}
-              </option>
-            ))}
+            {semesters.map(
+              (semester: { id: number; level: number }) => (
+                <option value={semester.id} key={semester.id}>
+                  {semester.level }
+                </option>
+              )
+            )}
           </select>
-          {errors.semesterId?.message && (
+          {errors.semesters?.message && (
             <p className="text-xs text-red-400">
-              {errors.semesterId.message.toString()}
+              {errors.semesters.message.toString()}
             </p>
           )}
         </div>
