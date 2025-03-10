@@ -14,7 +14,7 @@ import CharacterCertificate from "@/components/charactercertificate";
 import MigrationCertificate from "@/components/migrationcertificate"
 import MarksSheetCertificate from "@/components/Marksheet";
 import DiplomaGenerator from "@/components/diplomait";
-
+  import TranscriptCertificate from "@/components/transcript";
 const SingleStudentPage = async ({
   params: { id },
 }: {
@@ -26,12 +26,14 @@ const SingleStudentPage = async ({
   const student:
     | (Student & {
         branch: Branch & { _count: { lectures: number } };
+        semester: { id: number; level: number };
         results: (Result & { subject: Subject })[];
       })
     | null = await prisma.student.findUnique({
     where: { id },
     include: {
       branch: { include: { _count: { select: { lectures: true } } } },
+      semester: true,
       results: {
         include: { subject: true },
       }
@@ -164,6 +166,7 @@ const SingleStudentPage = async ({
             <MigrationCertificate student={student} />
             <MarksSheetCertificate student={student} />
             <DiplomaGenerator student={student}/>
+            <TranscriptCertificate student={student}/>
             {/* <Link
               className="p-3 rounded-md bg-pink-50"
               href={`/list/exams?branchId=${student.branch.id}`}
