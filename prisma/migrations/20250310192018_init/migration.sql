@@ -66,8 +66,8 @@ CREATE TABLE `Registrar` (
 CREATE TABLE `Semester` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
     `level` INTEGER NOT NULL,
+    `branchId` INTEGER NOT NULL,
 
-    UNIQUE INDEX `Semester_level_key`(`level`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
@@ -87,9 +87,7 @@ CREATE TABLE `Branch` (
     `name` VARCHAR(191) NOT NULL,
     `capacity` INTEGER NOT NULL,
     `supervisorId` VARCHAR(191) NULL,
-    `semesterId` INTEGER NULL,
 
-    UNIQUE INDEX `Branch_name_key`(`name`),
     UNIQUE INDEX `Branch_supervisorId_key`(`supervisorId`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -104,7 +102,6 @@ CREATE TABLE `Subject` (
     `branchId` INTEGER NOT NULL,
     `semesterId` INTEGER NULL,
 
-    UNIQUE INDEX `Subject_name_key`(`name`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
@@ -220,6 +217,9 @@ ALTER TABLE `Student` ADD CONSTRAINT `Student_branchId_fkey` FOREIGN KEY (`branc
 ALTER TABLE `Student` ADD CONSTRAINT `Student_semesterId_fkey` FOREIGN KEY (`semesterId`) REFERENCES `Semester`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
+ALTER TABLE `Semester` ADD CONSTRAINT `Semester_branchId_fkey` FOREIGN KEY (`branchId`) REFERENCES `Branch`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
 ALTER TABLE `StudentExam` ADD CONSTRAINT `StudentExam_studentId_fkey` FOREIGN KEY (`studentId`) REFERENCES `Student`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
@@ -227,9 +227,6 @@ ALTER TABLE `StudentExam` ADD CONSTRAINT `StudentExam_examId_fkey` FOREIGN KEY (
 
 -- AddForeignKey
 ALTER TABLE `Branch` ADD CONSTRAINT `Branch_supervisorId_fkey` FOREIGN KEY (`supervisorId`) REFERENCES `Teacher`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE `Branch` ADD CONSTRAINT `Branch_semesterId_fkey` FOREIGN KEY (`semesterId`) REFERENCES `Semester`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `Subject` ADD CONSTRAINT `Subject_branchId_fkey` FOREIGN KEY (`branchId`) REFERENCES `Branch`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;

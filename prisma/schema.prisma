@@ -61,7 +61,7 @@ model Registrar {
 
 model Semester {
   id       Int       @id @default(autoincrement())
-  level    Int       @unique
+  level    Int       
   students Student[]
   branchId   Int      // foreign key to Branch
   branch     Branch   @relation(fields: [branchId], references: [id])
@@ -94,7 +94,7 @@ model Branch {
 
 model Subject {
   id          Int         @id @default(autoincrement())
-  name        String      @unique
+  name        String      
   subjectCode String?
   type        SubjectType
   maxMarks    Int?

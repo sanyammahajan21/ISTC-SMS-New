@@ -14,7 +14,7 @@ async function main() {
     const branch = await prisma.branch.create({
       data: {
         name,
-        capacity: 100, // Set a default capacity value, modify as needed
+        capacity: 100, // Default capacity
         semesters: {
           create: Array.from({ length: 8 }, (_, i) => ({ level: i + 1 })),
         },
@@ -23,6 +23,7 @@ async function main() {
         semesters: true,
       },
     });
+
     console.log(`Branch ${branch.name} with 8 semesters seeded successfully`);
   }
 }

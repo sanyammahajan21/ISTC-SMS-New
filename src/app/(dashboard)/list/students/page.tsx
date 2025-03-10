@@ -111,7 +111,7 @@ const StudentListPage = async ({
         branches: {
           select: {
             id: true, // Branch ID
-            semesterId: true, // Semester ID associated with the branch
+            semesters: true, // Semesters associated with the branch
           },
         },
       },
@@ -120,7 +120,7 @@ const StudentListPage = async ({
     if (teacher && teacher.branches.length > 0) {
       const branchIds = teacher.branches.map((branch) => branch.id);
       const semesterIds = teacher.branches
-        .map((branch) => branch.semesterId)
+        .flatMap((branch) => branch.semesters.map((semester) => semester.id))
         .filter((id): id is number => id !== null); 
       query.branchId = { in: branchIds };
       query.semesterId = { in: semesterIds }; 

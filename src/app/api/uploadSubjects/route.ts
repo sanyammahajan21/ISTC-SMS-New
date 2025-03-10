@@ -74,7 +74,7 @@ export async function POST(req: NextRequest) {
         const semester = await prisma.semester.findFirst({
             where: {
               level: row.SemesterNumber,
-              branches: { some: { id: branch.id } }, // Use relation filtering
+              branchId: branch.id, // Use relation filtering
             },
           });
           
