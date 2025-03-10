@@ -89,7 +89,6 @@ CREATE TABLE `Branch` (
     `supervisorId` VARCHAR(191) NULL,
     `semesterId` INTEGER NULL,
 
-    UNIQUE INDEX `Branch_name_key`(`name`),
     UNIQUE INDEX `Branch_supervisorId_key`(`supervisorId`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -112,7 +111,7 @@ CREATE TABLE `Subject` (
 CREATE TABLE `Lectures` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
     `name` VARCHAR(191) NOT NULL,
-    `day` ENUM('MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY') NOT NULL,
+    `day` ENUM('MONDAY', 'TUESDAY') NOT NULL,
     `startTime` DATETIME(3) NOT NULL,
     `endTime` DATETIME(3) NOT NULL,
     `subjectId` INTEGER NOT NULL,

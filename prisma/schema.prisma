@@ -79,7 +79,7 @@ model StudentExam {
 
 model Branch {
   id            Int            @id @default(autoincrement())
-  name          String         @unique
+  name          String         
   capacity      Int
   supervisorId  String?        @unique
   supervisor    Teacher?       @relation(fields: [supervisorId], references: [id])
