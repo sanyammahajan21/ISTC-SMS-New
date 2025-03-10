@@ -10,6 +10,10 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
+import CharacterCertificate from "@/components/charactercertificate";
+import MigrationCertificate from "@/components/migrationcertificate"
+import MarksSheetCertificate from "@/components/Marksheet";
+import DiplomaGenerator from "@/components/diplomait";
 
 const SingleStudentPage = async ({
   params: { id },
@@ -115,21 +119,7 @@ const SingleStudentPage = async ({
               </div>
             </div>
             {/* CARD */}
-            {/* <div className="bg-white p-4 rounded-md flex gap-4 w-full md:w-[48%] xl:w-[45%] 2xl:w-[48%]">
-              <Image
-                src="/singleLesson.png"
-                alt=""
-                width={24}
-                height={24}
-                className="w-6 h-6"
-              />
-              <div className="">
-                <h1 className="text-xl font-semibold">
-                  {student.branch._count.lectures}
-                </h1>
-                <span className="text-sm text-gray-400">Lectures</span>
-              </div>
-            </div> */}
+           
             {/* CARD */}
             <div className="bg-white p-4 rounded-md flex gap-4 w-full md:w-[48%] xl:w-[45%] 2xl:w-[48%]">
               <Image
@@ -170,18 +160,17 @@ const SingleStudentPage = async ({
             >
               Student&apos;s Teachers
             </Link>
+            <CharacterCertificate student={student} />
+            <MigrationCertificate student={student} />
+            <MarksSheetCertificate student={student} />
+            <DiplomaGenerator student={student}/>
             {/* <Link
               className="p-3 rounded-md bg-pink-50"
               href={`/list/exams?branchId=${student.branch.id}`}
             >
               Student&apos;s Exams
             </Link> */}
-            {/* <Link
-              className="p-3 rounded-md bg-lamaSkyLight"
-              href={`/list/assignments?branchId=${student.branch.id}`}
-            >
-              Student&apos;s Assignments
-            </Link> */}
+           
             <Link
               className="p-3 rounded-md bg-lamaYellowLight"
               href={`/list/results?studentId=${student.id}`}

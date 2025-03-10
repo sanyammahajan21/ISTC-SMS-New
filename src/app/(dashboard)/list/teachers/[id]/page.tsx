@@ -265,7 +265,7 @@ const SingleTeacherPage = async ({
               <div className="relative w-36 h-36 rounded-full overflow-hidden border-4 border-gray-100 shadow-sm">
                 <Image
                   src={teacher.img || "/noAvatar.png"}
-                  alt={`${teacher.name} ${teacher.surname}`}
+                  alt={`${teacher.name} `}
                   width={144}
                   height={144}
                   className="w-full h-full object-cover"
@@ -276,7 +276,7 @@ const SingleTeacherPage = async ({
               <div>
                 <div className="flex items-center gap-4 mb-2">
                   <h1 className="text-xl font-semibold text-gray-800">
-                    {teacher.name + " " + teacher.surname}
+                    {teacher.name }
                   </h1>
                   {role === "admin" && (
                     <FormContainer table="teacher" type="update" data={teacher} />
@@ -286,35 +286,6 @@ const SingleTeacherPage = async ({
                   <span className="font-medium text-gray-600">Username:</span> {teacher.username}<br/>
                   <span className="font-medium text-gray-600">Email:</span> {teacher.email}
                 </p>
-              </div>
-              
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
-                <div className="flex items-center gap-2 text-gray-700">
-                  <div className="w-6 h-6 flex items-center justify-center bg-red-50 rounded-full">
-                    <Image src="/blood.png" alt="Blood type" width={14} height={14} />
-                  </div>
-                  <span>{teacher.bloodType || "Not specified"}</span>
-                </div>
-                <div className="flex items-center gap-2 text-gray-700">
-                  <div className="w-6 h-6 flex items-center justify-center bg-blue-50 rounded-full">
-                    <Image src="/date.png" alt="Birth date" width={14} height={14} />
-                  </div>
-                  <span>
-                    {new Intl.DateTimeFormat("en-GB").format(teacher.birthday)}
-                  </span>
-                </div>
-                <div className="flex items-center gap-2 text-gray-700">
-                  <div className="w-6 h-6 flex items-center justify-center bg-green-50 rounded-full">
-                    <Image src="/mail.png" alt="Email" width={14} height={14} />
-                  </div>
-                  <span className="truncate">{teacher.email || "Not specified"}</span>
-                </div>
-                <div className="flex items-center gap-2 text-gray-700">
-                  <div className="w-6 h-6 flex items-center justify-center bg-purple-50 rounded-full">
-                    <Image src="/phone.png" alt="Phone" width={14} height={14} />
-                  </div>
-                  <span>{teacher.phone || "Not specified"}</span>
-                </div>
               </div>
             </div>
           </div>

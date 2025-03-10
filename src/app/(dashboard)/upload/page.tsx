@@ -45,127 +45,68 @@ const UploadSection: React.FC<UploadSectionProps> = ({ title, onUpload, isTeache
     }
   };
 
-//   return (
-//     <div className="bg-purple-50 p-8 rounded-xl shadow-lg w-full max-w-lg mx-auto mb-8">
-//       <h2 className="text-3xl font-extrabold text-blue-900 text-center mb-6">{title}</h2>
+  return (
+    <div className="bg-blue-50 p-6 rounded-lg shadow-md w-full max-w-lg mx-auto mb-6">
+      {/* Form fields with more formal styling */}
+      {!isTeacherUpload && (
+        <div className="mb-4">
+          <label className="block text-gray-700 text-sm font-medium mb-1">Branch ID</label>
+          <input
+            type="text"
+            placeholder="Enter Branch ID"
+            value={branchId}
+            onChange={(e) => setBranchId(e.target.value)}
+            className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 bg-white"
+          />
+        </div>
+      )}
 
-//       {/* Branch ID Input (Only shown when not uploading teacher data) */}
-//       {!isTeacherUpload && (
-//         <div className="mb-6">
-//           <input
-//             type="text"
-//             placeholder="Enter Branch ID"
-//             value={branchId}
-//             onChange={(e) => setBranchId(e.target.value)}
-//             className="w-full p-4 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-800 bg-white"
-//           />
-//         </div>
-//       )}
+      {!isTeacherUpload && (
+        <div className="mb-4">
+          <label className="block text-gray-700 text-sm font-medium mb-1">Semester ID</label>
+          <input
+            type="text"
+            placeholder="Enter Semester ID"
+            value={semesterId}
+            onChange={(e) => setSemesterId(e.target.value)}
+            className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 bg-white"
+          />
+        </div>
+      )}
 
-//       {/* Grade ID Input (Only shown when not uploading teacher data) */}
-//       {!isTeacherUpload && (
-//         <div className="mb-6">
-//           <input
-//             type="text"
-//             placeholder="Enter Semester ID"
-//             value={semesterId}
-//             onChange={(e) => setSemesterId(e.target.value)}
-//             className="w-full p-4 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-800 bg-white"
-//           />
-//         </div>
-//       )}
-
-//       {/* File Upload */}
-//       <div className="mb-6">
-//         <input
-//           type="file"
-//           onChange={handleFileChange}
-//           className="w-full p-4 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-800 bg-white"
-//         />
-//       </div>
-
-//       {/* Upload Button */}
-//       <button
-//         onClick={handleUpload}
-//         className={`w-full py-4 px-6 text-white font-semibold rounded-lg focus:outline-none transition-all ${loading ? 'bg-blue-900 cursor-not-allowed' : 'bg-blue-900 hover:bg-cyan-600'} transform hover:scale-105`}
-//         disabled={loading}
-//       >
-//         {loading ? "Uploading..." : "Upload"}
-//       </button>
-
-//       {/* Message */}
-//       {message && (
-//         <p
-//           className={`mt-6 text-center p-4 rounded-lg text-white ${message.includes("error") ? "bg-red-600" : "bg-green-600"}`}
-//         >
-//           {message}
-//         </p>
-//       )}
-//     </div>
-//   );
-// };
-return (
-  <div className="bg-blue-50 p-6 rounded-lg shadow-md w-full max-w-lg mx-auto mb-6">
-    {/* Form fields with more formal styling */}
-    {!isTeacherUpload && (
       <div className="mb-4">
-        <label className="block text-gray-700 text-sm font-medium mb-1">Branch ID</label>
-        <input
-          type="text"
-          placeholder="Enter Branch ID"
-          value={branchId}
-          onChange={(e) => setBranchId(e.target.value)}
-          className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 bg-white"
-        />
+        <label className="block text-gray-700 text-sm font-medium mb-1">File Upload</label>
+        <div className="border border-dashed border-gray-400 rounded-md p-4 bg-white">
+          <input
+            type="file"
+            onChange={handleFileChange}
+            className="w-full text-sm text-gray-700 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-blue-100 file:text-blue-700 hover:file:bg-blue-200"
+          />
+          <p className="text-xs text-gray-500 mt-2">Please upload Excel (.xlsx) files only</p>
+        </div>
       </div>
-    )}
 
-    {!isTeacherUpload && (
-      <div className="mb-4">
-        <label className="block text-gray-700 text-sm font-medium mb-1">Semester ID</label>
-        <input
-          type="text"
-          placeholder="Enter Semester ID"
-          value={semesterId}
-          onChange={(e) => setSemesterId(e.target.value)}
-          className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 bg-white"
-        />
-      </div>
-    )}
-
-    <div className="mb-4">
-      <label className="block text-gray-700 text-sm font-medium mb-1">File Upload</label>
-      <div className="border border-dashed border-gray-400 rounded-md p-4 bg-white">
-        <input
-          type="file"
-          onChange={handleFileChange}
-          className="w-full text-sm text-gray-700 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-blue-100 file:text-blue-700 hover:file:bg-blue-200"
-        />
-        <p className="text-xs text-gray-500 mt-2">Please upload Excel (.xlsx) files only</p>
-      </div>
-    </div>
-
-    <button
-      onClick={handleUpload}
-      className={`w-full py-3 px-5 text-white font-medium rounded-md focus:outline-none transition-colors ${
-        loading ? 'bg-blue-700 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700'
-      }`}
-      disabled={loading}
-    >
-      {loading ? "Processing..." : "Upload File"}
-    </button>
-
-    {message && (
-      <div
-        className={`mt-4 text-center p-3 rounded-md text-white text-sm ${
-          message.includes("error") ? "bg-red-500" : "bg-green-500"
+      <button
+        onClick={handleUpload}
+        className={`w-full py-3 px-5 text-white font-medium rounded-md focus:outline-none transition-colors ${
+          loading ? 'bg-blue-700 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700'
         }`}
+        disabled={loading}
       >
-        {message}
-      </div>
-    )}
-  </div>
-);
+        {loading ? "Processing..." : "Upload File"}
+      </button>
+
+      {message && (
+        <div
+          className={`mt-4 text-center p-3 rounded-md text-white text-sm ${
+            message.includes("error") ? "bg-red-500" : "bg-green-500"
+          }`}
+        >
+          {message}
+        </div>
+      )}
+    </div>
+  );
 };
 
 export default function Upload() {
@@ -198,54 +139,84 @@ export default function Upload() {
   };
 
   // Handle teacher file upload
- // Handle teacher file upload
-const handleTeacherUpload = async (branchId: string | undefined, semesterId: string | undefined, file: File | null) => {
-  if (!file) {
-    throw new Error("File is required for teacher upload.");
-  }
-
-  const formData = new FormData();
-  formData.append("file", file as Blob);
-
-  try {
-    const response = await fetch("/api/uploadteacher", {
-      method: "POST",
-      body: formData,
-    });
-
-    const result = await response.json();
-    if (response.ok) {
-      // Assuming the response contains the updated teacher count
-      return result.updatedTeacherCount; // Make sure your backend returns the updated count here
-    } else {
-      throw new Error(result.error || "Upload failed.");
+  const handleTeacherUpload = async (branchId: string | undefined, semesterId: string | undefined, file: File | null) => {
+    if (!file) {
+      throw new Error("File is required for teacher upload.");
     }
-  } catch (error) {
-    throw new Error("An error occurred during the upload.");
-  }
-};
 
-return (
-  <div className="p-8 bg-gray-50 min-h-screen flex flex-col items-center">
-    {/* Header Section */}
-    <div className="mb-10 text-center">
-      <h1 className="text-4xl font-bold text-gray-900 font-mono">UPLOAD FILES</h1>
-      <div className="h-1 w-36 bg-blue-700 mx-auto mt-3"></div>
-    </div>
-    
-    <div className="flex flex-col lg:flex-row gap-10 w-full max-w-6xl">
-      {/* Student Upload Section */}
-      <div className="w-full lg:w-1/2 bg-white p-8 rounded-xl shadow-lg border border-gray-200">
-        <h2 className="text-xl font-semibold text-gray-900 text-center bg-blue-800 p-4 rounded-md text-white">Student Excel File</h2>
-        <UploadSection title="Student Excel File" onUpload={handleStudentUpload} isTeacherUpload={false} />
+    const formData = new FormData();
+    formData.append("file", file as Blob);
+
+    try {
+      const response = await fetch("/api/uploadteacher", {
+        method: "POST",
+        body: formData,
+      });
+
+      const result = await response.json();
+      if (response.ok) {
+        return result.updatedTeacherCount;
+      } else {
+        throw new Error(result.error || "Upload failed.");
+      }
+    } catch (error) {
+      throw new Error("An error occurred during the upload.");
+    }
+  };
+
+  // Handle subjects file upload
+  const handleSubjectsUpload = async (branchId: string | undefined, semesterId: string | undefined, file: File | null) => {
+    if (!file) {
+      throw new Error("File is required for subjects upload.");
+    }
+
+    const formData = new FormData();
+    formData.append("file", file as Blob);
+
+    try {
+      const response = await fetch("/api/uploadSubjects", {
+        method: "POST",
+        body: formData,
+      });
+
+      const result = await response.json();
+      if (response.ok) {
+        return result.message;
+      } else {
+        throw new Error(result.error || "Upload failed.");
+      }
+    } catch (error) {
+      throw new Error("An error occurred during the upload.");
+    }
+  };
+
+  return (
+    <div className="p-8 bg-gray-50 min-h-screen flex flex-col items-center">
+      {/* Header Section */}
+      <div className="mb-10 text-center">
+        <h1 className="text-4xl font-bold text-gray-900 font-mono">UPLOAD FILES</h1>
+        <div className="h-1 w-36 bg-blue-700 mx-auto mt-3"></div>
       </div>
       
-      {/* Teacher Upload Section */}
-      <div className="w-full lg:w-1/2 bg-white p-8 rounded-xl shadow-lg border border-gray-200">
-        <h2 className="text-xl font-semibold text-gray-900 text-center bg-blue-800 p-4 rounded-md text-white">Teacher Excel File</h2>
-        <UploadSection title="Teacher Excel File" onUpload={handleTeacherUpload} isTeacherUpload={true} />
+      <div className="flex flex-col lg:flex-row gap-10 w-full max-w-6xl">
+        {/* Student Upload Section */}
+        <div className="w-full lg:w-1/2 bg-white p-8 rounded-xl shadow-lg border border-gray-200">
+          <h2 className="text-xl font-semibold text-gray-900 text-center bg-blue-800 p-4 rounded-md text-white">Student Excel File</h2>
+          <UploadSection title="Student Excel File" onUpload={handleStudentUpload} isTeacherUpload={false} />
+        </div>
+        
+        {/* Teacher Upload Section */}
+        <div className="w-full lg:w-1/2 bg-white p-8 rounded-xl shadow-lg border border-gray-200">
+          <h2 className="text-xl font-semibold text-gray-900 text-center bg-blue-800 p-4 rounded-md text-white">Teacher Excel File</h2>
+          <UploadSection title="Teacher Excel File" onUpload={handleTeacherUpload} isTeacherUpload={true} />
+        </div>
+      </div>
+
+      {/* Subjects Upload Section */}
+      <div className="w-full max-w-6xl bg-white p-8 rounded-xl shadow-lg border border-gray-200 mt-10">
+        <h2 className="text-xl font-semibold text-gray-900 text-center bg-blue-800 p-4 rounded-md text-white">Subjects Excel File</h2>
+        <UploadSection title="Subjects Excel File" onUpload={handleSubjectsUpload} isTeacherUpload={true} />
       </div>
     </div>
-  </div>
-);
+  );
 }

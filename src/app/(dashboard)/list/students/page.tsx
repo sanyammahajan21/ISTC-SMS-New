@@ -7,7 +7,7 @@ import { ITEM_PER_PAGE } from "@/lib/settings";
 import { Branch, Prisma, Student } from "@prisma/client";
 import Image from "next/image";
 import Link from "next/link";
-import { auth } from "@clerk/nextjs/server";
+import { auth } from "@clerk/nextjs/server"; // Use auth() for server-side authentication
 import Filters from "@/components/Filter";
 
 type StudentList = Student & { branch: Branch };
@@ -17,8 +17,10 @@ const StudentListPage = async ({
 }: {
   searchParams: { [key: string]: string | undefined };
 }) => {
+  // Fetch authentication data on the server side
   const { sessionClaims } = auth();
   const role = (sessionClaims?.metadata as { role?: string })?.role;
+  const userId = sessionClaims?.sub; // Get the user ID from the session
 
   const columns = [
     {
@@ -101,6 +103,30 @@ const StudentListPage = async ({
 
   const query: Prisma.StudentWhereInput = {};
 
+  // If the user is a teacher, fetch their branches and filter students
+  if (role === "teacher" && userId) {
+    const teacher = await prisma.teacher.findUnique({
+      where: { id: userId },
+      select: {
+        branches: {
+          select: {
+            id: true, // Branch ID
+            semesterId: true, // Semester ID associated with the branch
+          },
+        },
+      },
+    });
+
+    if (teacher && teacher.branches.length > 0) {
+      const branchIds = teacher.branches.map((branch) => branch.id);
+      const semesterIds = teacher.branches
+        .map((branch) => branch.semesterId)
+        .filter((id): id is number => id !== null); 
+      query.branchId = { in: branchIds };
+      query.semesterId = { in: semesterIds }; 
+    }
+  }
+
   if (search) {
     query.OR = [
       { name: { contains: search.toLowerCase() } },
@@ -109,32 +135,29 @@ const StudentListPage = async ({
     ];
   }
 
-  if (branchId) {
+  if (branchId && role !== "teacher") {
     query.branch = {
       id: parseInt(branchId),
     };
   }
 
-  if (semester) {
-    // Assuming `semester` is a relation to a `Semester` table
+  if (semester && role !== "teacher") {
     query.semester = {
       id: parseInt(semester),
     };
   }
-
   const [data, count] = await prisma.$transaction([
     prisma.student.findMany({
       where: query,
       include: {
         branch: true,
-        semester: true, // Include the semester relation if it exists
+        semester: true, 
       },
       take: ITEM_PER_PAGE,
       skip: ITEM_PER_PAGE * (p - 1),
     }),
     prisma.student.count({ where: query }),
   ]);
-
   const branches = await prisma.branch.findMany();
   const semesters = await prisma.semester.findMany({
     select: { id: true, level: true },

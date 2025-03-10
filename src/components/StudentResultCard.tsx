@@ -20,7 +20,7 @@ interface Student {
 }
 
 interface Result {
-  subject: Subject | string; // ✅ Can be an object or a string
+  subject: Subject | string; 
   sessionalExam: string;
   endTerm: string;
   overallMark: string;
@@ -38,7 +38,6 @@ const StudentResultCard: React.FC<StudentResultCardProps> = ({
 }) => {
   const resultRef = useRef<HTMLDivElement>(null);
 
-  // ✅ Function to Generate PDF
   const generatePDF = async () => {
     if (!resultRef.current) return;
 
@@ -46,8 +45,8 @@ const StudentResultCard: React.FC<StudentResultCardProps> = ({
     const imgData = canvas.toDataURL("image/png");
 
     const pdf = new jsPDF("p", "mm", "a4");
-    const imgWidth = 190; // PDF width
-    const imgHeight = (canvas.height * imgWidth) / canvas.width; // Maintain aspect ratio
+    const imgWidth = 190;
+    const imgHeight = (canvas.height * imgWidth) / canvas.width;
 
     pdf.addImage(imgData, "PNG", 10, 10, imgWidth, imgHeight);
     pdf.save(`${student.name}_Result.pdf`);
