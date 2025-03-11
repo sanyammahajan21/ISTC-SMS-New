@@ -33,12 +33,9 @@ const ResultListPage = async ({ searchParams }: { searchParams: { [key: string]:
       <td className="hidden md:table-cell">{item.subject.name}</td>
       <td>
         <div className="flex items-center gap-2">
-          {/* Link to Result Details Page */}
           <Link href={`/result/${item.id}`} className="text-blue-600 hover:underline">
             View Details
           </Link>
-
-          {/* Actions for Registrar & Teacher */}
           {(role === "registrar" || role === "teacher") && (
             <>
               <FormContainer table="result" type="update" data={item} />
@@ -50,7 +47,7 @@ const ResultListPage = async ({ searchParams }: { searchParams: { [key: string]:
     </tr>
   );
 
-  const { page, ...queryParams } = searchParams;
+  const { page, sortBy, sortOrder, ...queryParams } = searchParams;
   const p = page ? parseInt(page) : 1;
 
   const query: Prisma.ResultWhereInput = {};
@@ -58,7 +55,11 @@ const ResultListPage = async ({ searchParams }: { searchParams: { [key: string]:
   if (queryParams) {
     for (const [key, value] of Object.entries(queryParams)) {
       if (value !== undefined) {
-        if (key === "studentId") query.studentId = value;
+        if (key === "studentName") query.student = { name: { contains: value, mode: 'insensitive' } };
+        if (key === "examId") query.examId = parseInt(value);
+        if (key === "subjectId") query.subjectId = parseInt(value);
+        if (key === "branchId") query.student.branchId = parseInt(value);
+        if (key === "semester") query.student.semester = { level: parseInt(value) };
       }
     }
   }
@@ -77,6 +78,19 @@ const ResultListPage = async ({ searchParams }: { searchParams: { [key: string]:
       break;
   }
 
+  let orderBy: Prisma.ResultOrderByWithRelationInput = {};
+  if (sortBy) {
+    if (sortBy === 'subject') {
+      orderBy = { subject: { name: sortOrder === 'desc' ? 'desc' : 'asc' } };
+    } else if (sortBy === 'branch') {
+      orderBy = { student: { branch: { name: sortOrder === 'desc' ? 'desc' : 'asc' } } };
+    } else if (sortBy === 'semester') {
+      orderBy = { student: { semester: { level: sortOrder === 'desc' ? 'desc' : 'asc' } } };
+    } else if (sortBy === 'marks') {
+      orderBy = { overallMark: sortOrder === 'desc' ? 'desc' : 'asc' };
+    }
+  }
+
   const [dataRes, count] = await prisma.$transaction([
     prisma.result.findMany({
       where: query,
@@ -87,6 +101,7 @@ const ResultListPage = async ({ searchParams }: { searchParams: { [key: string]:
       },
       take: ITEM_PER_PAGE,
       skip: ITEM_PER_PAGE * (p - 1),
+      orderBy,
     }),
     prisma.result.count({ where: query }),
   ]);
@@ -103,20 +118,9 @@ const ResultListPage = async ({ searchParams }: { searchParams: { [key: string]:
       <div className="flex items-center justify-between">
         <StudentResultDownload role={role} />
         <h1 className="hidden md:block text-lg font-semibold">All Results</h1>
-        <div className="flex flex-col md:flex-row items-center gap-4 w-full md:w-auto">
-          <TableSearch />
-          <div className="flex items-center gap-4 self-end">
-            <button className="w-8 h-8 flex items-center justify-center rounded-full bg-lamaYellow">
-              <Image src="/filter.png" alt="" width={14} height={14} />
-            </button>
-            <button className="w-8 h-8 flex items-center justify-center rounded-full bg-lamaYellow">
-              <Image src="/sort.png" alt="" width={14} height={14} />
-            </button>
-            {(role === "registrar" || role === "teacher") && <FormContainer table="result" type="create" />}
-          </div>
-        </div>
       </div>
-      <Table columns={columns} renderRow={renderRow} data={data} />
+      <TableSearch />
+      <Table columns={columns} data={data} renderRow={renderRow} />
       <Pagination page={p} count={count} />
     </div>
   );

@@ -7,7 +7,7 @@ import { ITEM_PER_PAGE } from "@/lib/settings";
 import { Branch, Prisma, Student } from "@prisma/client";
 import Image from "next/image";
 import Link from "next/link";
-import { auth } from "@clerk/nextjs/server"; // Use auth() for server-side authentication
+import { auth } from "@clerk/nextjs/server"; 
 import Filters from "@/components/Filter";
 
 type StudentList = Student & { branch: Branch };
@@ -17,7 +17,6 @@ const StudentListPage = async ({
 }: {
   searchParams: { [key: string]: string | undefined };
 }) => {
-  // Fetch authentication data on the server side
   const { sessionClaims } = auth();
   const role = (sessionClaims?.metadata as { role?: string })?.role;
   const userId = sessionClaims?.sub; // Get the user ID from the session

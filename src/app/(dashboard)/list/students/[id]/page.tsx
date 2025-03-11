@@ -74,10 +74,22 @@ const SingleStudentPage = async ({
               <p className="text-sm text-gray-500">
               The username of student is {student.username}.
               Studying in Branch {student.branch.name} {""}
-              In Semester {student.semesterId}. 
+              In Semester {student.semester.level}. 
               Father's Name: {student.fatherName}.<br/>
               Mother's Name: {student.motherName}.
               </p>
+              <div className="flex items-center justify-between gap-2 flex-wrap text-xs font-medium">
+                <div className="w-full md:w-1/3 lg:w-full 2xl:w-1/3 flex items-center gap-2">
+                  <Image src="/blood.png" alt="" width={14} height={14} />
+                  <span>{student.bloodType}</span>
+                </div>
+                <div className="w-full md:w-1/3 lg:w-full 2xl:w-1/3 flex items-center gap-2">
+                  <Image src="/date.png" alt="" width={14} height={14} />
+                  <span>
+                    {new Intl.DateTimeFormat("en-GB").format(student.birthday)}
+                  </span>
+                </div>
+              </div>  
               <div className="flex items-center justify-between gap-2 flex-wrap text-xs font-medium">
                 <div className="w-full md:w-1/3 lg:w-full 2xl:w-1/3 flex items-center gap-2">
                   {student.email}
@@ -114,10 +126,10 @@ const SingleStudentPage = async ({
                 className="w-6 h-6"
               />
               <div className="">
-                <h1 className="text-xl font-semibold">
-                  {student.branch.name.charAt(0)}th
-                </h1>
                 <span className="text-sm text-gray-400">Semester</span>
+                <h1 className="text-xl font-semibold">
+                  {student.semester.level}
+                </h1>
               </div>
             </div>
             {/* CARD */}

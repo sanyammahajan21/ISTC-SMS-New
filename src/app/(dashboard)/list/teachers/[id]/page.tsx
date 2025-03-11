@@ -292,21 +292,7 @@ const SingleTeacherPage = async ({
           
           {/* STATS CARDS */}
           <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-4">
-            {/* ATTENDANCE CARD */}
-            <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-100 flex items-center gap-4">
-              <div className="w-12 h-12 flex items-center justify-center bg-blue-50 rounded-lg">
-                <Image
-                  src="/singleAttendance.png"
-                  alt="Attendance"
-                  width={24}
-                  height={24}
-                />
-              </div>
-              <div>
-                <h2 className="text-2xl font-semibold text-gray-800">90%</h2>
-                <span className="text-sm text-gray-500">Attendance Rate</span>
-              </div>
-            </div>
+           
             
             {/* BRANCHES CARD */}
             <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-100 flex items-center gap-4">
@@ -326,25 +312,8 @@ const SingleTeacherPage = async ({
               </div>
             </div>
             
-            {/* LESSONS CARD */}
-            <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-100 flex items-center gap-4">
-              <div className="w-12 h-12 flex items-center justify-center bg-purple-50 rounded-lg">
-                <Image
-                  src="/singleLesson.png"
-                  alt="Lessons"
-                  width={24}
-                  height={24}
-                />
-              </div>
-              <div>
-                <h2 className="text-2xl font-semibold text-gray-800">
-                  {teacher._count.lectures || 0}
-                </h2>
-                <span className="text-sm text-gray-500">Total Lectures</span>
-              </div>
-            </div>
-            
-            {/* CLASSES CARD */}
+           
+            {/* BRANCH CARD */}
             <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-100 flex items-center gap-4">
               <div className="w-12 h-12 flex items-center justify-center bg-yellow-50 rounded-lg">
                 <Image
@@ -364,11 +333,11 @@ const SingleTeacherPage = async ({
           </div>
         </div>
         
-        {/* SCHEDULE CALENDAR */}
+        {/* SCHEDULE CALENDAR
         <div className="bg-white p-4 rounded-lg shadow-md">
         <h2 className="text-lg font-semibold mb-6 text-white text-center bg-blue-500 p-2 rounded-md"> Teachers Schedule</h2>
           <BigCalendarContainer type="teacherId" id={teacher.id} />
-        </div>
+        </div> */}
       </div>
       
       {/* RIGHT SECTION */}
@@ -396,15 +365,7 @@ const SingleTeacherPage = async ({
               </div>
               Teacher's Students
             </Link>
-            <Link
-              className="p-3 rounded-md bg-yellow-50 hover:bg-yellow-100 transition-colors flex items-center gap-2 text-yellow-700 font-medium"
-              href={`/list/lessons?teacherId=${teacher.id}`}
-            >
-              <div className="w-6 h-6 flex items-center justify-center bg-yellow-100 rounded-full">
-                <Image src="/singleLesson.png" alt="" width={14} height={14} />
-              </div>
-              Teacher's Lessons
-            </Link>
+            
             <Link
               className="p-3 rounded-md bg-pink-50 hover:bg-pink-100 transition-colors flex items-center gap-2 text-pink-700 font-medium"
               href={`/list/exams?teacherId=${teacher.id}`}
@@ -414,15 +375,7 @@ const SingleTeacherPage = async ({
               </div>
               Teacher's Exams
             </Link>
-            <Link
-              className="p-3 rounded-md bg-green-50 hover:bg-green-100 transition-colors flex items-center gap-2 text-green-700 font-medium"
-              href={`/list/assignments?teacherId=${teacher.id}`}
-            >
-              <div className="w-6 h-6 flex items-center justify-center bg-green-100 rounded-full">
-                <Image src="/singleBranch.png" alt="" width={14} height={14} />
-              </div>
-              Teacher's Assignments
-            </Link>
+            
           </div>
         </div>
         
