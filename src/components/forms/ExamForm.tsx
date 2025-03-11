@@ -19,7 +19,7 @@ interface Exam {
   subjectId: number;
   examDate: Date;
   startTime: Date;
-  endTime: Date; // Stored in the database
+  endTime: Date;
   semesterId: number;
   branchId: number;
 }
@@ -27,6 +27,7 @@ interface Exam {
 interface Semester {
   id: number;
   level: number;
+  branchId: number; // Add branchId to Semester interface
 }
 
 interface Branch {
@@ -57,11 +58,14 @@ export default function ExamPage({ role }: ExamPageProps) {
     subjectId: 0,
     examDate: new Date(),
     startTime: new Date(),
-    endTime: new Date(), 
+    endTime: new Date(),
     semesterId: 0,
     branchId: 0,
   });
-  const [duration, setDuration] = useState<string>("50"); 
+  const [duration, setDuration] = useState<string>("50");
+  const [availableSemesters, setAvailableSemesters] = useState<Semester[]>([]);
+
+  // Fetch initial data
   useEffect(() => {
     async function fetchData() {
       const examsResponse = await getAllExams();
@@ -76,6 +80,7 @@ export default function ExamPage({ role }: ExamPageProps) {
     fetchData();
   }, []);
 
+  // Fetch subjects when selectedSemester and selectedBranch change
   useEffect(() => {
     if (selectedSemester && selectedBranch) {
       fetchSubjects(selectedSemester, selectedBranch).then((response) => {
@@ -86,9 +91,23 @@ export default function ExamPage({ role }: ExamPageProps) {
         }
       });
     } else {
-      setSubjects([]); 
+      setSubjects([]); // Clear subjects if no semester or branch is selected
     }
   }, [selectedSemester, selectedBranch]);
+
+  // Filter semesters based on the selected branch in the form
+  useEffect(() => {
+    if (form.branchId) {
+      const filteredSemesters = semesters.filter(
+        (semester) => semester.branchId === form.branchId
+      );
+      setAvailableSemesters(filteredSemesters);
+    } else {
+      setAvailableSemesters([]);
+    }
+  }, [form.branchId, semesters]);
+
+  // Fetch subjects when form.semesterId or form.branchId changes
   useEffect(() => {
     if (form.semesterId && form.branchId) {
       fetchSubjects(form.semesterId, form.branchId).then((response) => {
@@ -98,8 +117,11 @@ export default function ExamPage({ role }: ExamPageProps) {
           console.error("Failed to fetch subjects:", response?.error);
         }
       });
+    } else {
+      setSubjects([]); // Clear subjects if no semester or branch is selected
     }
   }, [form.semesterId, form.branchId]);
+
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
@@ -111,6 +133,7 @@ export default function ExamPage({ role }: ExamPageProps) {
         : value,
     }));
   };
+
   const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, type } = e.target;
     if (!value) return;
@@ -137,6 +160,7 @@ export default function ExamPage({ role }: ExamPageProps) {
       return { ...prev, [name]: updatedDate };
     });
   };
+
   const calculateEndTime = (startTime: Date, duration: string): Date => {
     const endTime = new Date(startTime);
     if (duration === "50") {
@@ -198,8 +222,8 @@ export default function ExamPage({ role }: ExamPageProps) {
       toast(`Exam has been updated`);
     } else {
       if (window.confirm("Are you sure you want to add this exam?")) {
-      await createExam(payload);
-      toast(`Exam has been created`);
+        await createExam(payload);
+        toast(`Exam has been created`);
       }
     }
 
@@ -210,10 +234,11 @@ export default function ExamPage({ role }: ExamPageProps) {
       examDate: new Date(),
       startTime: new Date(),
       endTime: new Date(),
-      semesterId: prev.semesterId, 
-      branchId: prev.branchId, 
+      semesterId: prev.semesterId,
+      branchId: prev.branchId,
     }));
   };
+
   const handleUpdateExam = (exam: Exam) => {
     setForm({
       id: exam.id,
@@ -225,6 +250,7 @@ export default function ExamPage({ role }: ExamPageProps) {
       branchId: exam.branchId,
     });
   };
+
   const handleDeleteExam = async (examId: number) => {
     if (window.confirm("Are you sure you want to delete this exam?")) {
       await deleteExam(examId);
@@ -232,6 +258,7 @@ export default function ExamPage({ role }: ExamPageProps) {
       if (response?.success) setExams(response?.data ?? []);
     }
   };
+
   const availableSubjects = subjects.filter(
     (subject) => !exams.some((exam) => exam.subjectId === subject.id)
   );
@@ -298,6 +325,7 @@ export default function ExamPage({ role }: ExamPageProps) {
 
     doc.save("Complete_Datesheet.pdf");
   };
+
   const downloadSchedulePDF = async (
     exams: Exam[],
     branchName: string,
@@ -350,7 +378,6 @@ export default function ExamPage({ role }: ExamPageProps) {
     doc.save(`Exam_Schedule_${branchName}_Semester_${semesterLevel}.pdf`);
   };
 
-
   return (
     <div className="w-full mx-auto p-4">
       {role === "registrar" && (
@@ -360,21 +387,7 @@ export default function ExamPage({ role }: ExamPageProps) {
         >
           <h1 className="text-2xl font-bold mb-4">Manage Exams</h1>
           <div className="gap-4">
-            <select
-              name="semesterId"
-              value={form.semesterId}
-              onChange={handleChange}
-              className="p-2 border rounded-md"
-              required
-            >
-              <option value="">Select Semester</option>
-              {semesters.map((sem) => (
-                <option
-                  key={sem.id}
-                  value={sem.id}
-                >{`Semester ${sem.level}`}</option>
-              ))}
-            </select>
+            {/* Branch Selection */}
             <select
               name="branchId"
               value={form.branchId}
@@ -389,12 +402,32 @@ export default function ExamPage({ role }: ExamPageProps) {
                 </option>
               ))}
             </select>
+
+            {/* Semester Selection */}
+            <select
+              name="semesterId"
+              value={form.semesterId}
+              onChange={handleChange}
+              className="p-2 border rounded-md"
+              required
+              disabled={!form.branchId}
+            >
+              <option value="">Select Semester</option>
+              {availableSemesters.map((sem) => (
+                <option key={sem.id} value={sem.id}>
+                  {`Semester ${sem.level}`}
+                </option>
+              ))}
+            </select>
+
+            {/* Subject Selection */}
             <select
               name="subjectId"
               value={form.subjectId || 0}
               onChange={handleChange}
               className="p-2 border rounded-md"
               required
+              disabled={!form.semesterId}
             >
               <option value="">Select Subject</option>
               {availableSubjects.map((subject) => (
@@ -403,6 +436,8 @@ export default function ExamPage({ role }: ExamPageProps) {
                 </option>
               ))}
             </select>
+
+            {/* Exam Date */}
             <input
               type="date"
               name="examDate"
@@ -416,6 +451,8 @@ export default function ExamPage({ role }: ExamPageProps) {
               className="p-2 border rounded-md"
               required
             />
+
+            {/* Start Time */}
             <input
               type="time"
               name="startTime"
@@ -429,6 +466,8 @@ export default function ExamPage({ role }: ExamPageProps) {
               className="p-2 border rounded-md"
               required
             />
+
+            {/* Duration */}
             <select
               name="duration"
               value={duration}
@@ -449,25 +488,17 @@ export default function ExamPage({ role }: ExamPageProps) {
           </button>
         </form>
       )}
-      <h1 className="text-2xl font-bold mb-4">Exam Datesheet</h1>
 
+      {/* Exam Datesheet Display */}
+      <h1 className="text-2xl font-bold mb-4">Exam Datesheet</h1>
       <div className="flex gap-4 mb-6">
-        <select
-          value={selectedSemester}
-          onChange={(e) => setSelectedSemester(Number(e.target.value) || "")}
-          className="p-2 border rounded-md"
-        >
-          <option value="">Select Semester</option>
-          {semesters.map((sem) => (
-            <option
-              key={sem.id}
-              value={sem.id}
-            >{`Semester ${sem.level}`}</option>
-          ))}
-        </select>
+        {/* Branch Selection */}
         <select
           value={selectedBranch}
-          onChange={(e) => setSelectedBranch(Number(e.target.value) || "")}
+          onChange={(e) => {
+            setSelectedBranch(Number(e.target.value) || "");
+            setSelectedSemester(""); // Reset semester when branch changes
+          }}
           className="p-2 border rounded-md"
         >
           <option value="">Select Branch</option>
@@ -477,6 +508,25 @@ export default function ExamPage({ role }: ExamPageProps) {
             </option>
           ))}
         </select>
+
+        {/* Semester Selection */}
+        <select
+          value={selectedSemester}
+          onChange={(e) => setSelectedSemester(Number(e.target.value) || "")}
+          className="p-2 border rounded-md"
+          disabled={!selectedBranch} // Disable if no branch is selected
+        >
+          <option value="">Select Semester</option>
+          {semesters
+            .filter((semester) => semester.branchId === selectedBranch) // Filter semesters by branch
+            .map((semester) => (
+              <option key={semester.id} value={semester.id}>
+                {`Semester ${semester.level}`}
+              </option>
+            ))}
+        </select>
+
+        {/* Download Complete Datesheet Button */}
         <button
           onClick={downloadCompleteDatesheet}
           className="bg-green-500 text-white p-2 rounded-md ml-auto"
@@ -485,6 +535,7 @@ export default function ExamPage({ role }: ExamPageProps) {
         </button>
       </div>
 
+      {/* Display Exams for Selected Branch and Semester */}
       {selectedSemester && selectedBranch && (
         <div>
           <h2 className="text-xl font-semibold mb-2">
