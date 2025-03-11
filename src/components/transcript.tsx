@@ -21,7 +21,42 @@ interface SubjectAbbreviation {
   name: string;
 }
 
+// Helper interface for gender-specific terms
+interface GenderTerms {
+  title: string;      // Mr./Mrs./Mx.
+  pronoun: string;    // he/she/they
+  possessive: string; // his/her/their
+  childOf: string;    // s/o (son of) or d/o (daughter of)
+}
+
 const TranscriptCertificate = ({ student, startDate, endDate }: TranscriptCertificateProps) => {
+  // Helper function to get gender-specific terms
+  const getGenderTerms = (sex: string | null): GenderTerms => {
+    if (sex === 'female') {
+      return {
+        title: 'Mrs.',
+        pronoun: 'she',
+        possessive: 'her',
+        childOf: 'd/o'
+      };
+    } else if (sex === 'other') {
+      return {
+        title: 'Mr.',
+        pronoun: 'they',
+        possessive: 'their',
+        childOf: 'c/o'
+      };
+    } else {
+      // Default to male terms if null or unspecified
+      return {
+        title: 'Mr.',
+        pronoun: 'he',
+        possessive: 'his',
+        childOf: 's/o'
+      };
+    }
+  };
+
   // Helper function to group results by semester
   const groupResultsBySemester = (results: (Result & { subject: Subject })[]) => {
     const grouped: Record<number, (Result & { subject: Subject })[]> = {};
@@ -85,65 +120,65 @@ const TranscriptCertificate = ({ student, startDate, endDate }: TranscriptCertif
       const courseStartDate = startDate || `September ${birthdayYear}`;
       const courseEndDate = endDate || `July ${birthdayYear + 4}`;
       
+      // Get gender-specific terms
+      const genderTerms = getGenderTerms(student.sex);
+      
       // Add date at top
       doc.setFontSize(10);
-      doc.text(`Dated: ${formattedDate}`, 20, 20);
+      doc.text(`Dated: ${formattedDate}`, 90, 15);
       
       // Add TRANSCRIPT header
       doc.setFontSize(12);
       doc.setFont('helvetica', 'bold');
-      doc.text('TRANSCRIPT', 105, 30, { align: 'center' });
+      doc.text('TRANSCRIPT', 105, 22, { align: 'center' });
       doc.setFont('helvetica', 'normal');
       
       // Add first paragraph with student details (like marksheet)
-doc.setFontSize(10);
-const fullText = `Certified that Mr. ${student.name}, Roll No. ${student.username}, s/o Shri ${student.fatherName}, has been a bonafide student of this Institute from ${courseStartDate} to ${courseEndDate}. He successfully completed the course on "${student.branch.name}" (4-Year), in ${courseEndDate} after passing all the eight semesters.`;
+      doc.setFontSize(10);
+      const fullText = `Certified that ${genderTerms.title} ${student.name}, Roll No. ${student.username}, ${genderTerms.childOf} Shri ${student.fatherName}, has been a bonafide student of this Institute from ${courseStartDate} to ${courseEndDate}. ${genderTerms.title === 'Mx.' ? 'They' : genderTerms.pronoun.charAt(0).toUpperCase() + genderTerms.pronoun.slice(1)} successfully completed the course on "${student.branch.name}" (4-Year), in ${courseEndDate} after passing all the eight semesters.`;
 
-// Set the starting position for the text
-let xPos = 20;
-let yPos = 40;  // Starting Y position for the first paragraph
+      // Set the starting position for the text
+      let xPos = 20;
+      let yPos = 30;  // Starting Y position for the first paragraph (reduced)
 
-// Split the text into lines if it exceeds the width
-const lines = doc.splitTextToSize(fullText, 170); // 170 is the width for the text
+      // Split the text into lines if it exceeds the width
+      const lines = doc.splitTextToSize(fullText, 170); // 170 is the width for the text
 
-// Adjust yPos based on the number of lines and add the text
-doc.text(lines, xPos, yPos);
+      // Adjust yPos based on the number of lines and add the text
+      doc.text(lines, xPos, yPos);
+      
+      // Add additional line about transcript issuance
+      doc.text(`This transcript is being issued to ${student.name} at ${genderTerms.possessive} own request for higher education`, 20, yPos + 13);
 
-// Update yPos after the paragraph has been added
-yPos += lines.length * 5; // Increase Y position based on the number of lines
-
-// Now yPos is ready for the next part of the document
+      // Update yPos after the paragraph has been added
+      yPos += lines.length * 5 + 5; // Increase Y position based on the number of lines plus additional line
 
       // Add second paragraph for marks details
-      const detailText = 'Following is the detail of the marks secured by him in the eight Semesters during his study at this institute.';
+      const detailText = `Following is the detail of the marks secured by ${genderTerms.pronoun} in the eight Semesters during ${genderTerms.possessive} study at this institute.`;
       doc.text(detailText, 20, yPos);
       
       // Starting Y position for semester tables
-      let yPosition = yPos + 10;
+      let yPosition = yPos + 8;
       
       // Group results by semester
       const semesterResults = groupResultsBySemester(student.results);
+      
+      // Reduced spacing between each semester table
+      const semesterSpacing = 20; // Reduced from the previous value
       
       // Add each semester's marks
       Object.keys(semesterResults).forEach((semKey, semesterIndex) => {
         const semesterNumber = parseInt(semKey);
         const semResults = semesterResults[semesterNumber];
         
-        // Check if we need a new page
-        if (yPosition > 250) {
-          doc.addPage();
-          yPosition = 20;
-        }
-        
         // Semester header with superscript
         doc.setFont('helvetica', 'bold');
         const superscript = getSemesterSuperscript(semesterNumber);
         const semHeader = `${semesterNumber}${superscript} Semester`;
-        
         doc.text(semHeader, 105, yPosition, { align: 'center' });
         doc.setFont('helvetica', 'normal');
         
-        yPosition += 10;
+        yPosition += 6; // Reduced from 10
         
         // Headers for the table (like marksheet)
         const tableX = 20;
@@ -249,10 +284,11 @@ yPos += lines.length * 5; // Increase Y position based on the number of lines
           { align: 'center' }
         );
         
-        yPosition += 15; // Move down for next semester
+        // Move down for next semester with reduced spacing
+        yPosition += semesterSpacing;
       });
       
-      // Create a new page for subject abbreviations
+      // Create a new page for subject abbreviations only after all semesters are done
       doc.addPage();
       
       // Add header for abbreviations page
@@ -342,9 +378,11 @@ yPos += lines.length * 5; // Increase Y position based on the number of lines
         abbrevYPos = currentY + 10;
       });
       
-      // Add signature spaces
+      // Add signature spaces on first page
       doc.setPage(1);
       doc.setFontSize(10);
+      
+      // Adjusted bottom Y position to ensure signatures fit on the first page
       const bottomY = 280;
       
       // Add signature lines
@@ -365,14 +403,12 @@ yPos += lines.length * 5; // Increase Y position based on the number of lines
   };
 
   return (
-  
-        
     <button
-    onClick={handleDownload}
-    className="p-3 rounded-md bg-lamaSkyLight hover:bg-lamaSky transition-colors"
-  >
-    Download Transcript
-  </button>
+      onClick={handleDownload}
+      className="p-3 rounded-md bg-lamaSkyLight hover:bg-lamaSky transition-colors"
+    >
+      Download Transcript
+    </button>
   );
 };
 

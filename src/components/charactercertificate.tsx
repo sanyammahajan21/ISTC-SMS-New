@@ -35,27 +35,28 @@ const fromMonthYear = `${createdAtDate.toLocaleString('default', { month: 'long'
 const toMonthYear = `${currentDate.toLocaleString('default', { month: 'long' })} ${currentDate.getFullYear()}`;
 
       // Add certificate number and date
-      doc.setFontSize(12);
-      doc.text(`No.Prin./Char/${certificateNumber}/ISTC Dated: ${formattedDate}`, 30, 40);
+      doc.setFontSize(14);
+      doc.text(`No.Prin./Char/${certificateNumber}/ISTC `, 32, 79);
+      doc.text(`Dated: ${formattedDate}`, 140, 79);
       
       doc.setFontSize(16);
-      doc.text('CHARACTER CERTIFICATE', 105, 60, { align: 'center' });
+      doc.text('CHARACTER CERTIFICATE', 105,97, { align: 'center' });
     
       doc.setLineWidth(0.5);
-      doc.line(70, 65, 140, 65);
+      doc.line(70, 98, 140, 98);
     
-      doc.setFontSize(12);
+      doc.setFontSize(14);
       
       const text = `This is to certify that ${student.name.toUpperCase()}, Roll No. ${student.username}, S/o D/o Sh. ${student.fatherName.toUpperCase()} was a bonafide student of this institute from ${fromMonthYear} to ${toMonthYear}.`;
 
-      const splitText = doc.splitTextToSize(text, 150);
-      doc.text(splitText, 30, 80);
+      const splitText = doc.splitTextToSize(text, 140);
+      doc.text(splitText, 30, 110);
       
       
-      doc.text('To the best of my knowledge, he/she bears a good moral character.', 30, 110);
+      doc.text('To the best of my knowledge, he/she bears a good moral character.', 29, 141);
       
      
-      doc.text('(Principal)', 150, 140);
+      doc.text('(Principal)', 157, 163);
       
       // Save the PDF
       doc.save(`${student.name}_character_certificate.pdf`);

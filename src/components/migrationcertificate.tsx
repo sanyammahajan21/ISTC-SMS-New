@@ -40,33 +40,34 @@ const MigrationCertificate = ({ student }: MigrationCertificateProps) => {
       const toMonthYear = `${currentDate.toLocaleString('default', { month: 'short' })} ${currentDate.getFullYear()}`;
       
       // Add certificate number and date (positioned as in the template)
-      doc.setFontSize(12);
-      doc.text(`No.Prin./Migr/${certificateNumber}/ISTC Dated: ${formattedDate}`, 30, 40);
+      doc.setFontSize(14);
+      doc.text(`No.Prin./Char/${certificateNumber}/ISTC `, 32, 79);
+      doc.text(`Dated: ${formattedDate}`, 140, 79);
       
       // Add certificate title
       doc.setFontSize(16);
-      doc.text('MIGRATION CERTIFICATE', 105, 60, { align: 'center' });
+      doc.text('MIGRATION CERTIFICATE', 105, 97, { align: 'center' });
       
       // Add underline
       doc.setLineWidth(0.5);
-      doc.line(70, 65, 140, 65);
+      doc.line(70, 98, 140, 98);
       
       // Add certificate text
-      doc.setFontSize(12);
+      doc.setFontSize(14);
       
       // Split the text to handle wrapping
       const text = `This is to certify that ${student.name.toUpperCase()}, Roll No. ${student.username}, S/o/D/o Sh. ${student.fatherName.toUpperCase()} was a bonafide student of this institute from ${fromMonthYear} to ${toMonthYear}.`;
       
-      const splitText = doc.splitTextToSize(text, 150);
-      doc.text(splitText, 30, 80);
+      const splitText = doc.splitTextToSize(text, 140);
+      doc.text(splitText, 30, 110);
       
       // Add the "No Objection" text with proper spacing as in the template
       const objectionText = "The institute has No Objection for his/her further studies from any recognized Board/Institute or University.";
       const splitObjText = doc.splitTextToSize(objectionText, 150);
-      doc.text(splitObjText, 30, 110);
+      doc.text(splitObjText, 29, 141);
       
       // Add principal signature with indentation as in the template
-      doc.text('(Principal)', 150, 140);
+      doc.text('(Principal)', 157, 163);
       
       // Save the PDF
       doc.save(`${student.name}_migration_certificate.pdf`);
