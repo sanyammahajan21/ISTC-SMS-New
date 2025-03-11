@@ -32,9 +32,9 @@ interface GenderTerms {
 const TranscriptCertificate = ({ student, startDate, endDate }: TranscriptCertificateProps) => {
   // Helper function to get gender-specific terms
   const getGenderTerms = (sex: string | null): GenderTerms => {
-    if (sex === 'female') {
+    if (sex === 'FEMALE') {
       return {
-        title: 'Mrs.',
+        title: 'Miss.',
         pronoun: 'she',
         possessive: 'her',
         childOf: 'd/o'
