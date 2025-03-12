@@ -35,10 +35,8 @@ const ResultListPage = async ({ searchParams }: { searchParams: { [key: string]:
       <td className="hidden md:table-cell">{item.subject.name}</td>
       <td>
         <div className="flex items-center gap-2">
-          <Link href={`/result/${item.id}`} className="text-blue-600 hover:underline">
-            View Details
-          </Link>
-          {(role === "registrar" || role === "teacher") && (
+          
+          {( role === "teacher") && (
             <>
               <FormContainer table="result" type="update" data={item} />
               <FormContainer table="result" type="delete" id={item.id} />
@@ -136,8 +134,9 @@ const ResultListPage = async ({ searchParams }: { searchParams: { [key: string]:
       <div className="flex items-center justify-between">
         <StudentResultDownload role={role} />
         <h1 className="hidden md:block text-lg font-semibold">All Results</h1>
+        <TableSearch />
       </div>
-      <TableSearch />
+    
       <ResultFilters
         branches={branches}
         semesters={semesters}
