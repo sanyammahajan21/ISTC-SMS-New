@@ -5,7 +5,7 @@ import StudentAttendanceCard from "@/components/StudentAttendanceCard";
 import StudentResultCard from "@/components/StudentResultCard";
 import prisma from "@/lib/prisma";
 import { auth } from "@clerk/nextjs/server";
-import {  Branch, Student, Result, Subject } from "@prisma/client";
+import { Branch, Student, Result, Subject } from "@prisma/client";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -14,7 +14,8 @@ import CharacterCertificate from "@/components/charactercertificate";
 import MigrationCertificate from "@/components/migrationcertificate"
 import MarksSheetCertificate from "@/components/Marksheet";
 import DiplomaGenerator from "@/components/diplomait";
-  import TranscriptCertificate from "@/components/transcript";
+import TranscriptCertificate from "@/components/transcript";
+
 const SingleStudentPage = async ({
   params: { id },
 }: {
@@ -44,158 +45,190 @@ const SingleStudentPage = async ({
     return notFound();
   }
 
+
+  const isGraduatingSemester = student.semesterId === 8;
+ const isdiploma = student.semesterId>=6;
+
   return (
-    <div className="flex-1 p-4 flex flex-col gap-4 xl:flex-row">
-      {/* LEFT */}
+    <div className="flex-1 p-6 flex flex-col gap-6 xl:flex-row bg-gray-50">
+      {/* LEFT SECTION */}
       <div className="w-full xl:w-2/3">
-        {/* TOP */}
-        <div className="flex flex-col lg:flex-row gap-4">
-          {/* USER INFO CARD */}
-          <div className="bg-lamaSky py-6 px-4 rounded-md flex-1 flex gap-4">
+        {/* PROFILE SECTION */}
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-gray-800 mb-2 font-mono">STUDENT DASHBOARD</h1>
+          <div className="h-1 w-24 bg-blue-700"></div>
+          <p className="text-sm text-gray-500 mt-1">Detailed information and academic records</p>
+        </div>
+        
+        <div className="flex flex-col lg:flex-row gap-6">
+          {/* STUDENT PROFILE CARD */}
+          <div className="bg-white p-6 rounded-lg shadow-sm flex-1 flex gap-6 border border-gray-100">
             <div className="w-1/3">
-              <Image
-                src={student.img || "/noAvatar.png"}
-                alt=""
-                width={144}
-                height={144}
-                className="w-36 h-36 rounded-full object-cover"
-              />
-            </div>
-            <div className="w-2/3 flex flex-col justify-between gap-4">
-              <div className="flex items-center gap-4">
-                <h1 className="text-xl font-semibold">
-                  {student.name}
-                </h1>
-                
-                {role === "admin" || role === "registrar" && (
-                  <FormContainer table="student" type="update" data={student} />
-                )}
+              <div className="relative w-36 h-36 rounded-full overflow-hidden border-4 border-gray-100 shadow-sm">
+                <Image
+                  src={student.img || "/noAvatar.png"}
+                  alt={`${student.name} `}
+                  width={144}
+                  height={144}
+                  className="w-full h-full object-cover"
+                />
               </div>
-              <p className="text-sm text-gray-500">
-              The username of student is {student.username}.
-              Studying in Branch {student.branch.name} {""}
-              In Semester {student.semester.level}. 
-              Father's Name: {student.fatherName}.<br/>
-              Mother's Name: {student.motherName}.
-              </p>
-              <div className="flex items-center justify-between gap-2 flex-wrap text-xs font-medium">
-                <div className="w-full md:w-1/3 lg:w-full 2xl:w-1/3 flex items-center gap-2">
-                  <Image src="/blood.png" alt="" width={14} height={14} />
-                  <span>{student.bloodType}</span>
+            </div>
+            <div className="w-2/3 flex flex-col justify-between">
+              <div>
+                <div className="flex items-center gap-4 mb-2">
+                  <h1 className="text-xl font-semibold text-gray-800">
+                    {student.name}
+                  </h1>
+                  {(role === "admin" || role === "registrar") && (
+                    <FormContainer table="student" type="update" data={student} />
+                  )}
                 </div>
-                <div className="w-full md:w-1/3 lg:w-full 2xl:w-1/3 flex items-center gap-2">
-                  <Image src="/date.png" alt="" width={14} height={14} />
-                  <span>
-                    {new Intl.DateTimeFormat("en-GB").format(student.birthday)}
-                  </span>
-                </div>
-              </div>  
-              <div className="flex items-center justify-between gap-2 flex-wrap text-xs font-medium">
-                <div className="w-full md:w-1/3 lg:w-full 2xl:w-1/3 flex items-center gap-2">
-                  {student.email}
-                </div>
-                <div className="w-full md:w-1/3 lg:w-full 2xl:w-1/3 flex items-center gap-2">
-                  <Image src="/phone.png" alt="" width={14} height={14} />
-                  {student.phone}
-                </div>
+                <p className="text-sm text-gray-500 mb-4">
+                  <span className="font-medium text-gray-600">Username:</span> {student.username}<br/>
+                  <span className="font-medium text-gray-600">Email:</span> {student.email}<br/>
+                  <span className="font-medium text-gray-600">Phone:</span> {student.phone}<br/>
+                  <span className="font-medium text-gray-600">Father's Name:</span> {student.fatherName}<br/>
+                  <span className="font-medium text-gray-600">Mother's Name:</span> {student.motherName}
+                </p>
               </div>
             </div>
           </div>
-          {/* SMALL CARDS */}
-          <div className="flex-1 flex gap-4 justify-between flex-wrap">
-            {/* CARD */}
-            {/* <div className="bg-white p-4 rounded-md flex gap-4 w-full md:w-[48%] xl:w-[45%] 2xl:w-[48%]">
-              <Image
-                src="/singleAttendance.png"
-                alt=""
-                width={24}
-                height={24}
-                className="w-6 h-6"
-              />
-              <Suspense fallback="loading...">
-                <StudentAttendanceCard id={student.id} />
-              </Suspense>
-            </div> */}
-            {/* CARD */}
-            <div className="bg-white p-4 rounded-md flex gap-4 w-full md:w-[48%] xl:w-[45%] 2xl:w-[48%]">
-              <Image
-                src="/singleBranch.png"
-                alt=""
-                width={24}
-                height={24}
-                className="w-6 h-6"
-              />
-              <div className="">
-                <span className="text-sm text-gray-400">Semester</span>
-                <h1 className="text-xl font-semibold">
-                  {student.semester.level}
-                </h1>
+          
+          {/* STATS CARDS */}
+          <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-4">
+            
+            {/* SEMESTER CARD */}
+            <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-100 flex items-center gap-4">
+              <div className="w-12 h-12 flex items-center justify-center bg-green-50 rounded-lg">
+                <Image
+                  src="/singleBranch.png"
+                  alt="Semester"
+                  width={24}
+                  height={24}
+                />
+              </div>
+              <div>
+                <h2 className="text-2xl font-semibold text-gray-800">
+                  {student.semesterId}
+                </h2>
+                <span className="text-sm text-gray-500">Current Semester</span>
               </div>
             </div>
-            {/* CARD */}
+            
+            {/* BRANCH CARD */}
+            <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-100 flex items-center gap-4">
+              <div className="w-12 h-12 flex items-center justify-center bg-purple-50 rounded-lg">
+                <Image
+                  src="/singleClass.png"
+                  alt="Branch"
+                  width={24}
+                  height={24}
+                />
+              </div>
+              <div>
+                <h2 className="text-2xl font-semibold text-gray-800">
+                  {student.branch.name}
+                </h2>
+                <span className="text-sm text-gray-500">Branch</span>
+              </div>
+            </div>
            
-            {/* CARD */}
-            <div className="bg-white p-4 rounded-md flex gap-4 w-full md:w-[48%] xl:w-[45%] 2xl:w-[48%]">
-              <Image
-                src="/singleClass.png"
-                alt=""
-                width={24}
-                height={24}
-                className="w-6 h-6"
-              />
-              <div className="">
-                <h1 className="text-xl font-semibold">{student.branch.name}</h1>
-                <span className="text-sm text-gray-400">Branch</span>
-              </div>
-            </div>
           </div>
         </div>
-        {/* BOTTOM */}
-        <div className="mt-4 bg-white rounded-md p-4 h-[800px]">
-          <h1 className="text-xl center">Student&apos;s Results</h1>
-          {/* <BigCalendarContainer type="branchId" id={student.branch.id} /> */}
-          <StudentResultCard student={student} results={student.results} />
+        
+        {/* RESULTS SECTION */}
+        <div className="bg-white p-4 rounded-lg shadow-md mt-6">
+          <h2 className="text-lg font-semibold mb-6 text-white text-center bg-blue-500 p-2 rounded-md">Academic Results</h2>
+          <div className="max-h-[600px] overflow-y-auto">
+            <StudentResultCard student={student} results={student.results} />
+          </div>
         </div>
       </div>
-      {/* RIGHT */}
-      <div className="w-full xl:w-1/3 flex flex-col gap-4">
-        <div className="bg-white p-4 rounded-md">
-          <h1 className="text-xl font-semibold">Shortcuts</h1>
-          <div className="mt-4 flex gap-4 flex-wrap text-xs text-gray-500">
-            {/* <Link
-              className="p-3 rounded-md bg-lamaSkyLight"
-              href={`/list/lectures?branchId=${student.branch.id}`}
-            >
-              Student&apos;s Lectures
-            </Link> */}
+      
+      {/* RIGHT SECTION */}
+      <div className="w-full xl:w-1/3 flex flex-col gap-6">
+        {/* SHORTCUTS PANEL */}
+        <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
+          <h2 className="text-lg font-semibold mb-2 text-white text-center bg-blue-500 p-2 rounded-md">Quick navigation</h2>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-1 gap-3">
             <Link
-              className="p-3 rounded-md bg-lamaPurpleLight"
+              className="p-3 rounded-md bg-purple-50 hover:bg-purple-100 transition-colors flex items-center gap-2 text-purple-700 font-medium"
               href={`/list/teachers?branchId=${student.branch.id}`}
             >
-              Student&apos;s Teachers
+              <div className="w-6 h-6 flex items-center justify-center bg-purple-100 rounded-full">
+                <Image src="/singleBranch.png" alt="" width={14} height={14} />
+              </div>
+              Student's Teachers
             </Link>
-            <CharacterCertificate student={student} />
-            <MigrationCertificate student={student} />
-            <MarksSheetCertificate student={student} />
-            <DiplomaGenerator student={student}/>
-            <TranscriptCertificate student={student}/>
-            {/* <Link
-              className="p-3 rounded-md bg-pink-50"
-              href={`/list/exams?branchId=${student.branch.id}`}
-            >
-              Student&apos;s Exams
-            </Link> */}
-           
             <Link
-              className="p-3 rounded-md bg-lamaYellowLight"
+              className="p-3 rounded-md bg-yellow-50 hover:bg-yellow-100 transition-colors flex items-center gap-2 text-yellow-700 font-medium"
               href={`/list/results?studentId=${student.id}`}
             >
-              Student&apos;s Results
+              <div className="w-6 h-6 flex items-center justify-center bg-yellow-100 rounded-full">
+                <Image src="/singleLesson.png" alt="" width={14} height={14} />
+              </div>
+              Student's Results
             </Link>
+            
+            {/* Certificates section - only show when semester = 8 */}
+            
+              <>
+                <div className="col-span-1 md:col-span-2 xl:col-span-1 mt-2 mb-1">
+                  <h3 className="text-sm font-semibold text-gray-700">Certificates & Documents</h3>
+                  <div className="h-0.5 w-full bg-gray-100 my-2"></div>
+                </div>
+                {isGraduatingSemester && (
+                <div className="p-3 rounded-md bg-green-50 hover:bg-green-100 transition-colors flex items-center gap-2 text-green-700 font-medium">
+                  <div className="w-6 h-6 flex items-center justify-center bg-green-100 rounded-full">
+                    <Image src="/singleBranch.png" alt="" width={14} height={14} />
+                  </div>
+                  <CharacterCertificate student={student} />
+                </div>
+                )}
+                {isGraduatingSemester && (
+                <div className="p-3 rounded-md bg-blue-50 hover:bg-blue-100 transition-colors flex items-center gap-2 text-blue-700 font-medium">
+                  <div className="w-6 h-6 flex items-center justify-center bg-blue-100 rounded-full">
+                    <Image src="/singleBranch.png" alt="" width={14} height={14} />
+                  </div>
+                  <MigrationCertificate student={student} />
+                </div>
+                )}
+                <div className="p-3 rounded-md bg-pink-50 hover:bg-pink-100 transition-colors flex items-center gap-2 text-pink-700 font-medium">
+                  <div className="w-6 h-6 flex items-center justify-center bg-pink-100 rounded-full">
+                    <Image src="/singleClass.png" alt="" width={14} height={14} />
+                  </div>
+                  <MarksSheetCertificate student={student} />
+                </div>
+                {isdiploma && (
+                <div className="p-3 rounded-md bg-indigo-50 hover:bg-indigo-100 transition-colors flex items-center gap-2 text-indigo-700 font-medium">
+                  <div className="w-6 h-6 flex items-center justify-center bg-indigo-100 rounded-full">
+                    <Image src="/singleClass.png" alt="" width={14} height={14} />
+                  </div>
+                  <DiplomaGenerator student={student} />
+                </div>
+                )}
+                {isGraduatingSemester && (
+                <div className="p-3 rounded-md bg-amber-50 hover:bg-amber-100 transition-colors flex items-center gap-2 text-amber-700 font-medium">
+                  <div className="w-6 h-6 flex items-center justify-center bg-amber-100 rounded-full">
+                    <Image src="/singleClass.png" alt="" width={14} height={14} />
+                  </div>
+                  <TranscriptCertificate student={student} />
+                </div>
+                )}
+              </>
+            
           </div>
         </div>
-        {/* <Performance /> */}
-        <Announcements />
+        
+        {/* ANNOUNCEMENTS PANEL */}
+        <div className="bg-white rounded-lg shadow-sm border border-gray-100 overflow-hidden">
+          <div className="bg-white p-4 rounded-lg shadow-md">
+            <h2 className="text-lg font-semibold mb-2 text-white text-center bg-blue-500 p-2 rounded-md">Announcements</h2>
+            <Announcements />
+          </div>
+        </div>
       </div>
     </div>
   );

@@ -22,7 +22,10 @@ const DiplomaGenerator = ({ student }: DiplomaProps) => {
       });
       const currentDate = new Date();
       const formattedDate = `${currentDate.toLocaleString('default', { month: 'long' })} ${currentDate.getDate()}, ${currentDate.getFullYear()}`;
-      
+      const createdDate = new Date(student.createdAt);
+
+      const graduationYear = createdDate.getFullYear() + 4;
+    
       // Set font
       doc.setFont('helvetica');
       
@@ -39,7 +42,7 @@ const DiplomaGenerator = ({ student }: DiplomaProps) => {
       doc.setFontSize(12);
       // U doc.setFontSize(12);se exact date from document
       doc.setFontSize(14);
-      doc.text("july,2014", 226 * scale, (1234 - 363) * scale);
+      doc.text(`July,${graduationYear}`, 226 * scale, (1234 - 363) * scale);
       
       // Use exact expiry date from document
       doc.text(`${formattedDate}`, 133 * scale, (1234 - 85) * scale);

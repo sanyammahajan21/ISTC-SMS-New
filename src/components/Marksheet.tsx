@@ -13,6 +13,26 @@ interface MarksSheetCertificateProps {
 
 const MarksSheetCertificate = ({ student }: MarksSheetCertificateProps) => {
   
+  // Calculate graduation year (student creation year + 4)
+  const calculateGraduationYear = () => {
+    const creationDate = new Date(student.createdAt);
+    const graduationYear = creationDate.getFullYear() + 4;
+    return graduationYear;
+  };
+  
+  // Determine semester period based on semester number
+  const getSemesterPeriod = () => {
+    const currentYear = new Date().getFullYear();
+    const semesterNumber = Number(student.semesterId);
+    
+
+    if (semesterNumber % 2 === 0) {
+      return `FEBRUARY${currentYear} to JUNE ${currentYear}`;
+    } else {
+      return `JULY${currentYear} to JANUARY ${currentYear}`;
+    }
+  };
+  
   const handleDownload = async () => {
     try {
       // Create a new PDF document
@@ -34,10 +54,7 @@ const MarksSheetCertificate = ({ student }: MarksSheetCertificateProps) => {
       // Date (top right)
       doc.setFontSize(10);
       const currentDate = new Date();
-      const toMonthYear = `${currentDate.toLocaleString('default', { month: 'short' })} ${currentDate.getFullYear()}`;
-     
       const formattedDate = `${currentDate.getDate()} ${currentDate.toLocaleString('default', { month: 'long' })}, ${currentDate.getFullYear()}`;
-    //   doc.text(formattedDate, 187 * scale, (1234 - 1148) * scale);
       
       // Program information
       doc.setFontSize(12);
@@ -47,9 +64,11 @@ const MarksSheetCertificate = ({ student }: MarksSheetCertificateProps) => {
       // Diploma program name (centered)
       doc.text(`DIPLOMA IN ${student.branch.name.toUpperCase()}`, 176 * scale, (1234 - 962) * scale);
       
-      // Semester period
-      doc.text(`${toMonthYear}  to ${toMonthYear}`, 310 * scale, (1234 - 882) * scale);
+      // Semester period based on odd/even semester
+      const semesterPeriod = getSemesterPeriod();
+      doc.text(semesterPeriod, 310 * scale, (1234 - 882) * scale);
       doc.text(` ${student.semesterId}`, 570 * scale, (1234 - 900) * scale);
+      
       // Student information
       doc.setFontSize(11);
       // Student name
@@ -85,7 +104,7 @@ const MarksSheetCertificate = ({ student }: MarksSheetCertificateProps) => {
         doc.text(result.subject.name, 120 * scale, (subjectStartY + index * yIncrement) * scale);
         
         // Calculate sessional and end term marks
-        const sessionalMarks = Number(result.sessionalExam) || '0';
+        const sessionalMarks = Number(result.sessionalExam) || 0;
         const endTermMarks = Number(result.endTerm) || 0;
         const sessionalMax = 50;
         const endTermMax = result.overallMark || 100;
@@ -124,6 +143,7 @@ const MarksSheetCertificate = ({ student }: MarksSheetCertificateProps) => {
       const percentage = (totalMarks / totalMaxMarks) * 100;
       doc.text(percentage >= 33 ? 'PASS' : 'FAIL', 284 * scale, (1234 - 249) * scale);
       
+      // Add current date at the bottom
       doc.text(formattedDate, 187 * scale, (1234 - 100) * scale);
       
       // Save the PDF
