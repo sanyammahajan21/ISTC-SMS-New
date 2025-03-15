@@ -14,6 +14,7 @@ import CharacterCertificate from "@/components/charactercertificate";
 import MigrationCertificate from "@/components/migrationcertificate"
 import MarksSheetCertificate from "@/components/Marksheet";
 import DiplomaGenerator from "@/components/diplomait";
+import DMC from "@/components/MarksSheetCertificate";
 import TranscriptCertificate from "@/components/transcript";
 
 const SingleStudentPage = async ({
@@ -200,6 +201,12 @@ const SingleStudentPage = async ({
                     <Image src="/singleClass.png" alt="" width={14} height={14} />
                   </div>
                   <MarksSheetCertificate student={student} />
+                </div>
+                <div className="p-3 rounded-md bg-pink-50 hover:bg-pink-100 transition-colors flex items-center gap-2 text-pink-700 font-medium">
+                  <div className="w-6 h-6 flex items-center justify-center bg-pink-100 rounded-full">
+                    <Image src="/singleClass.png" alt="" width={14} height={14} />
+                  </div>
+                  <DMC student={student} />
                 </div>
                 {isdiploma && (
                 <div className="p-3 rounded-md bg-indigo-50 hover:bg-indigo-100 transition-colors flex items-center gap-2 text-indigo-700 font-medium">
