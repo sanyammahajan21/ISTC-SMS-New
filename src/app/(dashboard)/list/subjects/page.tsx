@@ -4,9 +4,10 @@ import Table from "@/components/Table";
 import TableSearch from "@/components/TableSearch";
 import prisma from "@/lib/prisma";
 import { ITEM_PER_PAGE } from "@/lib/settings";
-import { Prisma, Subject , Teacher } from "@prisma/client";
+import { Prisma, Subject, Teacher, Semester, Branch } from "@prisma/client";
 import Image from "next/image";
 import { auth } from "@clerk/nextjs/server";
+import { SubjectFilters } from "@/components/Filter";
 
 type SubjectList = Subject & { teachers: Teacher[] };
 
@@ -56,26 +57,39 @@ const SubjectListPage = async ({
     </tr>
   );
 
-  const { page, ...queryParams } = searchParams;
+  const { page, branchId, semester, ...queryParams } = searchParams;
 
   const p = page ? parseInt(page) : 1;
 
-  // URL PARAMS CONDITION
-
+  // Query logic
   const query: Prisma.SubjectWhereInput = {};
 
+  // Search functionality
   if (queryParams) {
     for (const [key, value] of Object.entries(queryParams)) {
       if (value !== undefined) {
         switch (key) {
-          // case "search":
-          //   query.name = { contains: value, mode: "insensitive" };
-          //   break;
+          case "search":
+            // Case-insensitive search without `mode`
+            query.name = {
+              contains: value.toLowerCase(), // Convert search term to lowercase
+            };
+            break;
           default:
             break;
         }
       }
     }
+  }
+
+  // Filter by branch
+  if (branchId) {
+    query.branchId = parseInt(branchId); // Parse branchId as an integer
+  }
+
+  // Filter by semester
+  if (semester) {
+    query.semesterId = parseInt(semester); // Parse semester as an integer
   }
 
   const [data, count] = await prisma.$transaction([
@@ -90,6 +104,12 @@ const SubjectListPage = async ({
     prisma.subject.count({ where: query }),
   ]);
 
+  // Fetch branches and semesters for filters
+  const branches = await prisma.branch.findMany().catch(() => []);
+  const semesters = await prisma.semester.findMany({
+    where: branchId ? { branchId: parseInt(branchId) } : {}, // Filter semesters by branchId
+  }).catch(() => []);
+
   return (
     <div className="bg-white p-4 rounded-md flex-1 m-4 mt-0">
       {/* TOP */}
@@ -98,12 +118,12 @@ const SubjectListPage = async ({
         <div className="flex flex-col md:flex-row items-center gap-4 w-full md:w-auto">
           <TableSearch />
           <div className="flex items-center gap-4 self-end">
-            <button className="w-8 h-8 flex items-center justify-center rounded-full bg-lamaYellow">
-              <Image src="/filter.png" alt="" width={14} height={14} />
-            </button>
-            <button className="w-8 h-8 flex items-center justify-center rounded-full bg-lamaYellow">
-              <Image src="/sort.png" alt="" width={14} height={14} />
-            </button>
+            <SubjectFilters
+              branches={branches}
+              semesters={semesters}
+              branchId={branchId}
+              semester={semester}
+            />
             {(role === "admin" || role === "registrar") && (
               <FormContainer table="subject" type="create" />
             )}

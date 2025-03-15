@@ -167,3 +167,62 @@ export  function ResultFilters({ branches = [], semesters = [], subjects = [], b
     </div>
   );
 }
+
+export  function SubjectFilters({ branches = [], semesters = [], branchId, semester }: FiltersProps) {
+  const router = useRouter();
+
+  // State for dependent dropdowns
+  const [filteredSemesters, setFilteredSemesters] = useState<Semester[]>(semesters);
+
+  // Update semesters when branch changes
+  useEffect(() => {
+    if (branchId) {
+      const filtered = semesters.filter((sem) => sem.branchId === parseInt(branchId));
+      setFilteredSemesters(filtered);
+    } else {
+      setFilteredSemesters(semesters);
+    }
+  }, [branchId, semesters]);
+
+  const handleFilterChange = (key: string, value: string) => {
+    const url = new URL(window.location.href);
+    if (value) {
+      url.searchParams.set(key, value);
+    } else {
+      url.searchParams.delete(key);
+    }
+    router.replace(url.toString());
+  };
+
+  return (
+    <div className="flex gap-4">
+      {/* Branch Dropdown */}
+      <select
+        defaultValue={branchId || ""}
+        onChange={(e) => handleFilterChange("branchId", e.target.value)}
+        className="p-2 border rounded"
+      >
+        <option value="">Filter by Branch</option>
+        {branches.map((branch) => (
+          <option key={branch.id} value={branch.id}>
+            {branch.name}
+          </option>
+        ))}
+      </select>
+
+      {/* Semester Dropdown */}
+      <select
+        defaultValue={semester || ""}
+        onChange={(e) => handleFilterChange("semester", e.target.value)}
+        className="p-2 border rounded"
+      >
+        <option value="">Filter by Semester</option>
+        {filteredSemesters.map((sem) => (
+          <option key={sem.id} value={sem.id}>
+            Semester {sem.level}
+          </option>
+        ))}
+      </select>
+    </div>
+  );
+}

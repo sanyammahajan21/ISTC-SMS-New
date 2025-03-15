@@ -7,10 +7,10 @@ import { ITEM_PER_PAGE } from "@/lib/settings";
 import { Branch, Prisma, Student } from "@prisma/client";
 import Image from "next/image";
 import Link from "next/link";
-import { auth } from "@clerk/nextjs/server"; 
-import Filters from "@/components/Filter";
+import { auth } from "@clerk/nextjs/server";
+import Filters, { ResultFilters, SubjectFilters } from "@/components/Filter";
 
-type StudentList = Student & { branch: Branch };
+type StudentList = Student & { branch: Branch; subject: Subject };
 
 const StudentListPage = async ({
   searchParams,
@@ -19,7 +19,7 @@ const StudentListPage = async ({
 }) => {
   const { sessionClaims } = auth();
   const role = (sessionClaims?.metadata as { role?: string })?.role;
-  const userId = sessionClaims?.sub; // Get the user ID from the session
+  const userId = sessionClaims?.sub;
 
   const columns = [
     {
@@ -120,9 +120,9 @@ const StudentListPage = async ({
       const branchIds = teacher.branches.map((branch) => branch.id);
       const semesterIds = teacher.branches
         .flatMap((branch) => branch.semesters.map((semester) => semester.id))
-        .filter((id): id is number => id !== null); 
+        .filter((id): id is number => id !== null);
       query.branchId = { in: branchIds };
-      query.semesterId = { in: semesterIds }; 
+      query.semesterId = { in: semesterIds };
     }
   }
 
@@ -150,17 +150,16 @@ const StudentListPage = async ({
       where: query,
       include: {
         branch: true,
-        semester: true, 
+        semester: true,
       },
       take: ITEM_PER_PAGE,
       skip: ITEM_PER_PAGE * (p - 1),
     }),
     prisma.student.count({ where: query }),
   ]);
-  const branches = await prisma.branch.findMany();
-  const semesters = await prisma.semester.findMany({
-    select: { id: true, level: true },
-  });
+  const branches = await prisma.branch.findMany().catch(() => []);
+  const semesters = await prisma.semester.findMany().catch(() => []);
+  const subjects = await prisma.subject.findMany().catch(() => []);
 
   return (
     <div className="bg-white p-6 rounded-lg shadow-md flex-1 m-4 mt-0 border border-gray-100">
@@ -179,11 +178,11 @@ const StudentListPage = async ({
             <TableSearch placeholder="Search students..." />
           </div>
           <div className="flex items-center gap-3 self-end">
-            <Filters
+            <SubjectFilters
               branches={branches}
               semesters={semesters}
-              selectedBranchId={branchId}
-              selectedSemester={semester}
+              branchId={branchId}
+              semester={semester}
             />
 
             {(role === "admin" || role === "registrar") && (
