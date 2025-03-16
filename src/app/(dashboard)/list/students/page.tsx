@@ -10,7 +10,7 @@ import Link from "next/link";
 import { auth } from "@clerk/nextjs/server";
 import Filters, { ResultFilters, SubjectFilters } from "@/components/Filter";
 
-type StudentList = Student & { branch: Branch; subject: Subject };
+type StudentList = Student & { branch: Branch};
 
 const StudentListPage = async ({
   searchParams,

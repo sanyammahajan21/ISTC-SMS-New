@@ -1,11 +1,15 @@
 import prisma from "@/lib/prisma";
 
 const SubjectDetailsPage = async ({ params }: { params: { subjectId: string } }) => {
-  // Parse the subjectId from the URL params
   const subjectId = parseInt(params.subjectId);
 
   if (isNaN(subjectId)) {
-    return <div>Invalid subject ID</div>;
+    return (
+      <div className="bg-white p-6 rounded-lg shadow-md flex-1 m-4 mt-0 border border-gray-100">
+        <h1 className="text-xl font-semibold text-gray-800 mb-6">Invalid Subject ID</h1>
+        <p className="text-gray-500">The provided subject ID is not valid.</p>
+      </div>
+    );
   }
 
   // Fetch the subject details
@@ -14,7 +18,12 @@ const SubjectDetailsPage = async ({ params }: { params: { subjectId: string } })
   });
 
   if (!subject) {
-    return <div>Subject not found</div>;
+    return (
+      <div className="bg-white p-6 rounded-lg shadow-md flex-1 m-4 mt-0 border border-gray-100">
+        <h1 className="text-xl font-semibold text-gray-800 mb-6">Subject Not Found</h1>
+        <p className="text-gray-500">No subject found with the provided ID.</p>
+      </div>
+    );
   }
 
   return (
