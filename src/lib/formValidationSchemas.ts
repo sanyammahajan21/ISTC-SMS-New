@@ -41,6 +41,7 @@ export const teacherSchema = z.object({
     .optional()
     .or(z.literal("")),
   phone: z.string().optional(),
+  suffix: z.enum(["Mr.", "Mrs.", "Miss" , "Dr."], { message: "Suffix is required!" }),
   division: z.string().optional(),
   branches: z.array(z.string()).optional(),
   subjects: z.array(z.string()).optional(), // subject ids

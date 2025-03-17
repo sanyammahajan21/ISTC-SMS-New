@@ -213,12 +213,12 @@ export const updateTeacher = async (
     return { success: false, error: true };
   }
   try {
-    const user = await clerkClient.users.updateUser(data.id, {
-      username: data.username,
-      ...(data.password !== "" && { password: data.password }),
-      name: data.name,
+    // const user = await clerkClient.users.updateUser(data.id, {
+    //   username: data.username,
+    //   ...(data.password !== "" && { password: data.password }),
+    //   name: data.name,
 
-    });
+    // });
 
     await prisma.teacher.update({
       where: {

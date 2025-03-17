@@ -51,22 +51,27 @@ export async function POST(req: NextRequest) {
     }
 
     // Step 1: Create users in Clerk and store the user IDs
-    const usersWithIds = await Promise.all(
-      teacherData.map(async (row) => {
-        const user = await clerkClient.users.createUser({
-          username: row.TeacherID,
-          password: "defaultPassword",
-          publicMetadata: { role: "teacher" },
-        });
-        return { userId: user.id, username: row.TeacherID, name: row.Name };
-      })
-    );
+    // const usersWithIds = await Promise.all(
+    //   teacherData.map(async (row) => {
+    //     const user = await clerkClient.users.createUser({
+    //       username: row.TeacherID,
+    //       password: "defaultPassword",
+    //       publicMetadata: { role: "teacher" },
+    //     });
+    //     return { userId: user.id, username: row.TeacherID, name: row.Name };
+    //   })
+    // );
 
-    // Step 2: Create teachers in Prisma using the user IDs from Clerk
-    const teachers = usersWithIds.map((user) => ({
-      id: user.userId,  // Use the userId from Clerk
-      name: user.name,
-      username: user.username,
+    // // Step 2: Create teachers in Prisma using the user IDs from Clerk
+    // const teachers = usersWithIds.map((user) => ({
+    //   id: user.userId,  // Use the userId from Clerk
+    //   name: user.name,
+    //   username: user.username,
+    //   password: "defaultPassword",
+    // }));
+    const teachers = teacherData.map((row) => ({
+      name: row.Name,
+      username: row.TeacherID,
       password: "defaultPassword",
     }));
 

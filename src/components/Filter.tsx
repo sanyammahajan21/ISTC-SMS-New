@@ -1,4 +1,4 @@
-"use client"; 
+"use client";
 
 import { useRouter } from "next/navigation";
 import { Branch, Semester, Subject } from "@prisma/client";
@@ -20,7 +20,7 @@ export default function Filters({
   selectedSemester,
 }: {
   branches: { id: number; name: string }[];
-  semesters: { id: number; level: number }[]; // Fix: Corrected semester type
+  semesters: { id: number; level: number }[];
   selectedBranchId?: string;
   selectedSemester?: string;
 }) {
@@ -81,7 +81,55 @@ export default function Filters({
   );
 }
 
-export  function ResultFilters({ branches = [], semesters = [], subjects = [], branchId, semester, subjectId }: FiltersProps) {
+export function TeacherFilter({
+  branches = [],
+  branchId,
+}: {
+  branches: { id: number; name: string }[];
+  
+  branchId?: string;
+}) {
+  const router = useRouter();
+
+  const handleBranchChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const branchId = e.target.value;
+    const url = new URL(window.location.href);
+    if (branchId) {
+      url.searchParams.set("branchId", branchId);
+    } else {
+      url.searchParams.delete("branchId");
+    }
+    router.push(url.toString());
+  };
+
+  
+  return (
+    <div className="flex items-center gap-2">
+      {/* Branch Filter */}
+      <select
+        className="p-2 rounded-md bg-blue-50 hover:bg-blue-100 transition-colors"
+        value={branchId || ""}
+        onChange={handleBranchChange}
+      >
+        <option value="">All Branches</option>
+        {branches.map((branch) => (
+          <option key={branch.id} value={branch.id}>
+            {branch.name}
+          </option>
+        ))}
+      </select>
+    </div>
+  );
+}
+
+export function ResultFilters({
+  branches = [],
+  semesters = [],
+  subjects = [],
+  branchId,
+  semester,
+  subjectId,
+}: FiltersProps) {
   const router = useRouter();
 
   // State for dependent dropdowns
@@ -168,7 +216,12 @@ export  function ResultFilters({ branches = [], semesters = [], subjects = [], b
   );
 }
 
-export  function SubjectFilters({ branches = [], semesters = [], branchId, semester }: FiltersProps) {
+export function SubjectFilters({
+  branches = [],
+  semesters = [],
+  branchId,
+  semester,
+}: FiltersProps) {
   const router = useRouter();
 
   // State for dependent dropdowns

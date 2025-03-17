@@ -8,6 +8,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { ITEM_PER_PAGE } from "@/lib/settings";
 import { auth } from "@clerk/nextjs/server";
+import { TeacherFilter } from "@/components/Filter";
 
 type TeacherList = Teacher & { subjects: Subject[] } & { branches: Branch[] };
 
@@ -47,6 +48,8 @@ const TeacherListPage = async ({
         ]
       : []),
   ];
+  const branches = await prisma.branch.findMany();
+  const semesters = await prisma.semester.findMany();
 
   const renderRow = (item: TeacherList) => (
     <tr
@@ -81,12 +84,12 @@ const TeacherListPage = async ({
               <>View</>
             </button>
           </Link>
-          {(role === "registrar" || role === 'admin') && (
-          <>
-            <FormContainer table="teacher" type="update" data={item} />
-            <FormContainer table="teacher" type="delete" id={item.id} />
-          </>
-        )}
+          {(role === "registrar" || role === "admin") && (
+            <>
+              <FormContainer table="teacher" type="update" data={item} />
+              <FormContainer table="teacher" type="delete" id={item.id} />
+            </>
+          )}
         </div>
       </td>
     </tr>
@@ -95,9 +98,9 @@ const TeacherListPage = async ({
   const { page, search, branchId, sort } = searchParams;
 
   const p = page ? parseInt(page) : 1;
-  
+
   const query: Prisma.TeacherWhereInput = {};
-  
+
   if (search) {
     query.OR = [
       { name: { contains: search.toLowerCase() } },
@@ -105,7 +108,7 @@ const TeacherListPage = async ({
       { username: { contains: search.toLowerCase() } },
     ];
   }
-  
+
   if (branchId) {
     query.branches = {
       some: {
@@ -113,15 +116,15 @@ const TeacherListPage = async ({
       },
     };
   }
-  
+
   const orderBy: Prisma.TeacherOrderByWithRelationInput = {};
-  
-  if (sort === "name") {
-    orderBy.name = "asc";
-  } else if (sort === "branch") {
-    orderBy.branches = { _count: "asc" };
-  }
-  
+
+  // if (sort === "name") {
+  //   orderBy.name = "asc";
+  // } else if (sort === "branch") {
+  //   orderBy.branches = { _count: "asc" };
+  // }
+
   const [data, count] = await prisma.$transaction([
     prisma.teacher.findMany({
       where: query,
@@ -153,18 +156,31 @@ const TeacherListPage = async ({
             <TableSearch placeholder="Search teachers..." />
           </div>
           <div className="flex items-center gap-3 self-end">
-            <Link href={`/list/teachers?branchId=${branchId || ""}&sort=name`}>
+            {/* <Link href={`/list/teachers?branchId=${branchId || ""}&sort=name`}>
               <button className="flex items-center justify-center p-2 rounded-md bg-blue-50 hover:bg-blue-100 transition-colors">
                 <Image src="/sort.png" alt="Sort" width={16} height={16} />
-                <span className="ml-2 text-sm font-medium text-blue-700 hidden md:inline">Sort by Name</span>
+                <span className="ml-2 text-sm font-medium text-blue-700 hidden md:inline">
+                  Sort by Name
+                </span>
               </button>
             </Link>
-            <Link href={`/list/teachers?branchId=${branchId || ""}&sort=branch`}>
+            <Link
+              href={`/list/teachers?branchId=${branchId || ""}&sort=branch`}
+            >
               <button className="flex items-center justify-center p-2 rounded-md bg-blue-50 hover:bg-blue-100 transition-colors">
                 <Image src="/sort.png" alt="Sort" width={16} height={16} />
-                <span className="ml-2 text-sm font-medium text-blue-700 hidden md:inline">Sort by Branch</span>
+                <span className="ml-2 text-sm font-medium text-blue-700 hidden md:inline">
+                  Sort by Branch
+                </span>
               </button>
-            </Link>
+            </Link> */}
+            <TeacherFilter
+              branches={branches}
+              // semesters={semesters}
+              branchId={searchParams.branchId}
+              // semester={searchParams.semester}
+            />
+
             {(role === "admin" || role === "registrar") && (
               <FormContainer table="teacher" type="create" />
             )}

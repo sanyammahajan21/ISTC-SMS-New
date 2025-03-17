@@ -3,14 +3,12 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import InputField from "../InputField";
-import Image from "next/image";
-import { Dispatch, SetStateAction, useEffect, useState } from "react";
+import { Dispatch, SetStateAction, useEffect } from "react";
 import { teacherSchema, TeacherSchema } from "@/lib/formValidationSchemas";
 import { useFormState } from "react-dom";
 import { createTeacher, updateTeacher } from "@/lib/actions";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
-import { CldUploadWidget } from "next-cloudinary";
 
 const TeacherForm = ({
   type,
@@ -26,12 +24,11 @@ const TeacherForm = ({
   const {
     register,
     handleSubmit,
+    setValue,
     formState: { errors },
   } = useForm<TeacherSchema>({
     resolver: zodResolver(teacherSchema),
   });
-
-  const [img, setImg] = useState<any>();
 
   const [state, formAction] = useFormState(
     type === "create" ? createTeacher : updateTeacher,
@@ -41,11 +38,33 @@ const TeacherForm = ({
     }
   );
 
-  const onSubmit = handleSubmit((data) => {
-    formAction({ ...data});
-  });
-
   const router = useRouter();
+
+  // Split the name into suffix and name during updates
+  useEffect(() => {
+    if (type === "update" && data?.name) {
+      const [suffix, ...rest] = data.name.split(" ");
+      const nameWithoutSuffix = rest.join(" ");
+
+      // Set the suffix and name fields
+      setValue("suffix", suffix);
+      setValue("name", nameWithoutSuffix);
+    }
+  }, [data, type, setValue]);
+
+  const onSubmit = handleSubmit((formData) => {
+    // Combine suffix and name into a single name field
+    const fullName = `${formData.suffix} ${formData.name}`;
+
+    // Create a new object with the combined name
+    const payload = {
+      ...formData,
+      name: fullName,
+    };
+
+    // Call the form action with the updated payload
+    formAction(payload);
+  });
 
   useEffect(() => {
     if (state.success) {
@@ -93,6 +112,27 @@ const TeacherForm = ({
         Personal Information
       </span>
       <div className="flex justify-between flex-wrap gap-4">
+        {/* Suffix Dropdown */}
+        <div className="flex flex-col gap-2 w-full md:w-1/4">
+          <label className="text-xs text-gray-500">Suffix</label>
+          <select
+            className="ring-[1.5px] ring-gray-300 p-2 rounded-md text-sm w-full"
+            {...register("suffix")}
+            defaultValue={data?.suffix || "Mr."}
+          >
+            <option value="Mr.">Mr.</option>
+            <option value="Miss">Miss</option>
+            <option value="Mrs.">Mrs.</option>
+            <option value="Dr.">Dr.</option>
+          </select>
+          {errors.suffix?.message && (
+            <p className="text-xs text-red-400">
+              {errors.suffix.message.toString()}
+            </p>
+          )}
+        </div>
+
+        {/* Name Field */}
         <InputField
           label="Name"
           name="name"
@@ -100,6 +140,7 @@ const TeacherForm = ({
           register={register}
           error={errors.name}
         />
+
         <InputField
           label="Phone"
           name="phone"
@@ -124,48 +165,47 @@ const TeacherForm = ({
             hidden
           />
         )}
-        
-        {/* <div className="flex flex-col gap-2 w-full md:w-1/4">
-          <label className="text-xs text-gray-500">Subjects</label>
-          <select
-            multiple
-            className="ring-[1.5px] ring-gray-300 p-2 rounded-md text-sm w-full"
-            {...register("subjects")}
-            defaultValue={data?.subjects}
-          >
-            {subjects.map((subject: { id: number; name: string }) => (
-              <option value={subject.id} key={subject.id}>
-                {subject.name}
-              </option>
-            ))}
-          </select>
-          {errors.subjects?.message && (
-            <p className="text-xs text-red-400">
-              {errors.subjects.message.toString()}
-            </p>
-          )}
-        </div>
-        <div className="flex flex-col gap-2 w-full md:w-1/4">
-          <label className="text-xs text-gray-500">Branch</label>
-          <select
-            multiple
-            className="ring-[1.5px] ring-gray-300 p-2 rounded-md text-sm w-full"
-            {...register("branches")}
-            defaultValue={data?.branches}
-          >
-            {branches.map((branch: { id: number; name: string }) => (
-              <option value={branch.id} key={branch.id}>
-                {branch.name}
-              </option>
-            ))}
-          </select>
-          {errors.branches?.message && (
-            <p className="text-xs text-red-400">
-              {errors.branches.message.toString()}
-            </p>
-          )}
-        </div> */}
       </div>
+       {/* <div className="flex flex-col gap-2 w-full md:w-1/4">
+           <label className="text-xs text-gray-500">Subjects</label>
+           <select
+             multiple
+             className="ring-[1.5px] ring-gray-300 p-2 rounded-md text-sm w-full"
+             {...register("subjects")}
+             defaultValue={data?.subjects}
+           >
+             {subjects.map((subject: { id: number; name: string }) => (
+               <option value={subject.id} key={subject.id}>
+                 {subject.name}
+               </option>
+             ))}
+           </select>
+           {errors.subjects?.message && (
+             <p className="text-xs text-red-400">
+               {errors.subjects.message.toString()}
+             </p>
+           )}
+         </div> */}
+         <div className="flex flex-col gap-2 w-full md:w-1/4">
+           <label className="text-xs text-gray-500">Branch</label>
+           <select
+             multiple
+             className="ring-[1.5px] ring-gray-300 p-2 rounded-md text-sm w-full"
+             {...register("branches")}
+             defaultValue={data?.branches}
+           >
+             {branches.map((branch: { id: number; name: string }) => (
+               <option value={branch.id} key={branch.id}>
+                 {branch.name}
+               </option>
+             ))}
+           </select>
+           {errors.branches?.message && (
+             <p className="text-xs text-red-400">
+               {errors.branches.message.toString()}
+             </p>
+           )}
+         </div>
       {state.error && (
         <span className="text-red-500">Something went wrong!</span>
       )}
