@@ -56,14 +56,12 @@ const ResultForm = (item : Student) => ({
 
   // ✅ Function to calculate grade based on overall marks
   const calculateGrade = (marks: number) => {
-    if (marks >= 90) return "A+";
-    if (marks >= 80) return "A";
-    if (marks >= 70) return "B+";
-    if (marks >= 60) return "B";
-    if (marks >= 50) return "C+";
-    if (marks >= 45) return "C";
-    if (marks >= 40) return "D";
-    return "E"; // Fail
+    if (marks >= 90) return "A";
+    if (marks >= 80) return "B";
+    if (marks >= 70) return "C";
+    if (marks >= 60) return "D";
+    if (marks >= 50) return "E";
+    return "F"; // Fail
   };
 
   // ✅ Auto-update grade when overall marks change
