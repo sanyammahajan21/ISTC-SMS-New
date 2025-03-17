@@ -15,10 +15,8 @@ import {
 } from "@/lib/actions";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
-import { Student } from "@prisma/client";
 
-
-const ResultForm = (item : Student) => ({
+const ResultForm = ({
   type,
   data,
   setOpen,
@@ -101,7 +99,7 @@ const ResultForm = (item : Student) => ({
   return (
     <form className="flex flex-col gap-8" onSubmit={onSubmit}>
       <h1 className="text-xl font-semibold">
-        {type === "create" ? `Create a result${item.name}` : "Update the result"}
+        {type === "create" ? "Create a result" : "Update the result"}
       </h1>
 
       {/* Toggle for Sessional Exam */}
