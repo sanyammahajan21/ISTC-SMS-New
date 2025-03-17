@@ -90,7 +90,7 @@ const StudentListPage = async ({
             <FormContainer table="student" type="delete" id={item.id} />
           )}
           {(role === "teacher" || role === "registrar") && (
-            <FormContainer table="result" type="create" id={item.id} />
+            <FormContainer table="result" type="create" data={{ student: item }} />
           )}
         </div>
       </td>

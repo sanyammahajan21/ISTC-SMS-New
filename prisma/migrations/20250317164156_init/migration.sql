@@ -86,9 +86,7 @@ CREATE TABLE `Branch` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
     `name` VARCHAR(191) NOT NULL,
     `capacity` INTEGER NOT NULL,
-    `supervisorId` VARCHAR(191) NULL,
 
-    UNIQUE INDEX `Branch_supervisorId_key`(`supervisorId`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
@@ -152,7 +150,6 @@ CREATE TABLE `Result` (
     `endTerm` INTEGER NULL,
     `overallMark` INTEGER NOT NULL,
     `grade` VARCHAR(191) NOT NULL,
-    `examId` INTEGER NULL,
     `studentId` VARCHAR(191) NOT NULL,
     `subjectId` INTEGER NULL,
 
@@ -193,6 +190,15 @@ CREATE TABLE `Notice` (
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
+CREATE TABLE `_BranchToTeacher` (
+    `A` INTEGER NOT NULL,
+    `B` VARCHAR(191) NOT NULL,
+
+    UNIQUE INDEX `_BranchToTeacher_AB_unique`(`A`, `B`),
+    INDEX `_BranchToTeacher_B_index`(`B`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
 CREATE TABLE `_SubjectToTeacher` (
     `A` INTEGER NOT NULL,
     `B` VARCHAR(191) NOT NULL,
@@ -226,9 +232,6 @@ ALTER TABLE `StudentExam` ADD CONSTRAINT `StudentExam_studentId_fkey` FOREIGN KE
 ALTER TABLE `StudentExam` ADD CONSTRAINT `StudentExam_examId_fkey` FOREIGN KEY (`examId`) REFERENCES `Exam`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `Branch` ADD CONSTRAINT `Branch_supervisorId_fkey` FOREIGN KEY (`supervisorId`) REFERENCES `Teacher`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
-
--- AddForeignKey
 ALTER TABLE `Subject` ADD CONSTRAINT `Subject_branchId_fkey` FOREIGN KEY (`branchId`) REFERENCES `Branch`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
@@ -259,9 +262,6 @@ ALTER TABLE `Exam` ADD CONSTRAINT `Exam_lecturesId_fkey` FOREIGN KEY (`lecturesI
 ALTER TABLE `ExamSchedule` ADD CONSTRAINT `ExamSchedule_examId_fkey` FOREIGN KEY (`examId`) REFERENCES `Exam`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `Result` ADD CONSTRAINT `Result_examId_fkey` FOREIGN KEY (`examId`) REFERENCES `Exam`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
-
--- AddForeignKey
 ALTER TABLE `Result` ADD CONSTRAINT `Result_studentId_fkey` FOREIGN KEY (`studentId`) REFERENCES `Student`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
@@ -272,6 +272,12 @@ ALTER TABLE `Attendance` ADD CONSTRAINT `Attendance_studentId_fkey` FOREIGN KEY 
 
 -- AddForeignKey
 ALTER TABLE `Attendance` ADD CONSTRAINT `Attendance_lecturesId_fkey` FOREIGN KEY (`lecturesId`) REFERENCES `Lectures`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `_BranchToTeacher` ADD CONSTRAINT `_BranchToTeacher_A_fkey` FOREIGN KEY (`A`) REFERENCES `Branch`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `_BranchToTeacher` ADD CONSTRAINT `_BranchToTeacher_B_fkey` FOREIGN KEY (`B`) REFERENCES `Teacher`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `_SubjectToTeacher` ADD CONSTRAINT `_SubjectToTeacher_A_fkey` FOREIGN KEY (`A`) REFERENCES `Subject`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;

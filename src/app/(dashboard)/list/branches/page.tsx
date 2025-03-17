@@ -8,7 +8,7 @@ import { Branch, Prisma, Teacher } from "@prisma/client";
 import Image from "next/image";
 import { auth } from "@clerk/nextjs/server";
 
-type BranchList = Branch & { supervisor: Teacher };
+type BranchList = Branch & { teachers: Teacher[] };
 
 const BranchListPage = async ({
   searchParams,
@@ -30,11 +30,7 @@ const columns = [
     accessor: "capacity",
     className: "hidden md:table-cell",
   },
-  {
-    header: "Supervisor",
-    accessor: "supervisor",
-    className: "hidden md:table-cell",
-  },
+  
   ...(role === "registrar"
     ? [
         {
@@ -52,9 +48,6 @@ const renderRow = (item: BranchList) => (
   >
     <td className="flex items-center gap-4 p-4">{item.name}</td>
     <td className="hidden md:table-cell">{item.capacity}</td>
-    <td className="hidden md:table-cell">
-      {item.supervisor?.name }
-    </td>
     <td>
       <div className="flex items-center gap-2">
         {role === "registrar" && (
@@ -80,9 +73,6 @@ const renderRow = (item: BranchList) => (
     for (const [key, value] of Object.entries(queryParams)) {
       if (value !== undefined) {
         switch (key) {
-          case "supervisorId":
-            query.supervisorId = value;
-            break;
           case "search":
             query.name = { contains: value, mode: "insensitive" };
             break;
@@ -96,8 +86,9 @@ const renderRow = (item: BranchList) => (
   const [data, count] = await prisma.$transaction([
     prisma.branch.findMany({
       where: query,
-      include: {
-        supervisor: true,
+      include: { 
+        teachers: true,
+        semesters: true,
       },
       take: ITEM_PER_PAGE,
       skip: ITEM_PER_PAGE * (p - 1),

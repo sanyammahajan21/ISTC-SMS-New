@@ -17,8 +17,8 @@ export const branchSchema = z.object({
   id: z.coerce.number().optional(),
   name: z.string().min(1, { message: "Branch name is required!" }),
   capacity: z.coerce.number().min(1, { message: "Capacity name is required!" }),
+  teachers: z.array(z.string()), 
   subjects: z.array(z.number()).optional(),
-  supervisorId: z.coerce.string().optional(),
   semesters: z.array(z.string()).optional(),
 });
 
@@ -143,7 +143,6 @@ export const resultSchema = z.object({
 
   grade: z.string().optional(),
   studentId: z.string().min(1, { message: "Student is required!" }),
-  examId: z.coerce.number().min(1, { message: "Exam is required!" }),
   subjectId: z.coerce.number().min(1, { message: "Subject is required!" }),
 });
 

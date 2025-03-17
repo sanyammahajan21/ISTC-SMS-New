@@ -93,11 +93,22 @@ const ResultForm = ({
       router.refresh();
     }
   }, [state, router, type, setOpen]);
+  useEffect(() => {
+    if (data?.student) {
+      setValue("studentId", data.student.id);
+    }
+  }, [data, setValue]);
 
-  const { students, exams, subjects } = relatedData;
+  const { students, subjects } = relatedData;
 
   return (
     <form className="flex flex-col gap-8" onSubmit={onSubmit}>
+      {data?.student && (
+    <h2 className="text-lg font-bold text-gray-800">
+      {data.student.name}
+    </h2>
+  )}
+
       <h1 className="text-xl font-semibold">
         {type === "create" ? "Create a result" : "Update the result"}
       </h1>
@@ -166,45 +177,23 @@ const ResultForm = ({
 
         {/* Student Selection */}
         <div className="flex flex-col gap-2 w-full md:w-1/4">
-          <label className="text-xs text-gray-500">Student</label>
-          <select
-            className="ring-[1.5px] ring-gray-300 p-2 rounded-md text-sm w-full"
-            {...register("studentId")}
-            defaultValue={data?.studentId}
-          >
-            {students.map((student: { id: string; name: string }) => (
-              <option value={student.id} key={student.id}>
-                {student.name}
-              </option>
-            ))}
-          </select>
-          {errors.studentId?.message && (
-            <p className="text-xs text-red-400">
-              {errors.studentId.message.toString()}
-            </p>
-          )}
-        </div>
+  <label className="text-xs text-gray-500">Student</label>
+  <select
+    className="ring-[1.5px] ring-gray-300 p-2 rounded-md text-sm w-full"
+    {...register("studentId")}
+    defaultValue={data?.student?.id} // Ensure pre-selected value
+  >
+    {students.map((student: { id: string; name: string }) => (
+      <option value={student.id} key={student.id}>
+        {student.name}
+      </option>
+    ))}
+  </select>
+  {errors.studentId?.message && (
+    <p className="text-xs text-red-400">{errors.studentId.message.toString()}</p>
+  )}
+</div>
 
-        {/* Exam Selection */}
-        <div className="flex flex-col gap-2 w-full md:w-1/4">
-          <label className="text-xs text-gray-500">Exam</label>
-          <select
-            className="ring-[1.5px] ring-gray-300 p-2 rounded-md text-sm w-full"
-            {...register("examId")}
-            defaultValue={data?.examId}
-          >
-            {exams.map((exam: { id: number }) => (
-              <option value={exam.id} key={exam.id}>
-                {exam.id}
-              </option>
-            ))}
-          </select>
-          {errors.examId?.message && (
-            <p className="text-xs text-red-400">
-              {errors.examId.message.toString()}
-            </p>
-          )}
-        </div>
 
         {/* Subject Selection */}
         <div className="flex flex-col gap-2 w-full md:w-1/4">

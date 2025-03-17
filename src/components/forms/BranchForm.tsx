@@ -98,27 +98,24 @@ const BranchForm = ({
           />
         )}
         <div className="flex flex-col gap-2 w-full md:w-1/4">
-          <label className="text-xs text-gray-500">Supervisor</label>
+          <label className="text-xs text-gray-500">Teachers</label>
           <select
-            className="ring-[1.5px] ring-gray-300 p-2 rounded-md text-sm w-full"
-            {...register("supervisorId")}
+            multiple
+            className="ring-[1.5px] ring-gray-300 p-2 rounded-md text-sm w-full h-80"
+            {...register("teachers")}
             defaultValue={data?.teachers}
           >
             {teachers.map(
-              (teacher: { id: string; name: string }) => (
-                <option
-                  value={teacher.id}
-                  key={teacher.id}
-                  selected={data && teacher.id === data.supervisorId}
-                >
+              (teacher: { id: string; name: string; surname: string }) => (
+                <option value={teacher.id} key={teacher.id}>
                   {teacher.name }
                 </option>
               )
             )}
           </select>
-          {errors.supervisorId?.message && (
+          {errors.teachers?.message && (
             <p className="text-xs text-red-400">
-              {errors.supervisorId.message.toString()}
+              {errors.teachers.message.toString()}
             </p>
           )}
         </div>

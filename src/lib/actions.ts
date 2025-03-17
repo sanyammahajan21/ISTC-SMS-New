@@ -99,7 +99,14 @@ export const createBranch = async (
 ) => {
   try {
     await prisma.branch.create({
-      data,
+      data:{
+        name: data.name,
+        capacity: data.capacity,
+        teachers: {
+          connect: data.teachers.map((teacherId: string) => ({ id: teacherId })),
+        },
+        
+      },
     });
 
     // revalidatePath("/list/class");
@@ -119,7 +126,13 @@ export const updateBranch = async (
       where: {
         id: data.id,
       },
-      data,
+      data: {
+        name: data.name,
+        capacity: data.capacity,
+        teachers: {
+          set: data.teachers.map((teacherId: string) => ({ id: teacherId })),
+        },
+      },
     });
 
     // revalidatePath("/list/class");

@@ -349,7 +349,7 @@ const SingleTeacherPage = async ({
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-1 gap-3">
             <Link
               className="p-3 rounded-md bg-blue-50 hover:bg-blue-100 transition-colors flex items-center gap-2 text-blue-700 font-medium"
-              href={`/list/branches?supervisorId=${teacher.id}`}
+              href={`/list/branches`}
             >
               <div className="w-6 h-6 flex items-center justify-center bg-blue-100 rounded-full">
                 <Image src="/singleBranch.png" alt="" width={14} height={14} />

@@ -82,14 +82,13 @@ model Branch {
   id            Int            @id @default(autoincrement())
   name          String         
   capacity      Int
-  supervisorId  String?        @unique
-  supervisor    Teacher?       @relation(fields: [supervisorId], references: [id])
   lectures      Lectures[]
   students      Student[]
   semesters      Semester[]      
   announcements Announcement[]
   subjects      Subject[]
   Exam          Exam[]
+  teachers      Teacher[]
 }
 
 model Subject {
@@ -138,7 +137,6 @@ model Exam {
   createdAt    DateTime       @default(now())
   examSchedule ExamSchedule[]
   studentExams StudentExam[]
-  results      Result[]
   Lectures     Lectures?      @relation(fields: [lecturesId], references: [id])
   lecturesId   Int?
 }
@@ -158,8 +156,6 @@ model Result {
   endTerm       Int?
   overallMark   Int
   grade         String
-  examId        Int?
-  exam          Exam?   @relation(fields: [examId], references: [id])
   studentId     String
   student       Student @relation(fields: [studentId], references: [id])
   subjectId   Int?
