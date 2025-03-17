@@ -40,7 +40,6 @@ const SubjectForm = ({
   );
 
   const onSubmit = handleSubmit((data) => {
-    console.log(data);
     formAction(data);
   });
 
@@ -58,7 +57,7 @@ const SubjectForm = ({
   const { semesters, branches } = relatedData;
 
   return (
-    <form className="flex flex-col gap-8" onSubmit={onSubmit}>
+    <form className="flex flex-col gap-10" onSubmit={onSubmit}>
       <h1 className="text-xl font-semibold">
         {type === "create" ? "Create a new subject" : "Update the subject"}
       </h1>
@@ -113,47 +112,6 @@ const SubjectForm = ({
           )}
         </div>
         <div className="flex flex-col gap-2 w-full md:w-1/4">
-          <label className="text-xs text-gray-500">Teachers</label>
-          <select
-            multiple
-            className="ring-[1.5px] ring-gray-300 p-2 rounded-md text-sm w-full"
-            {...register("teachers")}
-            defaultValue={data?.teachers}
-          >
-            {teachers.map(
-              (teacher: { id: string; name: string; surname: string }) => (
-                <option value={teacher.id} key={teacher.id}>
-                  {teacher.name }
-                </option>
-              )
-            )}
-          </select>
-          {errors.teachers?.message && (
-            <p className="text-xs text-red-400">
-              {errors.teachers.message.toString()}
-            </p>
-          )}
-        </div>
-        <div className="flex flex-col gap-2 w-full md:w-1/4">
-          <label className="text-xs text-gray-500">Semester</label>
-          <select
-            className="ring-[1.5px] ring-gray-300 p-2 rounded-md text-sm w-full"
-            {...register("semesterId")}
-            defaultValue={data?.semesterId}
-          >
-            {semesters.map((semester: { id: number; level: number }) => (
-              <option value={semester.id} key={semester.id}>
-                {semester.level}
-              </option>
-            ))}
-          </select>
-          {errors.semesterId?.message && (
-            <p className="text-xs text-red-400">
-              {errors.semesterId.message.toString()}
-            </p>
-          )}
-        </div>
-        <div className="flex flex-col gap-2 w-full md:w-1/4">
           <label className="text-xs text-gray-500">Branch</label>
           <select
             className="ring-[1.5px] ring-gray-300 p-2 rounded-md text-sm w-full"
@@ -181,6 +139,49 @@ const SubjectForm = ({
             </p>
           )}
         </div>
+        <div className="flex flex-col gap-2 w-full md:w-1/4">
+          <label className="text-xs text-gray-500">Semester</label>
+          <select
+            className="ring-[1.5px] ring-gray-300 p-2 rounded-md text-sm w-full"
+            {...register("semesterId")}
+            defaultValue={data?.semesterId}
+          >
+            {semesters.map((semester: { id: number; level: number }) => (
+              <option value={semester.id} key={semester.id}>
+                {semester.level}
+              </option>
+            ))}
+          </select>
+          {errors.semesterId?.message && (
+            <p className="text-xs text-red-400">
+              {errors.semesterId.message.toString()}
+            </p>
+          )}
+        </div>
+        <div className="flex flex-col gap-2 w-full md:w-1/4">
+          <label className="text-xs text-gray-500">Teachers</label>
+          <select
+            multiple
+            className="ring-[1.5px] ring-gray-300 p-2 rounded-md text-sm w-full h-80"
+            {...register("teachers")}
+            defaultValue={data?.teachers}
+          >
+            {teachers.map(
+              (teacher: { id: string; name: string; surname: string }) => (
+                <option value={teacher.id} key={teacher.id}>
+                  {teacher.name }
+                </option>
+              )
+            )}
+          </select>
+          {errors.teachers?.message && (
+            <p className="text-xs text-red-400">
+              {errors.teachers.message.toString()}
+            </p>
+          )}
+        </div>
+        
+        
       </div>
       {state.error && (
         <span className="text-red-500">Something went wrong!</span>

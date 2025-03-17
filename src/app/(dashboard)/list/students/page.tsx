@@ -10,7 +10,7 @@ import Link from "next/link";
 import { auth } from "@clerk/nextjs/server";
 import Filters, { ResultFilters, SubjectFilters } from "@/components/Filter";
 
-type StudentList = Student & { branch: Branch};
+type StudentList = Student & { branch: Branch };
 
 const StudentListPage = async ({
   searchParams,
@@ -81,8 +81,9 @@ const StudentListPage = async ({
       <td>
         <div className="flex items-center gap-2">
           <Link href={`/list/students/${item.id}`}>
-            <button className="w-7 h-7 flex items-center justify-center rounded-full  border-4 border-blue-400 bg-white ">
-              <Image src="/view.png" alt="" width={16} height={16} />
+            <button className="flex items-center justify-center p-2 m-2 bg-blue-400 ">
+              {/* <Image src="/view.png" alt="" width={16} height={16} /> */}
+              <>View</>
             </button>
           </Link>
           {(role === "admin" || role === "registrar") && (
@@ -184,7 +185,6 @@ const StudentListPage = async ({
               branchId={branchId}
               semester={semester}
             />
-
             {(role === "admin" || role === "registrar") && (
               <FormContainer table="student" type="create" />
             )}

@@ -76,8 +76,9 @@ const TeacherListPage = async ({
       <td>
         <div className="flex items-center gap-2">
           <Link href={`/list/teachers/${item.id}`}>
-            <button className="w-7 h-7 flex items-center justify-center rounded-full  border-4 border-blue-400 bg-white ">
-              <Image src="/view.png" alt="" width={16} height={16} />
+            <button className="flex items-center justify-center p-2 m-2 bg-blue-400 ">
+              {/* <Image src="/view.png" alt="" width={16} height={16} /> */}
+              <>View</>
             </button>
           </Link>
           {(role === "registrar" || role === 'admin') && (

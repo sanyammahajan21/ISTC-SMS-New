@@ -3,10 +3,10 @@ import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 
 const branches = [
-  "Electronics",
-  "Mechanical",
-  "Die and Mould Making",
-  "Mechatronics",
+  "Diploma in Electronics Engineering",
+  "Diploma in Mechanical Engineering",
+  "Diploma in Die and Mould Making",
+  "Diploma in Mechatronics",
 ];
 
 async function main() {

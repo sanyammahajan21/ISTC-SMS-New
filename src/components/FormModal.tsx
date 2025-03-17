@@ -155,11 +155,12 @@ const FormModal = ({
   const getActionIcon = () => {
     switch (type) {
       case "create":
-        return <PlusCircle size={iconSize} color="black" />;
+        if(table != 'result' )return <>Create new {table}</>;
+        return <>Add Result</>
       case "update":
-        return <Edit size={iconSize} color="black" />;
+        return <>Update</>;
       case "delete":
-        return <Trash2 size={iconSize} color="black" />;
+        return <>Delete</>;
       default:
         return null;
     }
@@ -203,7 +204,7 @@ const FormModal = ({
   return (
     <>
       <button
-        className={`${size} flex items-center justify-center rounded-full ${bgColor}`}
+        className={`flex items-center justify-center m-2 p-2 ${bgColor}`}
         onClick={() => setOpen(true)}
         aria-label={`${type} ${table}`}
       >

@@ -42,7 +42,6 @@ const TeacherForm = ({
   );
 
   const onSubmit = handleSubmit((data) => {
-    console.log(data);
     formAction({ ...data});
   });
 
@@ -126,7 +125,7 @@ const TeacherForm = ({
           />
         )}
         
-        <div className="flex flex-col gap-2 w-full md:w-1/4">
+        {/* <div className="flex flex-col gap-2 w-full md:w-1/4">
           <label className="text-xs text-gray-500">Subjects</label>
           <select
             multiple
@@ -165,7 +164,7 @@ const TeacherForm = ({
               {errors.branches.message.toString()}
             </p>
           )}
-        </div>
+        </div> */}
       </div>
       {state.error && (
         <span className="text-red-500">Something went wrong!</span>
