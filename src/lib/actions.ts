@@ -677,7 +677,6 @@ export const createResult = async (
         overallMark: data.overallMark ?? "",
         grade: data.grade??"",
         studentId: data.studentId,
-        examId: data.examId,
         subjectId: data.subjectId,
       },
     });
@@ -704,10 +703,9 @@ export const updateResult = async (
       data: {
         sessionalExam: data.sessionalExam,
         endTerm: data.endTerm,
-        overallMark: data.overallMark,
-        grade: data.grade,
+        overallMark: data.overallMark?? "",
+        grade: data.grade?? "",
         studentId: data.studentId,
-        examId: data.examId,
         subjectId: data.subjectId,
       },
     });

@@ -54,12 +54,14 @@ const ResultForm = ({
 
   // ✅ Function to calculate grade based on overall marks
   const calculateGrade = (marks: number) => {
-    if (marks >= 90) return "A";
-    if (marks >= 80) return "B";
-    if (marks >= 70) return "C";
-    if (marks >= 60) return "D";
-    if (marks >= 50) return "E";
-    return "F"; // Fail
+    if (marks >= 90) return "A+";
+    if (marks >= 80) return "A";
+    if (marks >= 70) return "B+";
+    if (marks >= 60) return "B";
+    if (marks >= 50) return "C+";
+    if (marks >= 45) return "C";
+    if (marks >= 40) return "D";
+    return "E"; // Fail
   };
 
   // ✅ Auto-update grade when overall marks change
@@ -181,7 +183,7 @@ const ResultForm = ({
   <select
     className="ring-[1.5px] ring-gray-300 p-2 rounded-md text-sm w-full"
     {...register("studentId")}
-    defaultValue={data?.student?.id} // Ensure pre-selected value
+    defaultValue={data?.studentId} // Ensure pre-selected value
   >
     {students.map((student: { id: string; name: string }) => (
       <option value={student.id} key={student.id}>
