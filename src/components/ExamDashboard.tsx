@@ -1,10 +1,10 @@
-// ExamDashboard.tsx (Client Component)
 "use client";
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import ExamPage from "@/components/forms/ExamForm";
 import GenerateDMCPage from "@/components/GenerateDMCPage";
+import GenerateMigrationCertificatesPage from "@/components/MigrationGeneration";
 
 function ExamDashboard({ role }: { role?: string }) {
   const [selectedComponent, setSelectedComponent] = useState<string | null>(null);
@@ -31,16 +31,16 @@ function ExamDashboard({ role }: { role?: string }) {
       icon: "🎓"
     },
     { 
+      id: "migrationCert", 
+      title: "Generate Migration Certificate", 
+      description: "Issue official migration certificates for 8th semester students",
+      icon: "📜"
+    },
+    { 
       id: "characterCert", 
       title: "Generate Character Certificate", 
       description: "Issue official character certificates for students",
       icon: "📜"
-    },
-    { 
-      id: "migrationCert", 
-      title: "Generate Migration Certificate", 
-      description: "Process and issue migration documentation for transfers",
-      icon: "🔄"
     },
     { 
       id: "transcript", 
@@ -83,6 +83,8 @@ function ExamDashboard({ role }: { role?: string }) {
         return <ExamPage role={role} />;
       case "generateDMC":
         return <GenerateDMCPage />;
+      case "migrationCert":
+        return <GenerateMigrationCertificatesPage />;
       default:
         return null;
     }

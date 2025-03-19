@@ -38,7 +38,7 @@ export function GET(req: NextRequest) {
   });
 }
 
-// Helper function to update progress
+
 export function updateProgress(completed: number, total: number) {
   progressState.completed = completed;
   progressState.total = total;
