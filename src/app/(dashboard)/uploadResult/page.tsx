@@ -1,11 +1,10 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { useAuth } from "@clerk/nextjs";
+import { useState } from "react";
 
 interface UploadSectionProps {
   title: string;
-  onUpload: (file: File | null, teacherId: string) => void;
+  onUpload: (file: File | null) => void;
 }
 
 const UploadSection: React.FC<UploadSectionProps> = ({ title, onUpload }) => {
@@ -29,13 +28,7 @@ const UploadSection: React.FC<UploadSectionProps> = ({ title, onUpload }) => {
     setMessage(""); // Reset the message
 
     try {
-      const { sessionClaims } = useAuth();
-      const teacherId = sessionClaims?.sub;
-      if (!teacherId) {
-        throw new Error("Teacher ID not found.");
-      }
-
-      await onUpload(file, teacherId);
+      await onUpload(file);
       setMessage("Upload successful.");
     } catch (error) {
       setMessage("An error occurred during the upload.");
@@ -82,14 +75,13 @@ const UploadSection: React.FC<UploadSectionProps> = ({ title, onUpload }) => {
 };
 
 export default function UploadResults() {
-  const handleResultsUpload = async (file: File | null, teacherId: string) => {
+  const handleResultsUpload = async (file: File | null) => {
     if (!file) {
       throw new Error("File is required for results upload.");
     }
 
     const formData = new FormData();
     formData.append("file", file as Blob);
-    formData.append("teacherId", teacherId);
 
     try {
       const response = await fetch("/api/uploadResults", {
