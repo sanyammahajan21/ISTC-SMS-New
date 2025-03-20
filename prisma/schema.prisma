@@ -166,6 +166,8 @@ model Result {
 
   teacherId     String?
   teacher       Teacher? @relation(fields: [teacherId], references: [id], map: "Result_teacherId_fk")
+  
+  verified      Boolean @default(false)
 }                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   
 
 model Attendance {

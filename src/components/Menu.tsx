@@ -63,8 +63,14 @@ const menuItems = [
       {
         icon: "/result.png",
         label: "Results",
-        href: "/list/results",
-        visible: ["teacher", "registrar"],
+        href: "/list/results/registrar",
+        visible: ["registrar"],
+      },
+      {
+        icon: "/result.png",
+        label: "Results",
+        href: "/list/results/teacher",
+        visible: ["teacher"],
       },
       // {
       //   icon: "/attendance.png",

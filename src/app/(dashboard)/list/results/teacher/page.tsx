@@ -16,6 +16,7 @@ const ResultListPage = async ({ searchParams }: { searchParams: { [key: string]:
   const { sessionClaims } = auth();
   const role = (sessionClaims?.metadata as { role?: string })?.role;
   const teacherId = (sessionClaims?.metadata as { teacherId?: string })?.teacherId;
+  
 
   const columns = [
     { header: "Student Name", accessor: "student.name", className: "hidden md:table-cell" },
