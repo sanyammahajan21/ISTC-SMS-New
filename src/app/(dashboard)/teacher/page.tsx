@@ -1,6 +1,5 @@
 import Announcements from "@/components/Announcements";
 import BigCalendarContainer from "@/components/BigCalendarContainer";
-import Notices from "@/components/Notices";
 import { auth } from "@clerk/nextjs/server";
 
 const TeacherPage = () => {
@@ -17,13 +16,11 @@ const TeacherPage = () => {
         {/* Main Content - Left Column */}
         <div className="w-full lg:w-8/12 flex flex-col gap-6">
           {/* Schedule Section */}
-          <div className="bg-white p-4 rounded-lg shadow-md">
-            <h2 className="text-lg font-semibold mb-6 text-white text-center bg-blue-500 p-2 rounded-md">Notices</h2>
+          {/* <div className="bg-white p-4 rounded-lg shadow-md">
+            <h2 className="text-lg font-semibold mb-6 text-white text-center bg-blue-500 p-2 rounded-md"></h2>
             <div className="h-[450px]">
-              {/* <BigCalendarContainer type="teacherId" id={userId!} /> */}
-              <Notices/>
             </div>
-          </div>
+          </div> */}
         </div>
         
         {/* Sidebar - Right Column */}

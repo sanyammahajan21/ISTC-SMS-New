@@ -14,6 +14,13 @@ import {
 import prisma from "./prisma";
 import { clerkClient } from "@clerk/nextjs/server";
 
+import { writeFile, mkdir, unlink } from 'fs/promises';
+import { join, resolve } from 'path';
+import { existsSync } from 'fs';
+
+const STORAGE_PATH = process.env.STORAGE_PATH || './public/uploads';
+const PUBLIC_URL_PATH = `${process.env.STORAGE_PATH}`;
+
 type CurrentState = { success: boolean; error: boolean };
 export const createSubject = async (
   currentState: CurrentState,
@@ -490,7 +497,6 @@ export const getAllExams = async () => {
   }
 };
 
-
 export const getAllSemesters = async () => {
   try {
     const semesters = await prisma.semester.findMany();
@@ -596,72 +602,175 @@ export const fetchSubjects = async (semesterId: number, branchId: number) => {
 
 
 export const createAnnouncement = async (
-  currentState: CurrentState,
+  currentState: any,
   data: AnnouncementSchema
 ) => {
   try {
+    const { title, content, type, teacherIds, file } = data;
+
+    let fileUrl = null;
+
+    // Handle file upload if a file is provided
+    if (file) {
+      const fileData = Buffer.from(file.data, 'base64'); // Decode base64 file data
+      const safeFileName = `${Date.now()}_${file.name}`; // Create a unique file name
+      const filePath = join(STORAGE_PATH, safeFileName); // Define the file path
+
+      // Create the uploads directory if it doesn't exist
+      if (!existsSync(STORAGE_PATH)) {
+        await mkdir(STORAGE_PATH, { recursive: true });
+      }
+
+      // Save the file to the server
+      await writeFile(filePath, fileData);
+
+      // Store only the filename in the database
+      fileUrl = safeFileName;
+    }
+
+    // Save the announcement to the database
     await prisma.announcement.create({
       data: {
-        title: data.title,
-        startTime: data.startTime,
-        endTime: data.endTime,
-        branchId: data.branchId,
+        title,
+        content,
+        type,
+        fileUrl, // Save the filename in the database (or null if no file)
+        teachers: {
+          create:
+            type === 'TEACHER_SPECIFIC'
+              ? teacherIds?.map((teacherId) => ({ teacherId }))
+              : [],
+        },
       },
     });
 
-    // revalidatePath("/list/subjects");
     return { success: true, error: false };
   } catch (err) {
-    console.log(err);
+    console.error('Error creating announcement:', err);
     return { success: false, error: true };
   }
 };
 
 export const updateAnnouncement = async (
-  currentState: CurrentState,
+  currentState: any,
   data: AnnouncementSchema
 ) => {
- 
   try {
+    const { id, title, content, type, teacherIds, file } = data;
 
-    await prisma.announcement.update({
+    if (!id) {
+      throw new Error('Announcement ID is required');
+    }
+
+    let fileUrl = null;
+
+    // Handle file upload if a file is provided
+    if (file) {
+      const fileData = Buffer.from(file.data, 'base64'); // Decode base64 file data
+      const safeFileName = `${Date.now()}_${file.name}`; // Create a unique file name
+      const filePath = join(STORAGE_PATH, safeFileName); // Define the file path
+
+      // Create the uploads directory if it doesn't exist
+      if (!existsSync(STORAGE_PATH)) {
+        await mkdir(STORAGE_PATH, { recursive: true });
+      }
+
+      // Save the file to the server
+      await writeFile(filePath, fileData);
+
+      // Store only the filename in the database
+      fileUrl = safeFileName;
+
+      // Delete the old file if it exists
+      const existingAnnouncement = await prisma.announcement.findUnique({
+        where: { id },
+      });
+      if (existingAnnouncement?.fileUrl) {
+        const oldFilePath = join(STORAGE_PATH, existingAnnouncement.fileUrl);
+        if (existsSync(oldFilePath)) {
+          console.log('Deleting old file:', oldFilePath); // Debugging
+          await unlink(oldFilePath); // Delete the old file
+        }
+      }
+    }
+
+    // First, remove existing teacher associations for this announcement
+    await prisma.announcementTeacher.deleteMany({
       where: {
-        id: data.id,
-      },
-      data: {
-        title: data.title,
-        startTime: data.startTime,
-        endTime: data.endTime,
-        branchId: data.branchId,
+        announcementId: id,
       },
     });
 
-    // revalidatePath("/list/subjects");
+    // Then, update the announcement and add new teacher associations
+    await prisma.announcement.update({
+      where: {
+        id,
+      },
+      data: {
+        title,
+        content,
+        type,
+        fileUrl: fileUrl || undefined, // Keep existing fileUrl if no new file is provided
+        teachers: {
+          create:
+            type === 'TEACHER_SPECIFIC'
+              ? teacherIds?.map((teacherId) => ({ teacherId }))
+              : [],
+        },
+      },
+    });
+
+    // revalidatePath("/list/announcements"); // Revalidate the announcements page
     return { success: true, error: false };
   } catch (err) {
-    console.log(err);
+    console.error('Error updating announcement:', err);
     return { success: false, error: true };
   }
 };
 
 export const deleteAnnouncement = async (
-  currentState: CurrentState,
+  currentState: any,
   data: FormData
 ) => {
-  const id = data.get("id") as string;
+  const id = data.get('id') as string;
 
   try {
-    await prisma.announcement.delete({
+    // Fetch the announcement to get the fileUrl
+    const announcement = await prisma.announcement.findUnique({
+      where: { id: parseInt(id) },
+    });
+
+    if (!announcement) {
+      throw new Error('Announcement not found');
+    }
+
+    // Delete the associated file if it exists
+    if (announcement.fileUrl) {
+      const filePath = join(STORAGE_PATH, announcement.fileUrl);
+      if (existsSync(filePath)) {
+        console.log('Deleting file:', filePath); // Debugging
+        await unlink(filePath); // Delete the file
+      }
+    }
+
+    // First, delete associated teacher records
+    await prisma.announcementTeacher.deleteMany({
       where: {
-        id: parseInt(id),
-        // ...(role === "teacher" ? { lecture: { teacherId: userId! } } : {}),
+        announcementId: parseInt(id),
       },
     });
 
-    // revalidatePath("/list/subjects");
+    // Then, delete the announcement
+    await prisma.announcement.delete({
+      where: {
+        id: parseInt(id),
+      },
+    });
+
+    // revalidatePath("/list/announcements"); // Revalidate the announcements page
     return { success: true, error: false };
   } catch (err) {
-    console.log(err);
+    console.error('Error deleting announcement:', err);
     return { success: false, error: true };
   }
 };

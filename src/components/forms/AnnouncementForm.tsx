@@ -6,17 +6,10 @@ import InputField from "../InputField";
 import {
   announcementSchema,
   AnnouncementSchema,
-  branchSchema,
-  BranchSchema,
 } from "@/lib/formValidationSchemas";
-import {
-  createAnnouncement,
-  createBranch,
-  updateAnnouncement,
-  updateBranch,
-} from "@/lib/actions";
+import { createAnnouncement, updateAnnouncement } from "@/lib/actions";
 import { useFormState } from "react-dom";
-import { Dispatch, SetStateAction, useEffect } from "react";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
 
@@ -35,12 +28,13 @@ const AnnouncementForm = ({
     register,
     handleSubmit,
     formState: { errors },
+    setValue,
   } = useForm<AnnouncementSchema>({
     resolver: zodResolver(announcementSchema),
   });
 
-  // AFTER REACT 19 IT'LL BE USEACTIONSTATE
-
+  const [selectedTeachers, setSelectedTeachers] = useState<string[]>([]);
+  const [file, setFile] = useState<File | null>(null);
   const [state, formAction] = useFormState(
     type === "create" ? createAnnouncement : updateAnnouncement,
     {
@@ -49,27 +43,48 @@ const AnnouncementForm = ({
     }
   );
 
-  const onSubmit = handleSubmit((data) => {
-    console.log(data);
-    formAction(data);
+
+  const onSubmit = handleSubmit(async (data) => {
+    const formData = {
+      ...data,
+      id: data.id, 
+      teacherIds: selectedTeachers,
+      file: null, 
+    };
+  
+    if (file) {
+      const reader = new FileReader();
+      reader.readAsDataURL(file); 
+      reader.onload = async () => {
+        const base64File = reader.result?.toString().split(',')[1]; 
+        formData.file = { name: file.name, data: base64File }; 
+        formAction(formData); 
+      };
+    } else {
+      formAction(formData); 
+    }
   });
 
   const router = useRouter();
 
   useEffect(() => {
     if (state.success) {
-      toast(`Announcement has been ${type === "create" ? "created" : "updated"}!`);
+      toast(
+        `Announcement has been ${type === "create" ? "created" : "updated"}!`
+      );
       setOpen(false);
       router.refresh();
     }
   }, [state, router, type, setOpen]);
 
-  const branches = relatedData?.branches || [];
+  const teachers = relatedData?.teachers || [];
 
   return (
     <form className="flex flex-col gap-8" onSubmit={onSubmit}>
       <h1 className="text-xl font-semibold">
-        {type === "create" ? "Create a new announcement" : "Update the announcement"}
+        {type === "create"
+          ? "Create a new announcement"
+          : "Update the announcement"}
       </h1>
 
       <div className="flex justify-between flex-wrap gap-4">
@@ -81,20 +96,12 @@ const AnnouncementForm = ({
           error={errors?.title}
         />
         <InputField
-          label="Start Date"
-          name="startTime"
-          defaultValue={data?.startTime}
+          label="Content"
+          name="content"
+          defaultValue={data?.content}
           register={register}
-          error={errors?.startTime}
-          type="datetime-local"
-        />
-        <InputField
-          label="End Date"
-          name="endTime"
-          defaultValue={data?.endTime}
-          register={register}
-          error={errors?.endTime}
-          type="datetime-local"
+          error={errors?.content}
+          type="textarea"
         />
 
         {data && (
@@ -107,38 +114,68 @@ const AnnouncementForm = ({
             hidden
           />
         )}
-        <div className="flex flex-col gap-2 w-full md:w-1/4">
-          <label className="text-xs text-gray-500">Branch</label>
+
+        <div className="flex flex-col gap-2 w-full">
+          <label className="text-xs text-gray-500">Type</label>
           <select
             className="ring-[1.5px] ring-gray-300 p-2 rounded-md text-sm w-full"
-            {...register("branchId")}
-            defaultValue={data?.branchId}
+            {...register("type")}
+            defaultValue={data?.type || "GENERAL"}
           >
-            {branches.map(
-              (branchItem: {
-                id: number;
-                name: string;
-                capacity: number;
-                _count: { students: number };
-              }) => (
-                <option value={branchItem.id} key={branchItem.id}>
-                  ({branchItem.name} -{" "}
-                  {branchItem._count.students + "/" + branchItem.capacity}{" "}
-                  Capacity)
-                </option>
-              )
-            )}
+            <option value="GENERAL">General Announcement</option>
+            <option value="TEACHER_SPECIFIC">
+              Teacher-Specific Announcement
+            </option>
           </select>
-          {errors.branchId?.message && (
+          {errors.type?.message && (
             <p className="text-xs text-red-400">
-              {errors.branchId.message.toString()}
+              {errors.type.message.toString()}
             </p>
           )}
         </div>
+
+        <div className="flex flex-col gap-2 w-full">
+          <label className="text-xs text-gray-500">
+            Teachers (for teacher-specific announcements)
+          </label>
+          <select
+            className="ring-[1.5px] ring-gray-300 p-2 rounded-md text-sm w-full"
+            multiple
+            onChange={(e) => {
+              const selectedOptions = Array.from(e.target.selectedOptions).map(
+                (option) => option.value
+              );
+              setSelectedTeachers(selectedOptions);
+            }}
+          >
+            {teachers.map((teacher: { id: string; name: string }) => (
+              <option value={teacher.id} key={teacher.id}>
+                {teacher.name}
+              </option>
+            ))}
+          </select>
+          {errors.teacherIds?.message && (
+            <p className="text-xs text-red-400">
+              {errors.teacherIds.message.toString()}
+            </p>
+          )}
+        </div>
+
+        <div className="flex flex-col gap-2 w-full">
+          <label className="text-xs text-gray-500">
+            Upload File (PDF, Image, Excel)
+          </label>
+          <input
+            type="file"
+            onChange={(e) => setFile(e.target.files?.[0] || null)}
+          />
+        </div>
       </div>
+
       {state.error && (
         <span className="text-red-500">Something went wrong!</span>
       )}
+
       <button className="bg-blue-400 text-white p-2 rounded-md">
         {type === "create" ? "Create" : "Update"}
       </button>

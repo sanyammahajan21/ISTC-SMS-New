@@ -171,22 +171,21 @@ CREATE TABLE `Attendance` (
 CREATE TABLE `Announcement` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
     `title` VARCHAR(191) NOT NULL,
-    `startTime` DATETIME(3) NOT NULL,
-    `endTime` DATETIME(3) NOT NULL,
-    `branchId` INTEGER NULL,
+    `content` VARCHAR(191) NULL,
+    `fileUrl` VARCHAR(191) NULL,
+    `type` ENUM('GENERAL', 'TEACHER_SPECIFIC') NOT NULL DEFAULT 'GENERAL',
+    `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+    `updatedAt` DATETIME(3) NOT NULL,
 
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
-CREATE TABLE `Notice` (
-    `id` INTEGER NOT NULL AUTO_INCREMENT,
-    `title` VARCHAR(191) NOT NULL,
-    `fileUrl` VARCHAR(191) NOT NULL,
-    `uploadedBy` VARCHAR(191) NOT NULL,
-    `timestamp` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+CREATE TABLE `AnnouncementTeacher` (
+    `announcementId` INTEGER NOT NULL,
+    `teacherId` VARCHAR(191) NOT NULL,
 
-    PRIMARY KEY (`id`)
+    PRIMARY KEY (`announcementId`, `teacherId`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
@@ -205,15 +204,6 @@ CREATE TABLE `_SubjectToTeacher` (
 
     UNIQUE INDEX `_SubjectToTeacher_AB_unique`(`A`, `B`),
     INDEX `_SubjectToTeacher_B_index`(`B`)
-) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-
--- CreateTable
-CREATE TABLE `_AnnouncementToBranch` (
-    `A` INTEGER NOT NULL,
-    `B` INTEGER NOT NULL,
-
-    UNIQUE INDEX `_AnnouncementToBranch_AB_unique`(`A`, `B`),
-    INDEX `_AnnouncementToBranch_B_index`(`B`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- AddForeignKey
@@ -274,6 +264,12 @@ ALTER TABLE `Attendance` ADD CONSTRAINT `Attendance_studentId_fkey` FOREIGN KEY 
 ALTER TABLE `Attendance` ADD CONSTRAINT `Attendance_lecturesId_fkey` FOREIGN KEY (`lecturesId`) REFERENCES `Lectures`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
+ALTER TABLE `AnnouncementTeacher` ADD CONSTRAINT `AnnouncementTeacher_announcementId_fkey` FOREIGN KEY (`announcementId`) REFERENCES `Announcement`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `AnnouncementTeacher` ADD CONSTRAINT `AnnouncementTeacher_teacherId_fkey` FOREIGN KEY (`teacherId`) REFERENCES `Teacher`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
 ALTER TABLE `_BranchToTeacher` ADD CONSTRAINT `_BranchToTeacher_A_fkey` FOREIGN KEY (`A`) REFERENCES `Branch`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
@@ -284,9 +280,3 @@ ALTER TABLE `_SubjectToTeacher` ADD CONSTRAINT `_SubjectToTeacher_A_fkey` FOREIG
 
 -- AddForeignKey
 ALTER TABLE `_SubjectToTeacher` ADD CONSTRAINT `_SubjectToTeacher_B_fkey` FOREIGN KEY (`B`) REFERENCES `Teacher`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE `_AnnouncementToBranch` ADD CONSTRAINT `_AnnouncementToBranch_A_fkey` FOREIGN KEY (`A`) REFERENCES `Announcement`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE `_AnnouncementToBranch` ADD CONSTRAINT `_AnnouncementToBranch_B_fkey` FOREIGN KEY (`B`) REFERENCES `Branch`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;

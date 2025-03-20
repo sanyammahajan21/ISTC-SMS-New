@@ -117,8 +117,12 @@ const FormContainer = async ({
         const announcementBranches = await prisma.branch.findMany({
           include: { _count: { select: { students: true } } },
         });
+        const announcementTeacher = await prisma.teacher.findMany({
+          select: { id: true, name: true },
+        });
 
-        relatedData = { branches: announcementBranches };
+
+        relatedData = { branches: announcementBranches, teachers: announcementTeacher };
         break;
 
       case "result":

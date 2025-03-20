@@ -116,12 +116,21 @@ export const examSchema = z.object({
 
 export type ExamSchema = z.infer<typeof examSchema>;
 
+
+
 export const announcementSchema = z.object({
   id: z.coerce.number().optional(),
-  title: z.string().min(1, { message: "Title name is required!" }),
-  startTime: z.coerce.date({ message: "Start time is required!" }),
-  endTime: z.coerce.date({ message: "End time is required!" }),
-  branchId: z.coerce.number({ message: "branch is required!" }),
+  title: z.string().min(1, 'Title is required'),
+  content: z.string().min(1, 'Content is required'),
+  type: z.enum(['GENERAL', 'TEACHER_SPECIFIC']),
+  teacherIds: z.array(z.string()).optional(),
+  file: z
+    .object({
+      name: z.string(),
+      data: z.string(), 
+    })
+    .optional()
+    .nullable(), 
 });
 
 export type AnnouncementSchema = z.infer<typeof announcementSchema>;

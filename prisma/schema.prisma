@@ -46,8 +46,9 @@ model Teacher {
   division  String?
   createdAt DateTime  @default(now())
   subjects  Subject[] 
-  lectures   Lectures[]  
-  branches   Branch[]  
+  lectures  Lectures[]  
+  branches  Branch[]  
+  announcements AnnouncementTeacher[] 
 }
 
 model Registrar {
@@ -84,8 +85,7 @@ model Branch {
   capacity      Int
   lectures      Lectures[]
   students      Student[]
-  semesters      Semester[]      
-  announcements Announcement[]
+  semesters      Semester[]     
   subjects      Subject[]
   Exam          Exam[]
   teachers      Teacher[]
@@ -175,17 +175,28 @@ model Attendance {
 model Announcement {
   id        Int      @id @default(autoincrement())
   title     String
-  startTime DateTime
-  endTime   DateTime
-  branchId  Int?
-  branches  Branch[] // Link announcements to multiple branches
+  content   String?  // Optional content field
+  fileUrl   String?  // Optional file URL for PDFs or images
+  type      AnnouncementType @default(GENERAL) // Type of announcement
+  teachers  AnnouncementTeacher[] // Many-to-many relationship with Teacher
+  createdAt DateTime @default(now()) // Timestamp of creation
+  updatedAt DateTime @updatedAt // Timestamp of last update
 }
-model Notice {
-    id        Int      @id @default(autoincrement())
-    title     String
-    fileUrl   String
-    uploadedBy String
-    timestamp DateTime @default(now())
+
+
+
+model AnnouncementTeacher {
+  announcementId Int
+  announcement   Announcement @relation(fields: [announcementId], references: [id])
+  teacherId      String
+  teacher        Teacher      @relation(fields: [teacherId], references: [id])
+
+  @@id([announcementId, teacherId]) 
+}
+
+enum AnnouncementType {
+  GENERAL
+  TEACHER_SPECIFIC
 }
 
 enum SubjectType {
@@ -198,8 +209,8 @@ enum UserSex {
   FEMALE
   PREFER_NOT_TO_SAY
 }
+
 enum Day{
   MONDAY
   TUESDAY
 }
-
