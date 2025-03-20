@@ -19,8 +19,9 @@ const AnnouncementListPage = async ({
 }: {
   searchParams: { [key: string]: string | undefined };
 }) => {
-  const {sessionClaims } = auth();
+  const { sessionClaims } = auth();
   const role = (sessionClaims?.metadata as { role?: string })?.role;
+  const userId = sessionClaims?.sub;
 
   const columns = [
     {
@@ -73,7 +74,7 @@ const AnnouncementListPage = async ({
       <td className="hidden md:table-cell">
         {item.fileUrl && (
           <a
-            href={`/api/files/${item.fileUrl}`} // Update this line
+            href={`/api/files/${item.fileUrl}`} 
             target="_blank"
             rel="noopener noreferrer"
             className="text-blue-500 hover:underline"
@@ -116,6 +117,13 @@ const AnnouncementListPage = async ({
   }
 
   // ROLE CONDITIONS
+  if (role === "teacher") {
+    query.OR = [
+      { teachers: { some: { teacherId: userId } } },
+      { teachers: { none: {} } }, // Includes general announcements
+    ];
+  }
+
   const [data, count] = await prisma.$transaction([
     prisma.announcement.findMany({
       where: query,
@@ -134,7 +142,6 @@ const AnnouncementListPage = async ({
 
   return (
     <div className="bg-white p-6 rounded-lg shadow-md flex-1 m-4 mt-0 border border-gray-100">
-      {/* Header Section */}
       <div className="flex flex-col md:flex-row items-start md:items-center justify-between mb-6">
         <div className="mb-4 md:mb-0">
           <h1 className="text-xl font-semibold text-gray-800 flex items-center">
@@ -145,36 +152,20 @@ const AnnouncementListPage = async ({
             View and manage system announcements
           </p>
         </div>
-
         <div className="flex flex-col md:flex-row items-center gap-3 w-full md:w-auto">
-        <div className="w-full md:w-auto mb-3 md:mb-0">
+          <div className="w-full md:w-auto mb-3 md:mb-0">
             <TableSearch />
           </div>
-          
           <div className="flex items-center gap-3 self-end">
-            <button className="flex items-center justify-center p-2 rounded-md bg-blue-50 hover:bg-blue-100 transition-colors">
-              <Image src="/filter.png" alt="Filter" width={16} height={16} />
-              <span className="ml-2 text-sm font-medium text-blue-700 hidden md:inline">Filter</span>
-            </button>
-            
-            <button className="flex items-center justify-center p-2 rounded-md bg-blue-50 hover:bg-blue-100 transition-colors">
-              <Image src="/sort.png" alt="Sort" width={16} height={16} />
-              <span className="ml-2 text-sm font-medium text-blue-700 hidden md:inline">Sort</span>
-            </button>
-            
             {(role === "admin" || role === "registrar") && (
               <FormContainer table="announcement" type="create" />
             )}
           </div>
         </div>
       </div>
-      
-      {/* Table Section with Card Styling */}
       <div className="bg-gray-50 p-4 rounded-md border border-gray-100">
         <Table columns={columns} renderRow={renderRow} data={data} />
       </div>
-      
-      {/* Pagination with Better Styling */}
       <div className="mt-6 flex justify-center md:justify-end">
         <Pagination page={p} count={count} />
       </div>
