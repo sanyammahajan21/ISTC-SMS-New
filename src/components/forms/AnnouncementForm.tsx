@@ -3,10 +3,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import InputField from "../InputField";
-import {
-  announcementSchema,
-  AnnouncementSchema,
-} from "@/lib/formValidationSchemas";
+import { announcementSchema, AnnouncementSchema } from "@/lib/formValidationSchemas";
 import { createAnnouncement, updateAnnouncement } from "@/lib/actions";
 import { useFormState } from "react-dom";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
@@ -29,6 +26,7 @@ const AnnouncementForm = ({
     handleSubmit,
     formState: { errors },
     setValue,
+    watch, 
   } = useForm<AnnouncementSchema>({
     resolver: zodResolver(announcementSchema),
   });
@@ -43,24 +41,28 @@ const AnnouncementForm = ({
     }
   );
 
+  // Watch the "type" field to determine if teacher selection should be shown
+  const announcementType = watch("type", data?.type || "GENERAL");
 
-  const onSubmit = handleSubmit(async (data) => {
-    const formData = {
-      ...data,
-      id: data.id, 
-      teacherIds: selectedTeachers,
-      file: null, 
-    };
-  
+  const onSubmit = handleSubmit((data) => {
+    const reader = new FileReader();
     if (file) {
-      const reader = new FileReader();
-      reader.readAsDataURL(file); 
+      reader.readAsDataURL(file);
       reader.onload = async () => {
         const base64File = reader.result?.toString().split(',')[1]; 
-        formData.file = { name: file.name, data: base64File }; 
+        const formData = {
+          ...data,
+          teacherIds: selectedTeachers,
+          file: file ? { name: file.name, data: base64File } : null,
+        };
         formAction(formData); 
       };
     } else {
+      const formData = {
+        ...data,
+        teacherIds: selectedTeachers,
+        file: null,
+      };
       formAction(formData); 
     }
   });
@@ -69,9 +71,7 @@ const AnnouncementForm = ({
 
   useEffect(() => {
     if (state.success) {
-      toast(
-        `Announcement has been ${type === "create" ? "created" : "updated"}!`
-      );
+      toast(`Announcement has been ${type === "create" ? "created" : "updated"}!`);
       setOpen(false);
       router.refresh();
     }
@@ -82,9 +82,7 @@ const AnnouncementForm = ({
   return (
     <form className="flex flex-col gap-8" onSubmit={onSubmit}>
       <h1 className="text-xl font-semibold">
-        {type === "create"
-          ? "Create a new announcement"
-          : "Update the announcement"}
+        {type === "create" ? "Create a new announcement" : "Update the announcement"}
       </h1>
 
       <div className="flex justify-between flex-wrap gap-4">
@@ -123,9 +121,7 @@ const AnnouncementForm = ({
             defaultValue={data?.type || "GENERAL"}
           >
             <option value="GENERAL">General Announcement</option>
-            <option value="TEACHER_SPECIFIC">
-              Teacher-Specific Announcement
-            </option>
+            <option value="TEACHER_SPECIFIC">Teacher-Specific Announcement</option>
           </select>
           {errors.type?.message && (
             <p className="text-xs text-red-400">
@@ -134,37 +130,36 @@ const AnnouncementForm = ({
           )}
         </div>
 
-        <div className="flex flex-col gap-2 w-full">
-          <label className="text-xs text-gray-500">
-            Teachers (for teacher-specific announcements)
-          </label>
-          <select
-            className="ring-[1.5px] ring-gray-300 p-2 rounded-md text-sm w-full"
-            multiple
-            onChange={(e) => {
-              const selectedOptions = Array.from(e.target.selectedOptions).map(
-                (option) => option.value
-              );
-              setSelectedTeachers(selectedOptions);
-            }}
-          >
-            {teachers.map((teacher: { id: string; name: string }) => (
-              <option value={teacher.id} key={teacher.id}>
-                {teacher.name}
-              </option>
-            ))}
-          </select>
-          {errors.teacherIds?.message && (
-            <p className="text-xs text-red-400">
-              {errors.teacherIds.message.toString()}
-            </p>
-          )}
-        </div>
+        {/* Conditionally render teacher selection based on announcement type */}
+        {announcementType === "TEACHER_SPECIFIC" && (
+          <div className="flex flex-col gap-2 w-full">
+            <label className="text-xs text-gray-500">Teachers (for teacher-specific announcements)</label>
+            <select
+              className="ring-[1.5px] ring-gray-300 p-2 rounded-md text-sm w-full"
+              multiple
+              onChange={(e) => {
+                const selectedOptions = Array.from(e.target.selectedOptions).map(
+                  (option) => option.value
+                );
+                setSelectedTeachers(selectedOptions);
+              }}
+            >
+              {teachers.map((teacher: { id: string; name: string }) => (
+                <option value={teacher.id} key={teacher.id}>
+                  {teacher.name}
+                </option>
+              ))}
+            </select>
+            {errors.teacherIds?.message && (
+              <p className="text-xs text-red-400">
+                {errors.teacherIds.message.toString()}
+              </p>
+            )}
+          </div>
+        )}
 
         <div className="flex flex-col gap-2 w-full">
-          <label className="text-xs text-gray-500">
-            Upload File (PDF, Image, Excel)
-          </label>
+          <label className="text-xs text-gray-500">Upload File (PDF, Image, Excel)</label>
           <input
             type="file"
             onChange={(e) => setFile(e.target.files?.[0] || null)}

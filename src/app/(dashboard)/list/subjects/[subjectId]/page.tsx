@@ -34,6 +34,16 @@ const SubjectDetailsPage = async ({ params }: { params: { subjectId: string } })
       <p className="text-gray-500">Max Marks: {subject.maxMarks}</p>
       <p className="text-gray-500">Branch ID: {subject.branchId}</p>
       <p className="text-gray-500">Semester ID: {subject.semesterId}</p>
+      {subject.fileUrl && (
+          <a
+            href={`/api/files/${subject.fileUrl}`} 
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-blue-500 hover:underline"
+          >
+            View Subject Curriculum
+          </a>
+        )}
     </div>
   );
 };

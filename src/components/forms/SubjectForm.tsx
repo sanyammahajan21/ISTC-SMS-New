@@ -6,7 +6,7 @@ import InputField from "../InputField";
 import { subjectSchema, SubjectSchema } from "@/lib/formValidationSchemas";
 import { createSubject, updateSubject } from "@/lib/actions";
 import { useFormState } from "react-dom";
-import { Dispatch, SetStateAction, useEffect } from "react";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
 
@@ -29,7 +29,7 @@ const SubjectForm = ({
     resolver: zodResolver(subjectSchema),
   });
 
-  // AFTER REACT 19 IT'LL BE USEACTIONSTATE
+  const [file, setFile] = useState<File | null>(null);
 
   const [state, formAction] = useFormState(
     type === "create" ? createSubject : updateSubject,
@@ -40,7 +40,24 @@ const SubjectForm = ({
   );
 
   const onSubmit = handleSubmit((data) => {
-    formAction(data);
+    const reader = new FileReader();
+    if (file) {
+      reader.readAsDataURL(file);
+      reader.onload = async () => {
+        const base64File = reader.result?.toString().split(",")[1];
+        const formData = {
+          ...data,
+          file: file ? { name: file.name, data: base64File } : null,
+        };
+        formAction(formData);
+      };
+    } else {
+      const formData = {
+        ...data,
+        file: null,
+      };
+      formAction(formData);
+    }
   });
 
   const router = useRouter();
@@ -77,7 +94,7 @@ const SubjectForm = ({
           register={register}
           error={errors?.maxMarks}
         />
-         <InputField
+        <InputField
           label="Subject Code"
           name="subjectCode"
           defaultValue={data?.subjectCode}
@@ -169,7 +186,7 @@ const SubjectForm = ({
             {teachers.map(
               (teacher: { id: string; name: string; surname: string }) => (
                 <option value={teacher.id} key={teacher.id}>
-                  {teacher.name }
+                  {teacher.name}
                 </option>
               )
             )}
@@ -180,8 +197,15 @@ const SubjectForm = ({
             </p>
           )}
         </div>
-        
-        
+        <div className="flex flex-col gap-2 w-full">
+          <label className="text-xs text-gray-500">
+            Upload File (PDF, Image)
+          </label>
+          <input
+            type="file"
+            onChange={(e) => setFile(e.target.files?.[0] || null)}
+          />
+        </div>
       </div>
       {state.error && (
         <span className="text-red-500">Something went wrong!</span>

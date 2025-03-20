@@ -27,14 +27,32 @@ export const createSubject = async (
   data: SubjectSchema
 ) => {
   try {
+    const { name, subjectCode, type, maxMarks, branchId, semesterId, file } = data;
+    let fileUrl = null;
+
+    // Handle file upload if a file is provided
+    if (file) {
+      const fileData = Buffer.from(file.data, 'base64'); // Decode base64 file data
+      const safeFileName = `${Date.now()}_${file.name}`; // Create a unique file name
+      const filePath = join(STORAGE_PATH, safeFileName); // Define the file path
+
+      if (!existsSync(STORAGE_PATH)) {
+        await mkdir(STORAGE_PATH, { recursive: true });
+      }
+
+      await writeFile(filePath, fileData);
+
+      fileUrl = safeFileName;
+    }
     await prisma.subject.create({
       data: {
-        name: data.name,
-        type: data.type,
-        subjectCode:  data.subjectCode,
-        maxMarks:  data.maxMarks,
-        branchId: data.branchId,
-        semesterId: data.semesterId,
+        name,
+        type,
+        subjectCode,
+        maxMarks,
+        fileUrl,
+        branchId,
+        semesterId,
         teachers: {
           connect: data.teachers.map((teacherId) => ({ id: teacherId })),
         },
@@ -54,6 +72,40 @@ export const updateSubject = async (
   data: SubjectSchema
 ) => {
   try {
+    const {id,  name, subjectCode, type, maxMarks, branchId, semesterId, file } = data;
+    if (!id) {
+      throw new Error('Subject ID is required');
+    }
+    let fileUrl = null;
+
+    if (file) {
+    const fileData = Buffer.from(file.data, 'base64'); // Decode base64 file data
+    const safeFileName = `${Date.now()}_${file.name}`; // Create a unique file name
+    const filePath = join(STORAGE_PATH, safeFileName); // Define the file path
+
+    // Create the uploads directory if it doesn't exist
+    if (!existsSync(STORAGE_PATH)) {
+      await mkdir(STORAGE_PATH, { recursive: true });
+    }
+
+    // Save the file to the server
+    await writeFile(filePath, fileData);
+
+    // Store only the filename in the database
+    fileUrl = safeFileName;
+
+    // Delete the old file if it exists
+    const existingSubject = await prisma.subject.findUnique({
+      where: { id },
+    });
+    if (existingSubject?.fileUrl) {
+      const oldFilePath = join(STORAGE_PATH, existingSubject.fileUrl);
+      if (existsSync(oldFilePath)) {
+        console.log('Deleting old file:', oldFilePath); // Debugging
+        await unlink(oldFilePath); // Delete the old file
+      }
+    }
+  }
     await prisma.subject.update({
       where: {
         id: data.id,
@@ -64,6 +116,7 @@ export const updateSubject = async (
         subjectCode:  data.subjectCode,
         maxMarks:  data.maxMarks,
         branchId: data.branchId,
+        fileUrl : fileUrl || undefined,
         semesterId: data.semesterId,
         teachers: {
           set: data.teachers.map((teacherId) => ({ id: teacherId })),
@@ -85,6 +138,20 @@ export const deleteSubject = async (
 ) => {
   const id = data.get("id") as string;
   try {
+    const subject = await prisma.subject.findUnique({
+      where: {id : parseInt(id)},
+    });
+    
+    if(!subject) {
+      throw new Error('Subject not found'); 
+    }
+    if (subject.fileUrl) {
+      const filePath = join(STORAGE_PATH, subject.fileUrl);
+      if (existsSync(filePath)) {
+        console.log('Deleting file:', filePath); // Debugging
+        await unlink(filePath); // Delete the file
+      }
+    }
     await prisma.subject.delete({
       where: {
         id: parseInt(id),

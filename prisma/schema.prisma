@@ -100,6 +100,7 @@ model Subject {
   maxMarks    Int?
   branchId    Int
   branch      Branch      @relation(fields: [branchId], references: [id])
+  fileUrl     String?
   semesterId  Int?
   semester    Semester?   @relation(fields: [semesterId], references: [id])
   teachers    Teacher[]
@@ -183,13 +184,13 @@ model Attendance {
 model Announcement {
   id        Int      @id @default(autoincrement())
   title     String
-  content   String?  // Optional content field
-  fileUrl   String?  // Optional file URL for PDFs or images
-  type      AnnouncementType @default(GENERAL) // Type of announcement
-  teachers  AnnouncementTeacher[] // Many-to-many relationship with Teacher
-  createdAt DateTime @default(now()) // Timestamp of creation
-  updatedAt DateTime @updatedAt // Timestamp of last update
-}
+  content   String?  
+  fileUrl   String?  
+  type      AnnouncementType @default(GENERAL)
+  teachers  AnnouncementTeacher[]
+  createdAt DateTime @default(now()) 
+  updatedAt DateTime @updatedAt 
+  }
 
 
 

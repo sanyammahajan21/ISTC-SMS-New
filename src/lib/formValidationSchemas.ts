@@ -7,6 +7,13 @@ export const subjectSchema = z.object({
   teachers: z.array(z.string()), //teacher ids
   subjectCode: z.string(),
   maxMarks: z.coerce.number(),
+  file: z
+    .object({
+      name: z.string(),
+      data: z.string(), 
+    })
+    .optional()
+    .nullable(), 
   branchId: z.coerce.number().min(1, { message: "branch name is required!" }),
   semesterId: z.coerce.number().min(1, { message: "semester name is required!" }),
 });

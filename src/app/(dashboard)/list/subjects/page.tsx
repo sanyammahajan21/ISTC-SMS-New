@@ -30,6 +30,11 @@ const SubjectListPage = async ({
       className: "hidden md:table-cell",
     },
     {
+      header: "Curriculum",
+      accessor: "Curriculum",
+      className: "hidden md:table-cell",
+    },
+    {
       header: "Actions",
       accessor: "action",
     },
@@ -43,6 +48,18 @@ const SubjectListPage = async ({
       <td className="flex items-center gap-4 p-4">{item.name}</td>
       <td className="hidden md:table-cell">
         {item.teachers.map((teacher) => teacher.name).join(",")}
+      </td>
+      <td className="hidden md:table-cell">
+        {item.fileUrl && (
+          <a
+            href={`/api/files/${item.fileUrl}`} 
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-blue-500 hover:underline"
+          >
+            View Curriculum
+          </a>
+        )}
       </td>
       <td>
         <div className="flex items-center gap-2">
