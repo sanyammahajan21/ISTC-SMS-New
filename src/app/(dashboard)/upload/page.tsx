@@ -189,6 +189,32 @@ export default function Upload() {
       throw new Error("An error occurred during the upload.");
     }
   };
+  // Handle results file upload
+  const handleResultsUpload = async (branchId: string | undefined, semesterId: string | undefined, file: File | null) => {
+    if (!file) {
+      throw new Error("File is required for results upload.");
+    }
+
+    const formData = new FormData();
+    formData.append("file", file as Blob);
+
+    try {
+      const response = await fetch("/api/uploadResults", {
+        method: "POST",
+        body: formData,
+    });
+
+    const result = await response.json();
+    if (response.ok) {
+      return result.message;
+    } else {
+      throw new Error(result.error || "Upload failed.");
+    }
+  } catch (error) {
+    throw new Error("An error occurred during the upload.");
+  }
+};
+
 
   return (
     <div className="p-8 bg-gray-50 min-h-screen flex flex-col items-center">
@@ -217,6 +243,11 @@ export default function Upload() {
         <h2 className="text-xl font-semibold text-gray-900 text-center bg-blue-800 p-4 rounded-md text-white">Subjects Excel File</h2>
         <UploadSection title="Subjects Excel File" onUpload={handleSubjectsUpload} isTeacherUpload={true} />
       </div>
+      {/* Results Upload Section */}
+      <div className="w-full max-w-6xl bg-white p-8 rounded-xl shadow-lg border border-gray-200 mt-10">
+      <h2 className="text-xl font-semibold text-gray-900 text-center bg-blue-800 p-4 rounded-md text-white">Results Excel File</h2>
+      <UploadSection title="Results Excel File" onUpload={handleResultsUpload} isTeacherUpload={true} />
+    </div>
     </div>
   );
 }
