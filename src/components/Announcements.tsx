@@ -10,7 +10,7 @@ const Announcements = async () => {
   if (role === "teacher") {
     query.OR = [
       { teachers: { some: { teacherId: userId } } },
-      { teachers: { none: {} } }, // Includes general announcements
+      { teachers: { none: {} } },
     ];
   }
 

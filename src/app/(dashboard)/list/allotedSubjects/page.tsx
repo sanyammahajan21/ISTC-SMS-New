@@ -26,7 +26,7 @@ const AllottedSubjectsPage = async () => {
       </h1>
 
       {teacher.subjects.length === 0 ? (
-        <p className="text-gray-500">No subjects allotted.</p>
+        <p className="text-gray-500">No Subjects Allotted.</p>
       ) : (
         <div className="space-y-4">
           {teacher.subjects.map((subject) => (

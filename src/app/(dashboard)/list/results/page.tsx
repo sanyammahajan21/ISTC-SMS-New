@@ -4,13 +4,13 @@ import Table from "@/components/Table";
 import TableSearch from "@/components/TableSearch";
 import prisma from "@/lib/prisma";
 import { ITEM_PER_PAGE } from "@/lib/settings";
-import { Result,  Student, Subject, Branch, Prisma } from "@prisma/client";
+import { Result,  Student, Subject, Branch, Prisma , Teacher} from "@prisma/client";
 import StudentResultDownload from "@/components/StudentResultDownload";
 import { auth } from "@clerk/nextjs/server";
 import Link from "next/link";
 import { ResultFilters } from "@/components/Filter";
 
-type ResultList = Result & { student: Student; subject: Subject; branch: Branch };
+type ResultList = Result & { student: Student; subject: Subject; branch: Branch, teacher: Teacher };
 
 const ResultListPage = async ({ searchParams }: { searchParams: { [key: string]: string | undefined } }) => {
   const { sessionClaims } = auth();
@@ -74,6 +74,7 @@ const ResultListPage = async ({ searchParams }: { searchParams: { [key: string]:
       include: {
         student: { select: { name: true, branch: true, semester: true } },
         subject: { select: { name: true } },
+        teacher: true,
       },
       take: ITEM_PER_PAGE,
       skip: ITEM_PER_PAGE * (p - 1),

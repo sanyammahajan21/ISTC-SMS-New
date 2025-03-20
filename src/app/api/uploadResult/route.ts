@@ -11,10 +11,18 @@ export async function POST(req: NextRequest) {
   try {
     const formData = await req.formData();
     const file = formData.get("file") as Blob;
+    const teacherId = formData.get("teacherId") as string; // Extract teacherId
 
     if (!file) {
       return NextResponse.json(
         { success: false, error: "Missing file" },
+        { status: 400 }
+      );
+    }
+
+    if (!teacherId) {
+      return NextResponse.json(
+        { success: false, error: "Missing teacher ID" },
         { status: 400 }
       );
     }
@@ -79,6 +87,7 @@ export async function POST(req: NextRequest) {
           endTerm: row.EndTerm ?? null,
           overallMark: row.OverallMark,
           grade: row.Grade,
+          teacherId: teacherId, // Store teacherId
         };
       })
     );

@@ -49,6 +49,7 @@ model Teacher {
   lectures  Lectures[]  
   branches  Branch[]  
   announcements AnnouncementTeacher[] 
+  results   Result[]
 }
 
 model Registrar {
@@ -156,11 +157,16 @@ model Result {
   endTerm       Int?
   overallMark   Int
   grade         String
+
   studentId     String
-  student       Student @relation(fields: [studentId], references: [id])
-  subjectId   Int?
-  subject     Subject?      @relation(fields: [subjectId], references: [id])
-}                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     
+  student       Student @relation(fields: [studentId], references: [id], map: "Result_studentId_fk")
+
+  subjectId     Int?
+  subject       Subject? @relation(fields: [subjectId], references: [id], map: "Result_subjectId_fk")
+
+  teacherId     String?
+  teacher       Teacher? @relation(fields: [teacherId], references: [id], map: "Result_teacherId_fk")
+}                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   
 
 model Attendance {
   id         Int      @id @default(autoincrement())

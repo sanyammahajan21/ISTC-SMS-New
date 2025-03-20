@@ -84,6 +84,12 @@ const menuItems = [
         href: "/upload",
         visible: ["admin", "registrar"],
       },
+      {
+        icon: "/upload.png",
+        label: "Upload Results",
+        href: "/uploadResult",
+        visible: ["teacher"],
+      },
     ],
   },
   // {
