@@ -171,73 +171,106 @@ export default function ExamPage({ role }: ExamPageProps) {
     return endTime;
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    if (
-      !form.subjectId ||
-      !form.examDate ||
-      !form.startTime ||
-      !form.semesterId ||
-      !form.branchId
-    ) {
-      alert("Please fill in all fields.");
-      return;
-    }
-    const endTime = calculateEndTime(form.startTime, duration);
-
-    const payload: Exam = {
-      subjectId: form.subjectId!,
-      examDate: new Date(
-        Date.UTC(
-          form.examDate.getFullYear(),
-          form.examDate.getMonth(),
-          form.examDate.getDate()
-        )
-      ),
-      startTime: new Date(
-        Date.UTC(
-          form.startTime.getFullYear(),
-          form.startTime.getMonth(),
-          form.startTime.getDate(),
-          form.startTime.getHours(),
-          form.startTime.getMinutes()
-        )
-      ),
-      endTime: new Date(
-        Date.UTC(
-          endTime.getFullYear(),
-          endTime.getMonth(),
-          endTime.getDate(),
-          endTime.getHours(),
-          endTime.getMinutes()
-        )
-      ),
-      semesterId: form.semesterId!,
-      branchId: form.branchId!,
-    };
-
-    if (form.id) {
-      await updateExam(form.id, payload);
-      toast(`Exam has been updated`);
-    } else {
-      if (window.confirm("Are you sure you want to add this exam?")) {
-        await createExam(payload);
-        toast(`Exam has been created`);
-      }
-    }
-
+  const checkForOverlappingExams = async (exam: Exam): Promise<boolean> => {
     const response = await getAllExams();
-    if (response?.success) setExams(response?.data ?? []);
-    setForm((prev) => ({
-      subjectId: 0,
-      examDate: new Date(),
-      startTime: new Date(),
-      endTime: new Date(),
-      semesterId: prev.semesterId,
-      branchId: prev.branchId,
-    }));
+    if (!response?.success) return false;
+  
+    const existingExams = response.data;
+  
+    const overlappingExam = existingExams.find((existingExam) => {
+      return (
+        existingExam.branchId === exam.branchId &&
+        existingExam.semesterId === exam.semesterId &&
+        existingExam.id !== exam.id && 
+        existingExam.examDate.toISOString().split("T")[0] ===
+          exam.examDate.toISOString().split("T")[0] && 
+        ((existingExam.startTime <= exam.startTime &&
+          existingExam.endTime > exam.startTime) || 
+          (existingExam.startTime < exam.endTime &&
+            existingExam.endTime >= exam.endTime) || 
+          (existingExam.startTime >= exam.startTime &&
+            existingExam.endTime <= exam.endTime)) 
+      );
+    });
+  
+    return !!overlappingExam; 
   };
+  const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
+
+  if (
+    !form.subjectId ||
+    !form.examDate ||
+    !form.startTime ||
+    !form.semesterId ||
+    !form.branchId
+  ) {
+    alert("Please fill in all fields.");
+    return;
+  }
+
+  const endTime = calculateEndTime(form.startTime, duration);
+
+  const payload: Exam = {
+    subjectId: form.subjectId!,
+    examDate: new Date(
+      Date.UTC(
+        form.examDate.getFullYear(),
+        form.examDate.getMonth(),
+        form.examDate.getDate()
+      )
+    ),
+    startTime: new Date(
+      Date.UTC(
+        form.startTime.getFullYear(),
+        form.startTime.getMonth(),
+        form.startTime.getDate(),
+        form.startTime.getHours(),
+        form.startTime.getMinutes()
+      )
+    ),
+    endTime: new Date(
+      Date.UTC(
+        endTime.getFullYear(),
+        endTime.getMonth(),
+        endTime.getDate(),
+        endTime.getHours(),
+        endTime.getMinutes()
+      )
+    ),
+    semesterId: form.semesterId!,
+    branchId: form.branchId!,
+  };
+
+  const hasOverlap = await checkForOverlappingExams(payload);
+  if (hasOverlap) {
+    alert(
+      "An exam for the same branch and semester is already scheduled at this date and time. Please choose a different date or time."
+    );
+    return;
+  }
+
+  if (form.id) {
+    await updateExam(form.id, payload);
+    toast(`Exam has been updated`);
+  } else {
+    if (window.confirm("Are you sure you want to add this exam?")) {
+      await createExam(payload);
+      toast(`Exam has been created`);
+    }
+  }
+
+  const response = await getAllExams();
+  if (response?.success) setExams(response?.data ?? []);
+  setForm((prev) => ({
+    subjectId: 0,
+    examDate: new Date(),
+    startTime: new Date(),
+    endTime: new Date(),
+    semesterId: prev.semesterId,
+    branchId: prev.branchId,
+  }));
+};
 
   const handleUpdateExam = (exam: Exam) => {
     setForm({
