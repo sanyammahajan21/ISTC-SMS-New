@@ -96,33 +96,33 @@ const AnnouncementListPage = async ({
     prisma.announcement.count({ where: query }),
   ]);
   return (
-    <div className="bg-white p-6 rounded-lg shadow-md flex-1 m-4 mt-0 border border-gray-100">
+    <div className="bg-blue-100 p-6 rounded-lg shadow-md flex-1 m-4 mt-0 border border-red-500">
       {/* Header Section */}
       <div className="flex flex-col md:flex-row items-start md:items-center justify-between mb-6">
         <div className="mb-4 md:mb-0">
           <h1 className="text-xl font-semibold text-gray-800 flex items-center">
-            <span className="bg-blue-500 w-2 h-6 rounded mr-2 hidden md:block"></span>
+            <span className="bg-red-500 w-2 h-6 rounded mr-2 hidden md:block"></span>
             All Announcements
           </h1>
-          <p className="text-sm text-gray-500 mt-1 hidden md:block">
+          <p className="text-sm text-red-500 mt-1 hidden md:block">
             View and manage system announcements
           </p>
         </div>
         
         <div className="flex flex-col md:flex-row items-center gap-3 w-full md:w-auto">
-          <div className="w-full md:w-auto mb-3 md:mb-0">
+          <div className="w-full bg-white rounded-full md:w-auto mb-3 md:mb-0">
             <TableSearch />
           </div>
           
           <div className="flex items-center gap-3 self-end">
-            <button className="flex items-center justify-center p-2 rounded-md bg-blue-50 hover:bg-blue-100 transition-colors">
+            <button className="flex items-center justify-center p-2 rounded-md bg-green-50 hover:bg-green-100 transition-colors">
               <Image src="/filter.png" alt="Filter" width={16} height={16} />
               <span className="ml-2 text-sm font-medium text-blue-700 hidden md:inline">Filter</span>
             </button>
             
-            <button className="flex items-center justify-center p-2 rounded-md bg-blue-50 hover:bg-blue-100 transition-colors">
+            <button className="flex items-center justify-center p-2 rounded-md bg-green-50 hover:bg-green-100 transition-colors">
               <Image src="/sort.png" alt="Sort" width={16} height={16} />
-              <span className="ml-2 text-sm font-medium text-blue-700 hidden md:inline">Sort</span>
+              <span className="ml-2 text-sm font-medium text-blue-900 hidden md:inline">Sort</span>
             </button>
             
             {(role === "admin" || role === "registrar") && (
@@ -133,7 +133,7 @@ const AnnouncementListPage = async ({
       </div>
       
       {/* Table Section with Card Styling */}
-      <div className="bg-gray-50 p-4 rounded-md border border-gray-100">
+      <div className="bg-white p-4 rounded-md border border-black">
         <Table columns={columns} renderRow={renderRow} data={data} />
       </div>
       
