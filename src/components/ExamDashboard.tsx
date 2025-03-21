@@ -7,7 +7,7 @@ import GenerateDMCPage from "@/components/GenerateDMCPage";
 import GenerateMigrationCertificatesPage from "@/components/MigrationGeneration";
 import GenerateCharacterCertificatesPage from "@/components/charactergeneration";
 import GeneratediplomaCertificatesPage from "@/components/certificategeneration/diplomageneration";
-
+import GenerateResult from "@/components/certificategeneration/resultgeneration";
 function ExamDashboard({ role }: { role?: string }) {
   const [selectedComponent, setSelectedComponent] = useState<string | null>(null);
   const router = useRouter();
@@ -91,6 +91,8 @@ function ExamDashboard({ role }: { role?: string }) {
         return <GenerateCharacterCertificatesPage />;
       case "diploma":
         return <GeneratediplomaCertificatesPage />;
+      case "publishResult":
+        return <GenerateResult />;
       default:
         return null;
     }
