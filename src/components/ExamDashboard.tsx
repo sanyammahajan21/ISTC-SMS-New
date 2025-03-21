@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import ExamPage from "@/components/forms/ExamForm";
 import GenerateDMCPage from "@/components/GenerateDMCPage";
 import GenerateMigrationCertificatesPage from "@/components/MigrationGeneration";
-
+import GenerateCharacterCertificatesPage from "@/components/charactergeneration";
 function ExamDashboard({ role }: { role?: string }) {
   const [selectedComponent, setSelectedComponent] = useState<string | null>(null);
   const router = useRouter();
@@ -85,6 +85,8 @@ function ExamDashboard({ role }: { role?: string }) {
         return <GenerateDMCPage />;
       case "migrationCert":
         return <GenerateMigrationCertificatesPage />;
+      case "characterCert":
+        return <GenerateCharacterCertificatesPage />;
       default:
         return null;
     }
