@@ -6,13 +6,11 @@ import { existsSync } from "fs";
 import path from "path";
 import os from "os";
 import { NextRequest } from "next/server";
-import { EmailAddress } from "@clerk/nextjs/server";
 import { UserSex } from "@prisma/client/wasm";
 
 export async function POST(req: NextRequest) {
   try {
     const formData = await req.formData();
-
     const branchId = parseInt(formData.get("branchId") as string);
     const semesterId = parseInt(formData.get("semesterId") as string);
     const file = formData.get("file") as Blob;
@@ -61,9 +59,9 @@ export async function POST(req: NextRequest) {
       username: row.RollNo,
       fatherName: row["Father Name"],
       motherName: row["Mother Name"],
-      password: "defaultPassword", // or generate a password
-      birthday: new Date(row.Birthday), // or set an appropriate date
-      phone: row.Phone ? String(row.Phone) : "",// or set an appropriate phone number
+      password: "defaultPassword",
+      birthday: new Date(row.Birthday), 
+      phone: row.Phone ? String(row.Phone) : "",
       email: row.Email,
       address: row.Address,
       bloodType: row["Blood Type"],

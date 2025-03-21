@@ -12,7 +12,6 @@ const SubjectDetailsPage = async ({ params }: { params: { subjectId: string } })
     );
   }
 
-  // Fetch the subject details
   const subject = await prisma.subject.findUnique({
     where: { id: subjectId },
   });
@@ -39,10 +38,15 @@ const SubjectDetailsPage = async ({ params }: { params: { subjectId: string } })
             href={`/api/files/${subject.fileUrl}`} 
             target="_blank"
             rel="noopener noreferrer"
-            className="text-blue-500 hover:underline"
+            className="text-blue-500 hover:underline hover:text-red-500 hover:font-extrabold"
           >
             View Subject Curriculum
           </a>
+        )}
+        {!subject.fileUrl && (
+          <p className="text-red-500 font-extrabold">
+            No Curriculum updated yet
+          </p>
         )}
     </div>
   );

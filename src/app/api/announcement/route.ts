@@ -9,6 +9,7 @@ const PUBLIC_URL_PATH = '/uploads';
 export const config = {
   api: {
     bodyParser: false, 
+    sizeLimit: '10mb',
   },
 };
 

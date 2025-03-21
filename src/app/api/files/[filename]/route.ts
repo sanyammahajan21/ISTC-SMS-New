@@ -4,7 +4,7 @@ import { join, resolve } from 'path';
 import { readFile } from 'fs/promises';
 import { existsSync } from 'fs';
 
-const STORAGE_PATH = process.env.STORAGE_PATH || 'C:\\Users\\tanis\\OneDrive\\Desktop\\test';
+const STORAGE_PATH = process.env.STORAGE_PATH || './upload/public';
 
 export async function GET(
   request: Request,

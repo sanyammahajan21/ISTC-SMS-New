@@ -20,7 +20,6 @@ const StudentListPage = async ({
   const { sessionClaims } = auth();
   const role = (sessionClaims?.metadata as { role?: string })?.role;
   const userId = sessionClaims?.sub;
-
   const columns = [
     {
       header: "Info",
@@ -41,11 +40,6 @@ const StudentListPage = async ({
       accessor: "phone",
       className: "hidden lg:table-cell",
     },
-    {
-      header: "Address",
-      accessor: "address",
-      className: "hidden lg:table-cell",
-    },
     ...(role === "admin" || role === "registrar"
       ? [
           {
@@ -55,7 +49,6 @@ const StudentListPage = async ({
         ]
       : []),
   ];
-
   const renderRow = (item: StudentList) => (
     <tr
       key={item.id}
@@ -82,7 +75,6 @@ const StudentListPage = async ({
         <div className="flex items-center gap-2">
           <Link href={`/list/students/${item.id}`}>
             <button className="flex items-center justify-center p-2 m-2 bg-blue-400 ">
-              {/* <Image src="/view.png" alt="" width={16} height={16} /> */}
               <>View</>
             </button>
           </Link>
@@ -168,10 +160,10 @@ const StudentListPage = async ({
         <div className="mb-4 md:mb-0">
           <h1 className="text-xl font-semibold text-gray-800 flex items-center">
             <span className="bg-blue-500 w-2 h-6 rounded mr-2 hidden md:block"></span>
-            All Students
+              All Students
           </h1>
           <p className="text-sm text-gray-500 mt-1 hidden md:block">
-            View and manage student information
+              View and manage student information
           </p>
         </div>
         <div className="flex flex-col md:flex-row items-center gap-3 w-full md:w-auto">
@@ -185,7 +177,8 @@ const StudentListPage = async ({
               branchId={branchId}
               semester={semester}
             />
-            {(role === "admin" || role === "registrar") && (
+            {(
+              role === "admin" || role === "registrar") && (
               <FormContainer table="student" type="create" />
             )}
           </div>
