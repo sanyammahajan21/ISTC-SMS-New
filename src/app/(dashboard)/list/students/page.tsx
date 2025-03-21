@@ -163,19 +163,19 @@ const StudentListPage = async ({
   });
 
   return (
-    <div className="bg-white p-6 rounded-lg shadow-md flex-1 m-4 mt-0 border border-gray-100">
+    <div className="bg-blue-100 p-6 rounded-lg shadow-md flex-1 m-4 mt-0 border border-red-400">
       <div className="flex flex-col md:flex-row items-start md:items-center justify-between mb-6">
         <div className="mb-4 md:mb-0">
-          <h1 className="text-xl font-semibold text-gray-800 flex items-center">
-            <span className="bg-blue-500 w-2 h-6 rounded mr-2 hidden md:block"></span>
+          <h1 className="text-xl font-semibold text-black flex items-center">
+            <span className="bg-red-500 w-2 h-6 rounded mr-2 hidden md:block"></span>
             All Students
           </h1>
-          <p className="text-sm text-gray-500 mt-1 hidden md:block">
+          <p className="text-sm text-red-500 mt-1 hidden md:block">
             View and manage student information
           </p>
         </div>
         <div className="flex flex-col md:flex-row items-center gap-3 w-full md:w-auto">
-          <div className="w-full md:w-auto mb-3 md:mb-0">
+          <div className="w-full bg-white rounded-full md:w-auto mb-3 md:mb-0">
             <TableSearch placeholder="Search students..." />
           </div>
           <div className="flex items-center gap-3 self-end">
@@ -192,7 +192,7 @@ const StudentListPage = async ({
           </div>
         </div>
       </div>
-      <div className="bg-gray-50 p-4 rounded-md border border-gray-100">
+      <div className="bg-white p-4 rounded-md border border-black">
         <Table columns={columns} renderRow={renderRow} data={data} />
       </div>
       <div className="mt-6 flex justify-center md:justify-end">
