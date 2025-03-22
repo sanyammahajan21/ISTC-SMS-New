@@ -199,11 +199,21 @@ const SubjectForm = ({
         </div>
         <div className="flex flex-col gap-2 w-full">
           <label className="text-xs text-gray-500">
-            Upload File (PDF, Image)
+            Upload File (PDF, Image, Excel, max 10MB)
           </label>
           <input
             type="file"
-            onChange={(e) => setFile(e.target.files?.[0] || null)}
+            onChange={(e) => {
+              const selectedFile = e.target.files?.[0];
+              if (selectedFile) {
+                if (selectedFile.size > 10 * 1024 * 1024) {
+                  toast.error("File size must be less than 10MB");
+                  e.target.value = ""; 
+                } else {
+                  setFile(selectedFile);
+                }
+              }
+            }}
           />
         </div>
       </div>

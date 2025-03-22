@@ -14,25 +14,30 @@ import {
 import prisma from "./prisma";
 import { clerkClient } from "@clerk/nextjs/server";
 
-import { writeFile, mkdir, unlink } from 'fs/promises';
-import { join, resolve } from 'path';
-import { existsSync } from 'fs';
+import { writeFile, mkdir, unlink } from "fs/promises";
+import { join, resolve } from "path";
+import { existsSync } from "fs";
 
-const STORAGE_PATH = process.env.STORAGE_PATH || './public/uploads';
+const STORAGE_PATH = process.env.STORAGE_PATH || "./public/uploads";
 const PUBLIC_URL_PATH = `${process.env.STORAGE_PATH}`;
 
 type CurrentState = { success: boolean; error: boolean };
+
 export const createSubject = async (
   currentState: CurrentState,
   data: SubjectSchema
 ) => {
   try {
-    const { name, subjectCode, type, maxMarks, branchId, semesterId, file } = data;
+    const { name, subjectCode, type, maxMarks, branchId, semesterId, file } =
+      data;
     let fileUrl = null;
 
     // Handle file upload if a file is provided
     if (file) {
-      const fileData = Buffer.from(file.data, 'base64'); // Decode base64 file data
+      if (file.data.length > 10 * 1024 * 1024) {
+        throw new Error("File size must be less than 10MB");
+      }
+      const fileData = Buffer.from(file.data, "base64"); // Decode base64 file data
       const safeFileName = `${Date.now()}_${file.name}`; // Create a unique file name
       const filePath = join(STORAGE_PATH, safeFileName); // Define the file path
 
@@ -72,40 +77,52 @@ export const updateSubject = async (
   data: SubjectSchema
 ) => {
   try {
-    const {id,  name, subjectCode, type, maxMarks, branchId, semesterId, file } = data;
+    const {
+      id,
+      name,
+      subjectCode,
+      type,
+      maxMarks,
+      branchId,
+      semesterId,
+      file,
+    } = data;
     if (!id) {
-      throw new Error('Subject ID is required');
+      throw new Error("Subject ID is required");
     }
     let fileUrl = null;
 
     if (file) {
-    const fileData = Buffer.from(file.data, 'base64'); // Decode base64 file data
-    const safeFileName = `${Date.now()}_${file.name}`; // Create a unique file name
-    const filePath = join(STORAGE_PATH, safeFileName); // Define the file path
+      if (file.data.length > 10 * 1024 * 1024) {
+        throw new Error("File size must be less than 10MB");
+      }
+      const fileData = Buffer.from(file.data, "base64"); // Decode base64 file data
+      const safeFileName = `${Date.now()}_${file.name}`; // Create a unique file name
+      const filePath = join(STORAGE_PATH, safeFileName); // Define the file path
 
-    // Create the uploads directory if it doesn't exist
-    if (!existsSync(STORAGE_PATH)) {
-      await mkdir(STORAGE_PATH, { recursive: true });
-    }
+      // Create the uploads directory if it doesn't exist
+      if (!existsSync(STORAGE_PATH)) {
+        await mkdir(STORAGE_PATH, { recursive: true });
+      }
 
-    // Save the file to the server
-    await writeFile(filePath, fileData);
+      // Save the file to the server
+      await writeFile(filePath, fileData);
 
-    // Store only the filename in the database
-    fileUrl = safeFileName;
+      // Store only the filename in the database
+      fileUrl = safeFileName;
 
-    // Delete the old file if it exists
-    const existingSubject = await prisma.subject.findUnique({
-      where: { id },
-    });
-    if (existingSubject?.fileUrl) {
-      const oldFilePath = join(STORAGE_PATH, existingSubject.fileUrl);
-      if (existsSync(oldFilePath)) {
-        console.log('Deleting old file:', oldFilePath); // Debugging
-        await unlink(oldFilePath); // Delete the old file
+      // Delete the old file if it exists
+      const existingSubject = await prisma.subject.findUnique({
+        where: { id },
+      });
+      if (existingSubject?.fileUrl) {
+        const oldFilePath = join(STORAGE_PATH, existingSubject.fileUrl);
+        if (existsSync(oldFilePath)) {
+          console.log("Deleting old file:", oldFilePath); // Debugging
+          await unlink(oldFilePath); // Delete the old file
+        }
       }
     }
-  }
     await prisma.subject.update({
       where: {
         id: data.id,
@@ -113,10 +130,10 @@ export const updateSubject = async (
       data: {
         name: data.name,
         type: data.type,
-        subjectCode:  data.subjectCode,
-        maxMarks:  data.maxMarks,
+        subjectCode: data.subjectCode,
+        maxMarks: data.maxMarks,
         branchId: data.branchId,
-        fileUrl : fileUrl || undefined,
+        fileUrl: fileUrl || undefined,
         semesterId: data.semesterId,
         teachers: {
           set: data.teachers.map((teacherId) => ({ id: teacherId })),
@@ -139,16 +156,16 @@ export const deleteSubject = async (
   const id = data.get("id") as string;
   try {
     const subject = await prisma.subject.findUnique({
-      where: {id : parseInt(id)},
+      where: { id: parseInt(id) },
     });
-    
-    if(!subject) {
-      throw new Error('Subject not found'); 
+
+    if (!subject) {
+      throw new Error("Subject not found");
     }
     if (subject.fileUrl) {
       const filePath = join(STORAGE_PATH, subject.fileUrl);
       if (existsSync(filePath)) {
-        console.log('Deleting file:', filePath); // Debugging
+        console.log("Deleting file:", filePath); // Debugging
         await unlink(filePath); // Delete the file
       }
     }
@@ -166,20 +183,20 @@ export const deleteSubject = async (
   }
 };
 
-
 export const createBranch = async (
   currentState: CurrentState,
   data: BranchSchema
 ) => {
   try {
     await prisma.branch.create({
-      data:{
+      data: {
         name: data.name,
         capacity: data.capacity,
         teachers: {
-          connect: data.teachers.map((teacherId: string) => ({ id: teacherId })),
+          connect: data.teachers.map((teacherId: string) => ({
+            id: teacherId,
+          })),
         },
-        
       },
     });
 
@@ -246,7 +263,7 @@ export const createTeacher = async (
       username: data.username,
       password: data.password,
       // name: data.name,
-      publicMetadata:{role:"teacher"}
+      publicMetadata: { role: "teacher" },
     });
 
     await prisma.teacher.create({
@@ -357,7 +374,7 @@ export const createRegistrar = async (
       username: data.username,
       password: data.password || "",
       // name: data.name,
-      publicMetadata:{role:"registrar"}
+      publicMetadata: { role: "registrar" },
     });
 
     await prisma.registrar.create({
@@ -456,7 +473,6 @@ export const createStudent = async (
     //   fatherName: data.fatherName,
     //   motherName: data.motherName,
 
-
     //   publicMetadata:{role:"student"}
     // });
 
@@ -464,12 +480,12 @@ export const createStudent = async (
       data: {
         // id: user.id,
         username: data.username,
-        password: data.password||"",
+        password: data.password || "",
         name: data.name,
         fatherName: data.fatherName,
         motherName: data.motherName,
         address: data.address,
-        birthday:new Date(data.birthday),
+        birthday: new Date(data.birthday),
         phone: data.phone || "",
         email: data.email,
         sex: data.sex,
@@ -514,9 +530,9 @@ export const updateStudent = async (
         name: data.name,
         fatherName: data.fatherName,
         motherName: data.motherName,
-        address:  data.address,
+        address: data.address,
         birthday: data.birthday,
-        phone: data.phone,   
+        phone: data.phone,
         email: data.email,
         sex: data.sex,
         bloodType: data.bloodType,
@@ -667,7 +683,6 @@ export const fetchSubjects = async (semesterId: number, branchId: number) => {
   }
 };
 
-
 export const createAnnouncement = async (
   currentState: any,
   data: AnnouncementSchema
@@ -677,9 +692,12 @@ export const createAnnouncement = async (
 
     let fileUrl = null;
 
-    // Handle file upload if a file is provided
     if (file) {
-      const fileData = Buffer.from(file.data, 'base64'); // Decode base64 file data
+      if (file.data.length > 10 * 1024 * 1024) {
+        throw new Error("File size must be less than 10MB");
+      }
+
+      const fileData = Buffer.from(file.data, "base64"); // Decode base64 file data
       const safeFileName = `${Date.now()}_${file.name}`; // Create a unique file name
       const filePath = join(STORAGE_PATH, safeFileName); // Define the file path
 
@@ -704,7 +722,7 @@ export const createAnnouncement = async (
         fileUrl, // Save the filename in the database (or null if no file)
         teachers: {
           create:
-            type === 'TEACHER_SPECIFIC'
+            type === "TEACHER_SPECIFIC"
               ? teacherIds?.map((teacherId) => ({ teacherId }))
               : [],
         },
@@ -713,11 +731,10 @@ export const createAnnouncement = async (
 
     return { success: true, error: false };
   } catch (err) {
-    console.error('Error creating announcement:', err);
-    return { success: false, error: true };
+    console.error("Error creating announcement:", err);
+    return { success: false, error: true, message: err.message };
   }
 };
-
 export const updateAnnouncement = async (
   currentState: any,
   data: AnnouncementSchema
@@ -726,49 +743,39 @@ export const updateAnnouncement = async (
     const { id, title, content, type, teacherIds, file } = data;
 
     if (!id) {
-      throw new Error('Announcement ID is required');
+      throw new Error("Announcement ID is required");
     }
 
     let fileUrl = null;
 
-    // Handle file upload if a file is provided
     if (file) {
-      const fileData = Buffer.from(file.data, 'base64'); // Decode base64 file data
-      const safeFileName = `${Date.now()}_${file.name}`; // Create a unique file name
-      const filePath = join(STORAGE_PATH, safeFileName); // Define the file path
-
-      // Create the uploads directory if it doesn't exist
+      if (file.data.length > 10 * 1024 * 1024) {
+        throw new Error("File size must be less than 10MB");
+      }
+      const fileData = Buffer.from(file.data, "base64");
+      const safeFileName = `${Date.now()}_${file.name}`;
+      const filePath = join(STORAGE_PATH, safeFileName);
       if (!existsSync(STORAGE_PATH)) {
         await mkdir(STORAGE_PATH, { recursive: true });
       }
-
-      // Save the file to the server
       await writeFile(filePath, fileData);
-
-      // Store only the filename in the database
       fileUrl = safeFileName;
-
-      // Delete the old file if it exists
       const existingAnnouncement = await prisma.announcement.findUnique({
         where: { id },
       });
       if (existingAnnouncement?.fileUrl) {
         const oldFilePath = join(STORAGE_PATH, existingAnnouncement.fileUrl);
         if (existsSync(oldFilePath)) {
-          console.log('Deleting old file:', oldFilePath); // Debugging
-          await unlink(oldFilePath); // Delete the old file
+          console.log("Deleting old file:", oldFilePath);
+          await unlink(oldFilePath);
         }
       }
     }
-
-    // First, remove existing teacher associations for this announcement
     await prisma.announcementTeacher.deleteMany({
       where: {
         announcementId: id,
       },
     });
-
-    // Then, update the announcement and add new teacher associations
     await prisma.announcement.update({
       where: {
         id,
@@ -777,67 +784,55 @@ export const updateAnnouncement = async (
         title,
         content,
         type,
-        fileUrl: fileUrl || undefined, // Keep existing fileUrl if no new file is provided
+        fileUrl: fileUrl || undefined,
         teachers: {
           create:
-            type === 'TEACHER_SPECIFIC'
+            type === "TEACHER_SPECIFIC"
               ? teacherIds?.map((teacherId) => ({ teacherId }))
               : [],
         },
       },
     });
 
-    // revalidatePath("/list/announcements"); // Revalidate the announcements page
     return { success: true, error: false };
   } catch (err) {
-    console.error('Error updating announcement:', err);
+    console.error("Error updating announcement:", err);
     return { success: false, error: true };
   }
 };
 
-export const deleteAnnouncement = async (
-  currentState: any,
-  data: FormData
-) => {
-  const id = data.get('id') as string;
+export const deleteAnnouncement = async (currentState: any, data: FormData) => {
+  const id = data.get("id") as string;
 
   try {
-    // Fetch the announcement to get the fileUrl
     const announcement = await prisma.announcement.findUnique({
       where: { id: parseInt(id) },
     });
 
     if (!announcement) {
-      throw new Error('Announcement not found');
+      throw new Error("Announcement not found");
     }
 
-    // Delete the associated file if it exists
     if (announcement.fileUrl) {
       const filePath = join(STORAGE_PATH, announcement.fileUrl);
       if (existsSync(filePath)) {
-        console.log('Deleting file:', filePath); // Debugging
-        await unlink(filePath); // Delete the file
+        console.log("Deleting file:", filePath);
+        await unlink(filePath);
       }
     }
-
-    // First, delete associated teacher records
     await prisma.announcementTeacher.deleteMany({
       where: {
         announcementId: parseInt(id),
       },
     });
-
-    // Then, delete the announcement
     await prisma.announcement.delete({
       where: {
         id: parseInt(id),
       },
     });
-
-    // revalidatePath("/list/announcements"); // Revalidate the announcements page
     return { success: true, error: false };
   } catch (err) {
-    console.error('Error deleting announcement:', err);
+    console.error("Error deleting announcement:", err);
     return { success: false, error: true };
   }
 };
@@ -851,12 +846,11 @@ export const createResult = async (
         sessionalExam: data.sessionalExam,
         endTerm: data.endTerm,
         overallMark: data.overallMark ?? "",
-        grade: data.grade??"",
+        grade: data.grade ?? "",
         studentId: data.studentId,
         subjectId: data.subjectId,
       },
     });
-
 
     return { success: true, error: false };
   } catch (err) {
@@ -869,9 +863,7 @@ export const updateResult = async (
   currentState: CurrentState,
   data: ResultSchema
 ) => {
- 
   try {
-
     await prisma.result.update({
       where: {
         id: data.id,
@@ -879,13 +871,12 @@ export const updateResult = async (
       data: {
         sessionalExam: data.sessionalExam,
         endTerm: data.endTerm,
-        overallMark: data.overallMark?? "",
-        grade: data.grade?? "",
+        overallMark: data.overallMark ?? "",
+        grade: data.grade ?? "",
         studentId: data.studentId,
         subjectId: data.subjectId,
       },
     });
-
 
     return { success: true, error: false };
   } catch (err) {
@@ -904,10 +895,8 @@ export const deleteResult = async (
     await prisma.result.delete({
       where: {
         id: parseInt(id),
-
       },
     });
-
 
     return { success: true, error: false };
   } catch (err) {
