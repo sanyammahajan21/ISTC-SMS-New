@@ -83,7 +83,7 @@ export default function UploadResults() {
     formData.append("file", file as Blob);
 
     try {
-      const response = await fetch("/api/uploadResults", {
+      const response = await fetch("/api/uploadResult", {
         method: "POST",
         body: formData,
       });

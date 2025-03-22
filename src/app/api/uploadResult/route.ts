@@ -6,12 +6,25 @@ import { existsSync } from "fs";
 import path from "path";
 import os from "os";
 import { NextRequest } from "next/server";
+import { auth } from "@clerk/nextjs/server";
 
 export async function POST(req: NextRequest) {
   try {
+    const { sessionClaims } = auth();
+
+    const role = (sessionClaims?.metadata as { role?: string })?.role;
+    const userId = sessionClaims?.sub;
+
+    if (role !== "teacher") {
+      return NextResponse.json(
+        { success: false, error: "Unauthorized: User is not a teacher" },
+        { status: 403 }
+      );
+    }
+    const teacherId = userId;
+
     const formData = await req.formData();
     const file = formData.get("file") as Blob;
-    const teacherId = formData.get("teacherId") as string; // Extract teacherId
 
     if (!file) {
       return NextResponse.json(
@@ -19,16 +32,9 @@ export async function POST(req: NextRequest) {
         { status: 400 }
       );
     }
-
-    if (!teacherId) {
-      return NextResponse.json(
-        { success: false, error: "Missing teacher ID" },
-        { status: 400 }
-      );
-    }
-
     const arrayBuffer = await file.arrayBuffer();
     const uint8Array = new Uint8Array(arrayBuffer);
+
     const tempDir = os.tmpdir();
     const tempFilePath = path.join(tempDir, "uploadedresults.xlsx");
     await writeFile(tempFilePath, uint8Array);
@@ -45,17 +51,18 @@ export async function POST(req: NextRequest) {
     const sheet = workbook.Sheets[workbook.SheetNames[0]];
 
     const resultData = xlsx.utils.sheet_to_json<{
-      StudentID: string;
-      SubjectCode: string;
-      SessionalExam?: string;
-      EndTerm?: number;
-      OverallMark: number;
+      "Roll No": string; 
+      "Subject Code": string;
+      "Sessional Exam"?: number; 
+      "End Term"?: number;
+      "Overall Mark": number;
       Grade: string;
     }>(sheet);
 
+    // Validate Excel columns
     if (
       !resultData.every(
-        (row) => row.StudentID && row.SubjectCode && row.OverallMark && row.Grade
+        (row) => row["Roll No"] && row["Subject Code"] && row["Overall Mark"] && row.Grade
       )
     ) {
       return NextResponse.json(
@@ -63,31 +70,31 @@ export async function POST(req: NextRequest) {
         { status: 400 }
       );
     }
-
     const results = await Promise.all(
       resultData.map(async (row) => {
         const student = await prisma.student.findUnique({
-          where: { id: row.StudentID },
+          where: { username: row["Roll No"] },
         });
         if (!student) {
-          throw new Error(`Student with ID '${row.StudentID}' not found`);
+          throw new Error(`Student with username '${row["Roll No"]}' not found`);
         }
 
+        // Find the subject in the database
         const subject = await prisma.subject.findFirst({
-          where: { subjectCode: row.SubjectCode },
+          where: { subjectCode: row["Subject Code"] },
         });
         if (!subject) {
-          throw new Error(`Subject with code '${row.SubjectCode}' not found`);
+          throw new Error(`Subject with code '${row["Subject Code"]}' not found`);
         }
 
         return {
           studentId: student.id,
           subjectId: subject.id,
-          sessionalExam: row.SessionalExam ?? null,
-          endTerm: row.EndTerm ?? null,
-          overallMark: row.OverallMark,
+          sessionalExam: row["Sessional Exam"]?.toString() ?? null,
+          endTerm: row["End Term"] ?? null,
+          overallMark: row["Overall Mark"],
           grade: row.Grade,
-          teacherId: teacherId, // Store teacherId
+          teacherId: teacherId,
         };
       })
     );

@@ -163,7 +163,7 @@ const StudentForm = ({
           />
         )}
         <div className="flex flex-col gap-2 w-full md:w-1/4">
-          <label className="text-xs text-gray-500">Sex</label>
+          <label className="text-xs text-gray-500">Gender</label>
           <select
             className="ring-[1.5px] ring-gray-300 p-2 rounded-md text-sm w-full"
             {...register("sex")}
@@ -171,6 +171,7 @@ const StudentForm = ({
           >
             <option value="MALE">Male</option>
             <option value="FEMALE">Female</option>
+            {/* <option value="PREFER_NOY_TO_SAY">PREFER NOT TO SAY</option> */}
           </select>
           {errors.sex?.message && (
             <p className="text-xs text-red-400">

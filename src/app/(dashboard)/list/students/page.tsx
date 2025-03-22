@@ -40,6 +40,11 @@ const StudentListPage = async ({
       accessor: "phone",
       className: "hidden lg:table-cell",
     },
+    {
+      header: "Gender",
+      accessor: "gender",
+      className: "hidden lg:table-cell",
+    },
     ...(role === "admin" || role === "registrar"
       ? [
           {
@@ -70,6 +75,7 @@ const StudentListPage = async ({
       <td className="hidden md:table-cell">{item.username}</td>
       <td className="hidden md:table-cell">{item.semesterId}</td>
       <td className="hidden md:table-cell">{item.phone}</td>
+      <td className="hidden md:table-cell">{item.sex}</td>
 
       <td>
         <div className="flex items-center gap-2">
