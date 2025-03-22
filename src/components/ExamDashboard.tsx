@@ -6,7 +6,7 @@ import ExamPage from "@/components/forms/ExamForm";
 import GenerateDMCPage from "@/components/GenerateDMCPage";
 import GenerateMigrationCertificatesPage from "@/components/MigrationGeneration";
 import GenerateCharacterCertificatesPage from "@/components/charactergeneration";
-import GeneratediplomaCertificatesPage from "@/components/certificategeneration/diplomageneration";
+import GeneratediplomaCertificatesPage from "@/components/diplomageneration";
 import GenerateResult from "@/components/certificategeneration/resultgeneration";
 function ExamDashboard({ role }: { role?: string }) {
   const [selectedComponent, setSelectedComponent] = useState<string | null>(null);
