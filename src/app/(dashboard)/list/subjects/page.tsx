@@ -3,7 +3,6 @@ import Pagination from "@/components/Pagination";
 import Table from "@/components/Table";
 import TableSearch from "@/components/TableSearch";
 import prisma from "@/lib/prisma";
-import { ITEM_PER_PAGE } from "@/lib/settings";
 import { Prisma, Subject, Teacher, Semester, Branch } from "@prisma/client";
 import Image from "next/image";
 import { auth } from "@clerk/nextjs/server";
@@ -74,9 +73,10 @@ const SubjectListPage = async ({
     </tr>
   );
 
-  const { page, branchId, semester, ...queryParams } = searchParams;
+  const { page, branchId, semester,itemsPerPage,  ...queryParams } = searchParams;
 
   const p = page ? parseInt(page) : 1;
+  const itemsPerPageValue = itemsPerPage ? parseInt(itemsPerPage) : 10;
 
   // Query logic
   const query: Prisma.SubjectWhereInput = {};
@@ -115,8 +115,8 @@ const SubjectListPage = async ({
       include: {
         teachers: true,
       },
-      take: ITEM_PER_PAGE,
-      skip: ITEM_PER_PAGE * (p - 1),
+      take: itemsPerPageValue,
+      skip: itemsPerPageValue * (p - 1),
     }),
     prisma.subject.count({ where: query }),
   ]);
@@ -152,7 +152,7 @@ const SubjectListPage = async ({
       {/* LIST */}
       <Table columns={columns} renderRow={renderRow} data={data} />
       {/* PAGINATION */}
-      <Pagination page={p} count={count} />
+      <Pagination page={p} count={count} itemsPerPage={itemsPerPageValue} />
     </div>
   );
 };

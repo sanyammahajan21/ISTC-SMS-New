@@ -3,7 +3,6 @@ import Pagination from "@/components/Pagination";
 import Table from "@/components/Table";
 import TableSearch from "@/components/TableSearch";
 import prisma from "@/lib/prisma";
-import { ITEM_PER_PAGE } from "@/lib/settings";
 import { Announcement, Teacher, Prisma } from "@prisma/client";
 import { auth } from "@clerk/nextjs/server";
 
@@ -95,8 +94,9 @@ const AnnouncementListPage = async ({
     </tr>
   );
 
-  const { page, ...queryParams } = searchParams;
+  const { page,itemsPerPage, ...queryParams } = searchParams;
   const p = page ? parseInt(page) : 1;
+  const itemsPerPageValue = itemsPerPage ? parseInt(itemsPerPage) : 10;
 
   // URL PARAMS CONDITION
   const query: Prisma.AnnouncementWhereInput = {};
@@ -133,8 +133,8 @@ const AnnouncementListPage = async ({
           },
         },
       },
-      take: ITEM_PER_PAGE,
-      skip: ITEM_PER_PAGE * (p - 1),
+      take: itemsPerPageValue,
+      skip: itemsPerPageValue * (p - 1),
     }),
     prisma.announcement.count({ where: query }),
   ]);
@@ -165,8 +165,8 @@ const AnnouncementListPage = async ({
       <div className="bg-gray-50 p-4 rounded-md border border-gray-100">
         <Table columns={columns} renderRow={renderRow} data={data} />
       </div>
-      <div className="mt-6 flex justify-center md:justify-end">
-        <Pagination page={p} count={count} />
+      <div className=" mt-6 flex justify-center md:justify-end ">
+      <Pagination page={p} count={count} itemsPerPage={itemsPerPageValue}  />
       </div>
     </div>
   );

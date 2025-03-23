@@ -70,7 +70,7 @@ export async function POST(req: NextRequest) {
     //   password: "defaultPassword",
     // }));
     const teachers = teacherData.map((row) => ({
-      name: row.Name,
+      name: row.Name.toUpperCase(),
       username: row.TeacherID,
       password: "defaultPassword",
     }));

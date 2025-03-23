@@ -3,7 +3,6 @@ import Pagination from "@/components/Pagination";
 import Table from "@/components/Table";
 import TableSearch from "@/components/TableSearch";
 import prisma from "@/lib/prisma";
-import { ITEM_PER_PAGE } from "@/lib/settings";
 import { Branch, Prisma, Student } from "@prisma/client";
 import Image from "next/image";
 import Link from "next/link";
@@ -95,9 +94,10 @@ const StudentListPage = async ({
     </tr>
   );
 
-  const { page, search, branchId, semester } = searchParams;
+  const { page, search, branchId, semester, itemsPerPage } = searchParams;
 
   const p = page ? parseInt(page) : 1;
+  const itemsPerPageValue = itemsPerPage ? parseInt(itemsPerPage) : 10;
 
   const query: Prisma.StudentWhereInput = {};
 
@@ -151,8 +151,8 @@ const StudentListPage = async ({
         branch: true,
         semester: true,
       },
-      take: ITEM_PER_PAGE,
-      skip: ITEM_PER_PAGE * (p - 1),
+      take: itemsPerPageValue,
+      skip: itemsPerPageValue * (p - 1),
     }),
     prisma.student.count({ where: query }),
   ]);
@@ -194,7 +194,7 @@ const StudentListPage = async ({
         <Table columns={columns} renderRow={renderRow} data={data} />
       </div>
       <div className="mt-6 flex justify-center md:justify-end">
-        <Pagination page={p} count={count} />
+        <Pagination page={p} count={count} itemsPerPage={itemsPerPageValue} />
       </div>
     </div>
   );

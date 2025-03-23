@@ -14,6 +14,7 @@ export async function POST(req: NextRequest) {
 
     const role = (sessionClaims?.metadata as { role?: string })?.role;
     const userId = sessionClaims?.sub;
+    console.log(userId)
 
     if (role !== "teacher") {
       return NextResponse.json(

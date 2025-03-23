@@ -9,6 +9,7 @@ import { useFormState } from "react-dom";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
+import Select from "react-select";
 
 const SubjectForm = ({
   type,
@@ -24,12 +25,23 @@ const SubjectForm = ({
   const {
     register,
     handleSubmit,
+    setValue,
     formState: { errors },
   } = useForm<SubjectSchema>({
     resolver: zodResolver(subjectSchema),
+    defaultValues: {
+      teachers: data?.teachers || [],
+    },
   });
 
   const [file, setFile] = useState<File | null>(null);
+
+  const [selectedTeachers, setSelectedTeachers] = useState(
+    data?.teachers?.map((teacher: any) => ({
+      value: teacher.id,
+      label: `${teacher.name}`,
+    })) || []
+  );
 
   const [state, formAction] = useFormState(
     type === "create" ? createSubject : updateSubject,
@@ -72,6 +84,11 @@ const SubjectForm = ({
 
   const { teachers } = relatedData;
   const { semesters, branches } = relatedData;
+
+  const teacherOptions = teachers.map((teacher: any) => ({
+    value: teacher.id,
+    label: `${teacher.name}`,
+  }));
 
   return (
     <form className="flex flex-col gap-10" onSubmit={onSubmit}>
@@ -175,22 +192,22 @@ const SubjectForm = ({
             </p>
           )}
         </div>
-        <div className="flex flex-col gap-2 w-full md:w-1/4">
+        <div className="flex flex-col gap-2 w-full ">
           <label className="text-xs text-gray-500">Teachers</label>
-          <select
-            multiple
-            className="ring-[1.5px] ring-gray-300 p-2 rounded-md text-sm w-full h-80"
-            {...register("teachers")}
-            defaultValue={data?.teachers}
-          >
-            {teachers.map(
-              (teacher: { id: string; name: string; surname: string }) => (
-                <option value={teacher.id} key={teacher.id}>
-                  {teacher.name}
-                </option>
-              )
-            )}
-          </select>
+          <Select
+            isMulti
+            options={teacherOptions}
+            value={selectedTeachers}
+            onChange={(selectedOptions) => {
+              setSelectedTeachers(selectedOptions as any);
+              setValue(
+                "teachers",
+                (selectedOptions as any).map((option: any) => option.value)
+              );
+            }}
+            className="basic-multi-select"
+            classNamePrefix="select"
+          />
           {errors.teachers?.message && (
             <p className="text-xs text-red-400">
               {errors.teachers.message.toString()}

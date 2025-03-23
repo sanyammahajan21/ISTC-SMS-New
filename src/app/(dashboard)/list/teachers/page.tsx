@@ -6,7 +6,6 @@ import prisma from "@/lib/prisma";
 import { Branch, Prisma, Subject, Teacher } from "@prisma/client";
 import Image from "next/image";
 import Link from "next/link";
-import { ITEM_PER_PAGE } from "@/lib/settings";
 import { auth } from "@clerk/nextjs/server";
 import { TeacherFilter } from "@/components/Filter";
 
@@ -95,9 +94,10 @@ const TeacherListPage = async ({
     </tr>
   );
 
-  const { page, search, branchId, sort } = searchParams;
+  const { page, search, branchId, itemsPerPage } = searchParams;
 
   const p = page ? parseInt(page) : 1;
+  const itemsPerPageValue = itemsPerPage ? parseInt(itemsPerPage) : 10;
 
   const query: Prisma.TeacherWhereInput = {};
 
@@ -132,8 +132,8 @@ const TeacherListPage = async ({
         subjects: true,
         branches: true,
       },
-      take: ITEM_PER_PAGE,
-      skip: ITEM_PER_PAGE * (p - 1),
+      take: itemsPerPageValue,
+      skip: itemsPerPageValue * (p - 1),
       orderBy,
     }),
     prisma.teacher.count({ where: query }),
@@ -191,7 +191,7 @@ const TeacherListPage = async ({
         <Table columns={columns} renderRow={renderRow} data={data} />
       </div>
       <div className="mt-6 flex justify-between items-center">
-        <Pagination page={p} count={count} />
+      <Pagination page={p} count={count} itemsPerPage={itemsPerPageValue} />
       </div>
     </div>
   );

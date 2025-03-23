@@ -39,30 +39,22 @@ const TeacherForm = ({
   );
 
   const router = useRouter();
-
-  // Split the name into suffix and name during updates
   useEffect(() => {
     if (type === "update" && data?.name) {
       const [suffix, ...rest] = data.name.split(" ");
       const nameWithoutSuffix = rest.join(" ");
-
-      // Set the suffix and name fields
       setValue("suffix", suffix);
       setValue("name", nameWithoutSuffix);
     }
   }, [data, type, setValue]);
 
   const onSubmit = handleSubmit((formData) => {
-    // Combine suffix and name into a single name field
     const fullName = `${formData.suffix} ${formData.name}`;
-
-    // Create a new object with the combined name
     const payload = {
       ...formData,
-      name: fullName,
+      name: fullName.toUpperCase(),
     };
 
-    // Call the form action with the updated payload
     formAction(payload);
   });
 
@@ -114,16 +106,16 @@ const TeacherForm = ({
       <div className="flex justify-between flex-wrap gap-4">
         {/* Suffix Dropdown */}
         <div className="flex flex-col gap-2 w-full md:w-1/4">
-          <label className="text-xs text-gray-500">Suffix</label>
+          <label className="text-xs text-gray-500">Prefix</label>
           <select
             className="ring-[1.5px] ring-gray-300 p-2 rounded-md text-sm w-full"
             {...register("suffix")}
             defaultValue={data?.suffix || "Mr."}
           >
-            <option value="Mr.">Mr.</option>
-            <option value="Miss">Miss</option>
-            <option value="Mrs.">Mrs.</option>
-            <option value="Dr.">Dr.</option>
+            <option value="MR.">MR.</option>
+            <option value="MS.">MS.</option>
+            <option value="MRS.">MRS.</option>
+            <option value="DR.">DR.</option>
           </select>
           {errors.suffix?.message && (
             <p className="text-xs text-red-400">
