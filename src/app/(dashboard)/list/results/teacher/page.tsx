@@ -12,13 +12,10 @@ import { ResultFilters } from "@/components/Filter";
 type ResultList = Result & { student: Student; subject: Subject; branch: Branch; teacher: Teacher };
 
 const ResultListPage = async ({ searchParams }: { searchParams: { [key: string]: string | undefined } }) => {
-  // Get authenticated user
-  const user = await currentUser();
-  const teacherId = user?.id; // Directly using Clerk's user ID as teacherId
-  const role = user?.publicMetadata?.role as string | undefined;
 
-  console.log("User ID (Teacher ID):", teacherId);
-  console.log("User Role:", role);
+  const user = await currentUser();
+  const teacherId = user?.id; 
+  const role = user?.publicMetadata?.role as string | undefined;
 
   const columns = [
     { header: "Student Name", accessor: "student.name", className: "hidden md:table-cell" },
@@ -49,23 +46,15 @@ const ResultListPage = async ({ searchParams }: { searchParams: { [key: string]:
   const p = page ? Number.parseInt(page) : 1;
 
   const query: Prisma.ResultWhereInput = {};
-
-  // Handle search by student name
   if (queryParams.studentName) {
     query.student = { name: { contains: queryParams.studentName, mode: "insensitive" } };
   }
-
-  // Handle branch filter
   if (branchId) {
     query.student = { ...query.student, branchId: Number.parseInt(branchId) };
   }
-
-  // Handle semester filter
   if (semester) {
     query.student = { ...query.student, semesterId: Number.parseInt(semester) };
   }
-
-  // Fetch allotted subjects for the teacher
   let allowedSubjectIds: number[] = [];
 
   if (role === "teacher" && teacherId) {
@@ -77,8 +66,6 @@ const ResultListPage = async ({ searchParams }: { searchParams: { [key: string]:
 
       allowedSubjectIds = teacherSubjects.map((subject) => subject.id);
       console.log("Allowed Subject IDs:", allowedSubjectIds);
-
-      // If no subjects are allotted, show no results
       if (allowedSubjectIds.length === 0) {
         return (
           <div className="bg-white p-4 rounded-md flex-1 m-4 mt-0">
@@ -87,13 +74,11 @@ const ResultListPage = async ({ searchParams }: { searchParams: { [key: string]:
           </div>
         );
       }
-
-      // Apply subject filter based on allotted subjects
       if (subjectId) {
         const requestedSubjectId = Number.parseInt(subjectId);
         query.subjectId = allowedSubjectIds.includes(requestedSubjectId)
           ? requestedSubjectId
-          : { in: [] }; // Ensures unauthorized subjects are not shown
+          : { in: [] }; 
       } else {
         query.subjectId = { in: allowedSubjectIds };
       }
@@ -101,13 +86,8 @@ const ResultListPage = async ({ searchParams }: { searchParams: { [key: string]:
       console.error("Error fetching teacher subjects:", error);
     }
   } else if (subjectId) {
-    // For non-teacher roles, apply the subject filter directly
     query.subjectId = Number.parseInt(subjectId);
   }
-
-  console.log("Final Query:", JSON.stringify(query, null, 2));
-
-  // Fetch results based on the query
   try {
     const [dataRes, count] = await prisma.$transaction([
       prisma.result.findMany({
@@ -128,16 +108,9 @@ const ResultListPage = async ({ searchParams }: { searchParams: { [key: string]:
       }),
       prisma.result.count({ where: query }),
     ]);
-
-    console.log("Results count:", count);
-
     const data = dataRes.map((item) => ({ ...item }));
-
-    // Fetch branches and semesters for filters
     const branches = await prisma.branch.findMany().catch(() => []);
     const semesters = await prisma.semester.findMany().catch(() => []);
-
-    // Fetch subjects for filters (only allotted subjects for teachers)
     const subjects =
       role === "teacher"
         ? await prisma.subject
@@ -152,7 +125,6 @@ const ResultListPage = async ({ searchParams }: { searchParams: { [key: string]:
     return (
       <div className="bg-white p-4 rounded-md flex-1 m-4 mt-0">
         <div className="flex items-center justify-between">
-          <StudentResultDownload role={role} />
           <h1 className="hidden md:block text-lg font-semibold">All Results</h1>
         </div>
         <TableSearch />

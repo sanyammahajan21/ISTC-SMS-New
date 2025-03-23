@@ -1,57 +1,83 @@
-import prisma from "@/lib/prisma";
-import { ITEM_PER_PAGE } from "@/lib/settings";
-import { auth } from "@clerk/nextjs/server";
-import Pagination from "@/components/Pagination";
-import TableSearch from "@/components/TableSearch";
-import ResultTable from "@/components/ResultTable";
-import StudentResultDownload from "@/components/StudentResultDownload";
-import { ResultFilters } from "@/components/Filter";
+"use client";
 
-interface SearchParams {
-  page?: string;
-  [key: string]: any;
+import { useState, useEffect } from "react";
+import Link from "next/link";
+
+interface Result {
+  teacherId: string;
+  teacherName: string;
+  subjectId: number;
+  subjectName: string;
+  studentCount: number;
+  verified: boolean;
 }
 
-const ResultListPage = async ({ searchParams }: { searchParams: SearchParams }) => {
-  const { sessionClaims } = auth();
-  const role = (sessionClaims?.metadata)?.role;
-  const teacherId = (sessionClaims?.metadata)?.teacherId;
+export default function RegistrarResultsPage() {
+  const [results, setResults] = useState<Result[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const query = {};
-  if (role === "teacher" && teacherId) {
-    const teacherSubjects = await prisma.subject.findMany({
-      where: { teachers: { some: { id: teacherId } } },
-      select: { id: true },
-    });
-    query.subjectId = { in: teacherSubjects.map((subject) => subject.id) };
-  }
+  useEffect(() => {
+    fetch("/api/results/list")
+      .then((res) => {
+        if (!res.ok) throw new Error("Failed to fetch results");
+        return res.json();
+      })
+      .then((data) => {
+        console.log("Fetched data:", data); // Debugging log
+        setResults(data);
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.error("Error fetching results:", err);
+        setLoading(false);
+      });
+  }, []);
 
-  const [dataRes, count] = await prisma.$transaction([
-    prisma.result.findMany({
-      where: query,
-      include: {
-        student: true,
-        subject: true,
-        teacher: true,
-      },
-      take: ITEM_PER_PAGE,
-      skip: ITEM_PER_PAGE * ((searchParams.page ? parseInt(searchParams.page) : 1) - 1),
-    }),
-    prisma.result.count({ where: query }),
-  ]);
+  if (loading) return <div>Loading results...</div>;
 
   return (
-    <div className="bg-white p-4 rounded-md m-4">
-      <div className="flex justify-between">
-        <StudentResultDownload role={role} />
-        <h1 className="hidden md:block text-lg font-semibold">All Results</h1>
-      </div>
-      <TableSearch />
-      <ResultFilters />
-      <ResultTable results={dataRes} role={role} />
-      <Pagination page={parseInt(searchParams.page || "1")} count={count} />
+    <div className="p-6">
+      <h1 className="text-2xl font-bold mb-4">Uploaded Results</h1>
+
+      <table className="w-full border-collapse border border-gray-300">
+        <thead>
+          <tr className="bg-gray-200">
+            <th className="border p-2">Teacher</th>
+            <th className="border p-2">Subject</th>
+            <th className="border p-2">Students</th>
+            <th className="border p-2">Status</th>
+            <th className="border p-2">Download</th>
+          </tr>
+        </thead>
+        <tbody>
+          {results.length > 0 ? (
+            results.map((res, index) => (
+              <tr key={index} className="border">
+                <td className="border p-2">{res.teacherName}</td>
+                <td className="border p-2">{res.subjectName}</td>
+                <td className="border p-2">{res.studentCount}</td>
+                <td className={`border p-2 ${res.verified ? "text-green-600" : "text-red-600"}`}>
+                  {res.verified ? "Verified" : "Unverified"}
+                </td>
+                <td className="border p-2">
+                  <Link
+                    href={`/api/results/export?teacherId=${res.teacherId}&subjectId=${res.subjectId}`}
+                    className="bg-blue-500 text-white px-3 py-1 rounded"
+                  >
+                    Download Excel
+                  </Link>
+                </td>
+              </tr>
+            ))
+          ) : (
+            <tr>
+              <td colSpan={5} className="text-center p-4">
+                No results available.
+              </td>
+            </tr>
+          )}
+        </tbody>
+      </table>
     </div>
   );
-};
-
-export default ResultListPage;
+}
