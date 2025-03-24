@@ -97,11 +97,19 @@ const renderRow = (item: BranchList) => (
   ]);
 
   return (
+<<<<<<< HEAD
     <div className="bg-teal-50 p-6 rounded-lg shadow-md flex-1 m-4 mt-0 border border-red-400">
       {/* Header Section */}
       <div className="flex flex-col md:flex-row items-start md:items-center justify-between mb-6">
         <div className="mb-4 md:mb-0">
           <h1 className="text-xl font-semibold text-gray-800 flex items-center">
+=======
+    <div className="bg-blue-50 p-6 rounded-lg shadow-md flex-1 m-4 mt-0 border border-red-400">
+      {/* Header Section */}
+      <div className="flex flex-col md:flex-row items-start md:items-center justify-between mb-6">
+        <div className="mb-4 md:mb-0">
+          <h1 className="text-xl font-semibold text-black flex items-center">
+>>>>>>> a2b2dbf308c0875a1ba8977daf9b5df9d793b3dd
             <span className="bg-red-500 w-2 h-6 rounded mr-2 hidden md:block"></span>
             All Branches
           </h1>
@@ -111,7 +119,7 @@ const renderRow = (item: BranchList) => (
         </div>
         
         <div className="flex flex-col md:flex-row items-center gap-3 w-full md:w-auto">
-          <div className="w-full md:w-auto mb-3 md:mb-0">
+          <div className="w-full bg-white rounded-full md:w-auto mb-3 md:mb-0">
             <TableSearch />
           </div>
           
@@ -134,7 +142,11 @@ const renderRow = (item: BranchList) => (
       </div>
       
       {/* Table Section with Card Styling */}
+<<<<<<< HEAD
       <div className="bg-white p-4 rounded-md border border-blue-900">
+=======
+      <div className="bg-white p-4 rounded-md border border-black">
+>>>>>>> a2b2dbf308c0875a1ba8977daf9b5df9d793b3dd
         <Table columns={columns} renderRow={renderRow} data={data} />
       </div>
       

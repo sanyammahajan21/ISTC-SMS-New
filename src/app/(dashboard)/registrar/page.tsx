@@ -12,7 +12,12 @@ const RegistrarPage = ({
     <div className="p-6 bg-blue-50">
       {/* Header Section */}
       <div className="mb-8">
+<<<<<<< HEAD
         <h1 className="text-3xl font-bold text-black mb-2 font-mono">
+=======
+        <h1 className="text-3xl font-bold text-black
+         mb-2 font-mono">
+>>>>>>> a2b2dbf308c0875a1ba8977daf9b5df9d793b3dd
           REGISTRAR DASHBOARD
         </h1>
         <div className="h-1 w-24 bg-red-500"></div>
@@ -33,8 +38,14 @@ const RegistrarPage = ({
           </div>
 
           {/* Analytics Section */}
+<<<<<<< HEAD
           {/* <div className="bg-white p-4 rounded-lg shadow-md">
             <h2 className="text-lg font-semibold mb-2 text-white text-center bg-blue-500 p-2 rounded-md">
+=======
+          <div className="bg-teal-50 p-4 rounded-lg shadow-md border border-red-400">
+            <h2 className="text-lg font-semibold mb-2 text-white text-center bg-blue-900 p-2 rounded-md">
+              Notices
+>>>>>>> a2b2dbf308c0875a1ba8977daf9b5df9d793b3dd
             </h2>
             <UploadNotice />
             <div className="h-[450px]">
@@ -55,7 +66,11 @@ const RegistrarPage = ({
 
           {/* Announcements Section */}
           <div className="bg-teal-50 p-4 rounded-lg shadow-md border border-red-400">
+<<<<<<< HEAD
             <h2 className="text-lg font-semibold mb-2 text-white text-center bg-blue-500 p-2 rounded-md">
+=======
+            <h2 className="text-lg font-semibold mb-2 text-white text-center bg-blue-900 p-2 rounded-md">
+>>>>>>> a2b2dbf308c0875a1ba8977daf9b5df9d793b3dd
               Announcements
             </h2>
             <Announcements />

@@ -140,10 +140,17 @@ const TeacherListPage = async ({
   ]);
 
   return (
+<<<<<<< HEAD
     <div className="bg-teal-50 p-6 rounded-lg shadow-md flex-1 m-4 mt-0 border border-red-400">
       <div className="flex flex-col md:flex-row items-start md:items-center justify-between mb-6">
         <div className="mb-4 md:mb-0">
           <h1 className="text-xl font-semibold text-gray-800 flex items-center">
+=======
+    <div className="bg-blue-100 p-6 rounded-lg shadow-md flex-1 m-4 mt-0 border border-red-500">
+      <div className="flex flex-col md:flex-row items-start md:items-center justify-between mb-6">
+        <div className="mb-4 md:mb-0">
+          <h1 className="text-xl font-semibold text-black flex items-center">
+>>>>>>> a2b2dbf308c0875a1ba8977daf9b5df9d793b3dd
             <span className="bg-red-500 w-2 h-6 rounded mr-2 hidden md:block"></span>
             All Teachers
           </h1>
@@ -152,6 +159,7 @@ const TeacherListPage = async ({
           </p>
         </div>
         <div className="flex flex-col md:flex-row items-center gap-3 w-full md:w-auto">
+<<<<<<< HEAD
           <div className="w-full bg-white rounded-full md:w-auto mb-3 md:mb-0">
             <TableSearch placeholder="Search teachers..." />
           </div>
@@ -172,6 +180,22 @@ const TeacherListPage = async ({
                 <span className="ml-2 text-sm font-medium text-blue-700 hidden md:inline">
                   Sort by Branch
                 </span>
+=======
+          <div className="w-full bg-white rounded-full md:w-auto mb-3 md:mb-0 ">
+            <TableSearch placeholder="Search teachers..." />
+          </div>
+          <div className="flex items-center gap-3 self-end">
+            <Link href={`/list/teachers?branchId=${branchId || ""}&sort=name`}>
+              <button className="flex items-center justify-center p-2 rounded-md bg-white hover:bg-green-100 transition-colors">
+                <Image src="/sort.png" alt="Sort" width={16} height={16} />
+                <span className="ml-2 text-sm font-medium text-blue-900 hidden md:inline">Sort by Name</span>
+              </button>
+            </Link>
+            <Link href={`/list/teachers?branchId=${branchId || ""}&sort=branch`}>
+              <button className="flex items-center justify-center p-2 rounded-md bg-white hover:bg-green-100 transition-colors">
+                <Image src="/sort.png" alt="Sort" width={16} height={16} />
+                <span className="ml-2 text-sm font-medium text-blue-900 hidden md:inline">Sort by Branch</span>
+>>>>>>> a2b2dbf308c0875a1ba8977daf9b5df9d793b3dd
               </button>
             </Link> */}
             <TeacherFilter

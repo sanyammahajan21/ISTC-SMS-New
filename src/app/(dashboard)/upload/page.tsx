@@ -217,7 +217,11 @@ export default function Upload() {
 
 
   return (
+<<<<<<< HEAD
     <div className="p-8 bg-blue-50 min-h-screen flex flex-col items-center">
+=======
+    <div className="p-8 bg-blue-100 min-h-screen flex flex-col items-center">
+>>>>>>> a2b2dbf308c0875a1ba8977daf9b5df9d793b3dd
       {/* Header Section */}
       <div className="mb-10 text-center">
         <h1 className="text-4xl font-bold text-gray-900 font-mono">UPLOAD FILES</h1>
@@ -226,20 +230,32 @@ export default function Upload() {
       
       <div className="flex flex-col lg:flex-row gap-10 w-full max-w-6xl">
         {/* Student Upload Section */}
+<<<<<<< HEAD
         <div className="w-full lg:w-1/2 bg-teal-50 p-8 rounded-xl shadow-lg border border-red-400">
+=======
+        <div className="w-full lg:w-1/2 bg-green-50 p-8 rounded-xl shadow-lg border border-red-500">
+>>>>>>> a2b2dbf308c0875a1ba8977daf9b5df9d793b3dd
           <h2 className="text-xl font-semibold text-gray-900 text-center bg-blue-800 p-4 rounded-md text-white">Student Excel File</h2>
           <UploadSection title="Student Excel File" onUpload={handleStudentUpload} isTeacherUpload={false} />
         </div>
         
         {/* Teacher Upload Section */}
+<<<<<<< HEAD
         <div className="w-full lg:w-1/2 bg-teal-50 p-8 rounded-xl shadow-lg border border-red-400">
+=======
+        <div className="w-full lg:w-1/2 bg-green-50 p-8 rounded-xl shadow-lg border border-red-500">
+>>>>>>> a2b2dbf308c0875a1ba8977daf9b5df9d793b3dd
           <h2 className="text-xl font-semibold text-gray-900 text-center bg-blue-800 p-4 rounded-md text-white">Teacher Excel File</h2>
           <UploadSection title="Teacher Excel File" onUpload={handleTeacherUpload} isTeacherUpload={true} />
         </div>
       </div>
 
       {/* Subjects Upload Section */}
+<<<<<<< HEAD
       <div className="w-full max-w-6xl bg-teal-50 p-8 rounded-xl shadow-lg border border-red-400 mt-10">
+=======
+      <div className="w-full max-w-6xl bg-green-50 p-8 rounded-xl shadow-lg border border-red-500 mt-10">
+>>>>>>> a2b2dbf308c0875a1ba8977daf9b5df9d793b3dd
         <h2 className="text-xl font-semibold text-gray-900 text-center bg-blue-800 p-4 rounded-md text-white">Subjects Excel File</h2>
         <UploadSection title="Subjects Excel File" onUpload={handleSubjectsUpload} isTeacherUpload={true} />
       </div>
