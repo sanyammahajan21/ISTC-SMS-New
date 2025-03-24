@@ -25,7 +25,7 @@ function ExamDashboard({ role }: { role?: string }) {
       title: "View Submitted Results", 
       description: "Check and review all submitted examination results",
       icon: "📊",
-      route: "/list/results"
+      route: "/list/results/registrar"
     },
     { 
       id: "generateDMC", 

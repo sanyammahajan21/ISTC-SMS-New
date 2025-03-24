@@ -106,7 +106,7 @@ export default function UploadResults() {
       </div>
 
       <div className="w-full max-w-6xl bg-white p-8 rounded-xl shadow-lg border border-gray-200 mt-10">
-        <h2 className="text-xl font-semibold text-gray-900 text-center bg-blue-800 p-4 rounded-md ">Results Excel File</h2>
+        <h2 className="text-xl font-semibold text-white text-center bg-blue-800 p-4 rounded-md ">Results Excel File</h2>
         <UploadSection title="Results Excel File" onUpload={handleResultsUpload} />
       </div>
     </div>
