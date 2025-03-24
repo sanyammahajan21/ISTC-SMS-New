@@ -45,20 +45,15 @@ const DMC = ({ student }: MarksSheetCertificateProps) => {
       doc.setFont('helvetica');
       
       // A4 size: 210x297mm
-      const pageWidth = 210;
-      const pageHeight = 297;
-      const margin = 15;
+      const pageWidth = 214;
+      const pageHeight = 299;
+      const margin = 12;
       
       // Add border to the document
       doc.setDrawColor(0, 51, 153); // Navy blue border
       doc.setLineWidth(0.5);
-      doc.rect(margin, margin, pageWidth - 2 * margin, pageHeight - 2 * margin);
+      doc.rect(margin-1, margin+2, pageWidth - 2 * margin+1, pageHeight - 2 * margin);
       
-      // Add decorative inner border
-      doc.setDrawColor(0, 102, 204); // Lighter blue
-      doc.setLineWidth(0.2);
-      doc.rect(margin + 3, margin + 3, pageWidth - 2 * (margin + 3), pageHeight - 2 * (margin + 3));
-
       const headerImage = "/docLogo.png";
       const img = new Image();
       img.src = headerImage;
@@ -68,12 +63,12 @@ const DMC = ({ student }: MarksSheetCertificateProps) => {
       });
   
       const imgWidth = 800;
-      const imgHeight = 100;
+      const imgHeight = 97;
       const aspectRatio = imgWidth / imgHeight;
       const pdfImageWidth = 180;
       const pdfImageHeight = pdfImageWidth / aspectRatio;
       const x = (doc.internal.pageSize.getWidth() - pdfImageWidth) / 2;
-      const y = 10;
+      const y = 15;
   
       doc.addImage(img, "PNG", x, y, pdfImageWidth, pdfImageHeight);
   
@@ -94,8 +89,8 @@ const DMC = ({ student }: MarksSheetCertificateProps) => {
       doc.setTextColor(0, 0, 0);
       const currentDate = new Date();
       const formattedDate = `${currentDate.getDate()} ${currentDate.toLocaleString('default', { month: 'long' })}, ${currentDate.getFullYear()}`;
-      doc.text(`Certificate No: ${Math.floor(Math.random() * 1000000)}`, margin, headerTop + 50);
-      doc.text(`Date: ${formattedDate}`, pageWidth - margin, headerTop + 50, { align: 'right' });
+
+      doc.text(`Date: ${formattedDate}`, pageWidth - margin-19, headerTop + 50, { align: 'right' });
       
       // Student details section
       doc.setDrawColor(0, 51, 153);
@@ -133,7 +128,7 @@ const DMC = ({ student }: MarksSheetCertificateProps) => {
       // Marks section - Table header
       const tableTop = headerTop + 115;
       doc.setFillColor(230, 230, 230);
-      doc.rect(margin, tableTop, pageWidth - 2 * margin, 10, 'F');
+      doc.rect(margin+1, tableTop, pageWidth - 2 * margin-1, 10, 'F');
       
       // Adjusted column widths to fit everything properly
       const col1 = margin + 7;      // S.No.
@@ -245,31 +240,29 @@ const DMC = ({ student }: MarksSheetCertificateProps) => {
       const percentage = (totalMarks / totalMaxMarks) * 100;
       const result = percentage >= 33 ? 'PASS' : 'FAIL';
       let division = '';
-      
-      if (percentage >= 60) division = 'FIRST DIVISION';
-      else if (percentage >= 45) division = 'SECOND DIVISION';
-      else if (percentage >= 33) division = 'THIRD DIVISION';
+ 
       
       doc.setFont('helvetica', 'bold');
       doc.text("Total Marks:", margin + 5, summaryTop + 10);
       doc.text("Percentage:", margin + 5, summaryTop + 20);
       doc.text("Result:", pageWidth / 2, summaryTop + 10);
-      doc.text("Division:", pageWidth / 2, summaryTop + 20);
+
       
       doc.setFont('helvetica', 'normal');
       doc.text(`${totalMarks}/${totalMaxMarks}`, margin + 40, summaryTop + 10);
       doc.text(`${percentage.toFixed(2)}%`, margin + 40, summaryTop + 20);
       doc.text(result, pageWidth / 2 + 40, summaryTop + 10);
-      doc.text(division, pageWidth / 2 + 40, summaryTop + 20);
+   
       
       // Signature section
       const signatureTop = summaryTop + 40;
       
-      doc.text("______________________", margin + 20, signatureTop +5 );
-      doc.text("Principal", margin + 30, signatureTop + 10);
+      // doc.text("______________________", margin + 20, signatureTop +5 );
+      doc.text(`This is a computer generated detailed marksheet for ${student.semesterId} semester.In case of any error/dispencary please conctact the `, margin+9 , signatureTop + 10);
+      doc.text(` respective concerened authorities. `, margin+9 , signatureTop + 14);
       
-      doc.text("______________________", pageWidth - margin - 50, signatureTop +5 );
-      doc.text("Examination Controller", pageWidth - margin - 60, signatureTop + 10);
+      // doc.text("______________________", pageWidth - margin - 50, signatureTop +5 );
+      // doc.text("Examination Controller", pageWidth - margin - 60, signatureTop + 10);
      
       doc.setDrawColor(0, 51, 153);
       doc.setLineWidth(0.5);

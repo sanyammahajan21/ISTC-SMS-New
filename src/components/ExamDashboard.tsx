@@ -103,8 +103,8 @@ function ExamDashboard({ role }: { role?: string }) {
 
   // Group the options in pairs for two boxes per row
   const groupedOptions = [];
-  for (let i = 0; i < examOptions.length; i += 2) {
-    groupedOptions.push(examOptions.slice(i, i + 2));
+  for (let i = 0; i < examOptions.length; i += 3) {
+    groupedOptions.push(examOptions.slice(i, i + 3));
   }
 
   return (
@@ -133,9 +133,9 @@ function ExamDashboard({ role }: { role?: string }) {
           </div>
         </div>
       ) : (
-        <div className="flex flex-col gap-8">
+        <div className="flex flex-col gap-10">
           {groupedOptions.map((group, groupIndex) => (
-            <div key={groupIndex} className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div key={groupIndex} className="grid grid-cols-2 md:grid-cols-3 gap-12">
               {group.map((option) => (
                 <div 
                   key={option.id} 
@@ -150,7 +150,7 @@ function ExamDashboard({ role }: { role?: string }) {
                   </div>
                   <button
                     onClick={() => handleClick(option.id, option.route)}
-                    className="w-full mt-4 py-3 bg-blue-500 text-white rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400 transition-colors"
+                    className="w-1/2 mt-4 py-3 bg-blue-800 text-white rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400 transition-colors"
                   >
                     Access
                   </button>

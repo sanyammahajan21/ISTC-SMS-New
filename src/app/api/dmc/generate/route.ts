@@ -1,19 +1,17 @@
 import { NextRequest, NextResponse } from 'next/server';
-import  prisma  from '@/lib/prisma';
+import prisma from '@/lib/prisma';
 import JSZip from 'jszip';
 import { jsPDF } from 'jspdf';
 import { updateProgress } from '../progress/route';
-import fs from 'fs';
-import path from 'path';
 
 export async function POST(req: NextRequest) {
   try {
     const { semesterId } = await req.json();
-
+    
     if (!semesterId) {
       return NextResponse.json({ success: false, message: 'Semester ID is required' }, { status: 400 });
     }
-
+    
     // Find all students in the specified semester who have results
     const students = await prisma.student.findMany({
       where: {
@@ -30,30 +28,21 @@ export async function POST(req: NextRequest) {
         }
       }
     });
-
+    
     if (students.length === 0) {
-      return NextResponse.json({ 
-        success: false, 
-        message: 'No students found with results for the selected semester' 
+      return NextResponse.json({
+        success: false,
+        message: 'No students found with results for the selected semester'
       }, { status: 404 });
     }
-
+    
     // Reset progress tracking
     updateProgress(0, students.length);
-
+    
     // Create a ZIP file to store all PDFs
     const zip = new JSZip();
     const timestamp = new Date().toISOString().replace(/:/g, '-');
     const folderName = `dmc_semester_${semesterId}_${timestamp}`;
-    
-    // Directory to save the zip file temporarily
-    const tmpDir = path.join(process.cwd(), 'tmp');
-    if (!fs.existsSync(tmpDir)) {
-      fs.mkdirSync(tmpDir, { recursive: true });
-    }
-    
-    const zipFilePath = path.join(tmpDir, `${folderName}.zip`);
-    const publicUrl = `/downloads/${folderName}.zip`;
     
     // Process each student and generate PDF
     for (let i = 0; i < students.length; i++) {
@@ -70,34 +59,26 @@ export async function POST(req: NextRequest) {
       updateProgress(i + 1, students.length);
     }
     
-    // Generate ZIP file
-    const zipContent = await zip.generateAsync({ type: 'nodebuffer' });
+    // Generate ZIP file as base64
+    const zipContent = await zip.generateAsync({ type: 'base64' });
+    const dataUrl = `data:application/zip;base64,${zipContent}`;
     
-    // Save the ZIP file to the public directory for download
-    const publicDir = path.join(process.cwd(), 'public', 'downloads');
-    if (!fs.existsSync(publicDir)) {
-      fs.mkdirSync(publicDir, { recursive: true });
-    }
-    
-    const publicFilePath = path.join(publicDir, `${folderName}.zip`);
-    fs.writeFileSync(publicFilePath, new Uint8Array(zipContent));
-    
-    // Return success response with download URL
-    return NextResponse.json({ 
-      success: true, 
+    // Return success response with download data
+    return NextResponse.json({
+      success: true,
       message: `Generated DMCs for ${students.length} students`,
-      url: publicUrl
+      dataUrl: dataUrl,
+      filename: `${folderName}.zip`
     });
     
   } catch (error) {
     console.error('Error generating DMCs:', error);
-    return NextResponse.json({ 
-      success: false, 
-      message: 'Failed to generate DMCs' 
+    return NextResponse.json({
+      success: false,
+      message: 'Failed to generate DMCs'
     }, { status: 500 });
   }
 }
-
 
 async function generateStudentPDF(student: any) {
   // Create a new PDF document

@@ -22,6 +22,7 @@ const GenerateDMCPage = () => {
       toast.error('Please select a semester');
       return;
     }
+    
 
     try {
       setIsLoading(true);
@@ -53,14 +54,28 @@ const GenerateDMCPage = () => {
         throw new Error('Failed to generate DMCs');
       }
 
-      const { success, message, url } = await response.json();
+      const data = await response.json();
       
-      if (success && url) {
-        // Download the zip file
-        window.location.href = url;
-        toast.success('DMC generation completed. Downloading ZIP file...');
+      if (data.success) {
+        if (data.dataUrl) {
+          // Create an anchor element and trigger download
+          const link = document.createElement('a');
+          link.href = data.dataUrl;
+          link.download = data.filename || `dmc_semester_${selectedSemester}.zip`;
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+          
+          toast.success('DMC generation completed. Downloading ZIP file...');
+        } else if (data.url) {
+          // Fallback to the old method if dataUrl is not provided
+          window.location.href = data.url;
+          toast.success('DMC generation completed. Downloading ZIP file...');
+        } else {
+          toast.error('Download link not provided');
+        }
       } else {
-        toast.error(message || 'Failed to generate DMCs');
+        toast.error(data.message || 'Failed to generate DMCs');
       }
     } catch (error) {
       console.error('Error generating DMCs:', error);
