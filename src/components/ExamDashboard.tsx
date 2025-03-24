@@ -144,7 +144,7 @@ function ExamDashboard({ role }: { role?: string }) {
                   <div className="flex items-start mb-4">
                     <span className="text-3xl mr-4">{option.icon}</span>
                     <div>
-                      <h3 className="text-xl font-bold text-gray-800">{option.title}</h3>
+                      <h3 className="text-xl font-bold text-black">{option.title}</h3>
                       <p className="text-gray-600 mt-1">{option.description}</p>
                     </div>
                   </div>
