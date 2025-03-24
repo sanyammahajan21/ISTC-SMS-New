@@ -163,7 +163,7 @@ const StudentListPage = async ({
   });
 
   return (
-    <div className="bg-blue-100 p-6 rounded-lg shadow-md flex-1 m-4 mt-0 border border-red-400">
+    <div className="bg-blue-50 p-6 rounded-lg shadow-md flex-1 m-4 mt-0 border border-red-400">
       <div className="flex flex-col md:flex-row items-start md:items-center justify-between mb-6">
         <div className="mb-4 md:mb-0">
           <h1 className="text-xl font-semibold text-black flex items-center">
