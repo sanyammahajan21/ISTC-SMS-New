@@ -107,7 +107,7 @@ const TranscriptCertificate = ({ student, startDate, endDate }: TranscriptCertif
       });
       
       // Set font
-      doc.setFont('helvetica');
+      doc.setFont('times');
       
       // Current date for formatting
       const currentDate = new Date();
@@ -124,14 +124,14 @@ const TranscriptCertificate = ({ student, startDate, endDate }: TranscriptCertif
       const genderTerms = getGenderTerms(student.sex);
       
       // Add date at top
-      doc.setFontSize(10);
-      doc.text(`Dated: ${formattedDate}`, 90, 15);
+      doc.setFontSize(12);
+      doc.text(`Dated: ${formattedDate}`, 90, 38);
       
       // Add TRANSCRIPT header
       doc.setFontSize(12);
-      doc.setFont('helvetica', 'bold');
-      doc.text('TRANSCRIPT', 105, 22, { align: 'center' });
-      doc.setFont('helvetica', 'normal');
+      doc.setFont('times', 'bold');
+      doc.text('TRANSCRIPT', 105, 42, { align: 'center' });
+      doc.setFont('times', 'normal');
       
       // Add first paragraph with student details (like marksheet)
       doc.setFontSize(10);
@@ -139,7 +139,7 @@ const TranscriptCertificate = ({ student, startDate, endDate }: TranscriptCertif
 
       // Set the starting position for the text
       let xPos = 20;
-      let yPos = 30;  // Starting Y position for the first paragraph (reduced)
+      let yPos = 50;  
 
       // Split the text into lines if it exceeds the width
       const lines = doc.splitTextToSize(fullText, 170); // 170 is the width for the text
@@ -172,13 +172,13 @@ const TranscriptCertificate = ({ student, startDate, endDate }: TranscriptCertif
         const semResults = semesterResults[semesterNumber];
         
         // Semester header with superscript
-        doc.setFont('helvetica', 'bold');
+        doc.setFont('helvetica', 'normal');
         const superscript = getSemesterSuperscript(semesterNumber);
         const semHeader = `${semesterNumber}${superscript} Semester`;
-        doc.text(semHeader, 105, yPosition, { align: 'center' });
+        doc.text(semHeader, 105, yPosition, { align: 'left' });
         doc.setFont('helvetica', 'normal');
         
-        yPosition += 6; // Reduced from 10
+        yPosition += 1; // Reduced from 10
         
         // Headers for the table (like marksheet)
         const tableX = 20;
@@ -195,8 +195,8 @@ const TranscriptCertificate = ({ student, startDate, endDate }: TranscriptCertif
         const tableWidth = firstColWidth + (subjectColWidth * numSubjects) + lastColWidth;
         
         // Draw header row
-        doc.setFontSize(8);
-        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(11);
+        doc.setFont('helvetica');
         doc.rect(tableX, tableY, tableWidth, 7); // Header row box
         
         // Draw vertical dividers for header
@@ -383,11 +383,7 @@ const TranscriptCertificate = ({ student, startDate, endDate }: TranscriptCertif
       doc.setFontSize(10);
       
       // Adjusted bottom Y position to ensure signatures fit on the first page
-      const bottomY = 280;
-      
-      // Add signature lines
-      doc.line(30, bottomY - 5, 70, bottomY - 5);
-      doc.line(130, bottomY - 5, 170, bottomY - 5);
+      const bottomY = 276;
       
       doc.text('(Registrar)', 40, bottomY);
       doc.text('(Principal)', 140, bottomY);
