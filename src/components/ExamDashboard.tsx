@@ -108,14 +108,14 @@ function ExamDashboard({ role }: { role?: string }) {
   }
 
   return (
-    <div className="p-6 bg-blue-50">
+    <div className="p-6 bg-teal-50 border border-red-400">
       {/* Header Section */}
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-gray-800 mb-2 font-mono">
           EXAMS AND RESULTS
         </h1>
-        <div className="h-1 w-24 bg-blue-700"></div>
-        <p className="text-gray-600 mt-4">
+        <div className="h-1 w-24 bg-red-500"></div>
+        <p className="text-red-500 mt-4">
           Manage examination processes and generate academic documents
         </p>
       </div>
@@ -139,7 +139,7 @@ function ExamDashboard({ role }: { role?: string }) {
               {group.map((option) => (
                 <div 
                   key={option.id} 
-                  className="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 border-l-4 border-blue-500"
+                  className="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 border-l-4 border-blue-800"
                 >
                   <div className="flex items-start mb-4">
                     <span className="text-3xl mr-4">{option.icon}</span>
@@ -150,7 +150,7 @@ function ExamDashboard({ role }: { role?: string }) {
                   </div>
                   <button
                     onClick={() => handleClick(option.id, option.route)}
-                    className="w-full mt-4 py-3 bg-blue-500 text-white rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400 transition-colors"
+                    className="w-full mt-4 py-3 bg-blue-700 text-white rounded-md hover:bg-blue-900 focus:outline-none focus:ring-2 focus:ring-blue-400 transition-colors"
                   >
                     Access
                   </button>

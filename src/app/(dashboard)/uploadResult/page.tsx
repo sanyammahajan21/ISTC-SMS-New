@@ -99,14 +99,14 @@ export default function UploadResults() {
   };
 
   return (
-    <div className="p-8 bg-gray-50 min-h-screen flex flex-col items-center">
+    <div className="p-8 bg-blue-50 min-h-screen flex flex-col items-center">
       <div className="mb-10 text-center">
         <h1 className="text-4xl font-bold text-gray-900 font-mono">UPLOAD RESULTS</h1>
-        <div className="h-1 w-36 bg-blue-700 mx-auto mt-3"></div>
+        <div className="h-1 w-36 bg-red-500 mx-auto mt-3"></div>
       </div>
 
-      <div className="w-full max-w-6xl bg-white p-8 rounded-xl shadow-lg border border-gray-200 mt-10">
-        <h2 className="text-xl font-semibold text-white text-center bg-blue-800 p-4 rounded-md ">Results Excel File</h2>
+      <div className="w-full max-w-6xl bg-teal-50 p-8 rounded-xl shadow-lg border border-red-400 mt-10">
+        <h2 className="text-xl font-semibold text-white text-center bg-blue-900 p-4 rounded-md ">Results Excel File</h2>
         <UploadSection title="Results Excel File" onUpload={handleResultsUpload} />
       </div>
     </div>
