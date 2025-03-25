@@ -37,19 +37,20 @@ model Student {
 }
 
 model Teacher {
-  id        String    @id @default(uuid())
-  username  String    @unique
-  password  String
-  name      String
-  email     String?   @unique
-  phone     String?   @unique
-  division  String?
-  createdAt DateTime  @default(now())
-  subjects  Subject[] 
-  lectures  Lectures[]  
-  branches  Branch[]  
-  announcements AnnouncementTeacher[] 
-  results   Result[]
+  id            String                @id @default(uuid())
+  username      String                @unique
+  password      String
+  name          String
+  email         String?               @unique
+  phone         String?               @unique
+  division      String?
+  createdAt     DateTime              @default(now())
+  subjects      Subject[]
+  lectures      Lectures[]
+  branches      Branch[]
+  announcements AnnouncementTeacher[]
+  results       Result[]
+  Exam          Exam[]
 }
 
 model Registrar {
@@ -63,10 +64,10 @@ model Registrar {
 
 model Semester {
   id       Int       @id @default(autoincrement())
-  level    Int       
+  level    Int
   students Student[]
-  branchId   Int      // foreign key to Branch
-  branch     Branch   @relation(fields: [branchId], references: [id])
+  branchId Int // foreign key to Branch
+  branch   Branch    @relation(fields: [branchId], references: [id])
   subjects Subject[]
   exams    Exam[]
 }
@@ -81,20 +82,20 @@ model StudentExam {
 }
 
 model Branch {
-  id            Int            @id @default(autoincrement())
-  name          String         
-  capacity      Int
-  lectures      Lectures[]
-  students      Student[]
-  semesters      Semester[]     
-  subjects      Subject[]
-  Exam          Exam[]
-  teachers      Teacher[]
+  id        Int        @id @default(autoincrement())
+  name      String
+  capacity  Int
+  lectures  Lectures[]
+  students  Student[]
+  semesters Semester[]
+  subjects  Subject[]
+  Exam      Exam[]
+  teachers  Teacher[]
 }
 
 model Subject {
   id          Int         @id @default(autoincrement())
-  name        String      
+  name        String
   subjectCode String?
   type        SubjectType
   maxMarks    Int?
@@ -126,21 +127,32 @@ model Lectures {
 }
 
 model Exam {
-  id           Int            @id @default(autoincrement())
-  subjectId    Int
-  subject      Subject        @relation(fields: [subjectId], references: [id])
-  examDate     DateTime
-  startTime    DateTime
-  endTime      DateTime
-  semesterId   Int
-  semester     Semester       @relation(fields: [semesterId], references: [id])
-  branchId     Int
-  branch       Branch         @relation(fields: [branchId], references: [id])
-  createdAt    DateTime       @default(now())
-  examSchedule ExamSchedule[]
-  studentExams StudentExam[]
-  Lectures     Lectures?      @relation(fields: [lecturesId], references: [id])
-  lecturesId   Int?
+  id                    Int                  @id @default(autoincrement())
+  subjectId             Int
+  subject               Subject              @relation(fields: [subjectId], references: [id])
+  examDate              DateTime
+  startTime             DateTime
+  endTime               DateTime
+  semesterId            Int
+  semester              Semester             @relation(fields: [semesterId], references: [id])
+  branchId              Int
+  branch                Branch               @relation(fields: [branchId], references: [id])
+  createdAt             DateTime             @default(now())
+  studentExams          StudentExam[]
+  lecture               Lectures?            @relation(fields: [lecturesId], references: [id])
+  lecturesId            Int?
+  teacherInvigilator   Teacher?            @relation(fields: [teacherInvigilatorId], references: [id])
+  teacherInvigilatorId String?
+  externalInvigilator  ExternalInvigilator? @relation(fields: [externalInvigilatorId], references: [id])
+  externalInvigilatorId Int?
+  ExamSchedule          ExamSchedule[]
+}
+
+model ExternalInvigilator {
+  id        Int      @id @default(autoincrement())
+  name      String
+  exams     Exam[]
+  createdAt DateTime @default(now())
 }
 
 model ExamSchedule {
@@ -148,7 +160,6 @@ model ExamSchedule {
   examId      Int
   exam        Exam     @relation(fields: [examId], references: [id])
   date        DateTime
-  location    String
   invigilator String
 }
 
@@ -159,17 +170,17 @@ model Result {
   overallMark   Int
   grade         String
 
-  studentId     String
-  student       Student @relation(fields: [studentId], references: [id], map: "Result_studentId_fk")
+  studentId String
+  student   Student @relation(fields: [studentId], references: [id], map: "Result_studentId_fk")
 
-  subjectId     Int?
-  subject       Subject? @relation(fields: [subjectId], references: [id], map: "Result_subjectId_fk")
+  subjectId Int?
+  subject   Subject? @relation(fields: [subjectId], references: [id], map: "Result_subjectId_fk")
 
-  teacherId     String?
-  teacher       Teacher? @relation(fields: [teacherId], references: [id], map: "Result_teacherId_fk")
-  
-  verified      Boolean @default(false)
-}                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   
+  teacherId String?
+  teacher   Teacher? @relation(fields: [teacherId], references: [id], map: "Result_teacherId_fk")
+
+  verified Boolean @default(false)
+}
 
 model Attendance {
   id         Int      @id @default(autoincrement())
@@ -182,17 +193,15 @@ model Attendance {
 }
 
 model Announcement {
-  id        Int      @id @default(autoincrement())
+  id        Int                   @id @default(autoincrement())
   title     String
-  content   String?  
-  fileUrl   String?  
-  type      AnnouncementType @default(GENERAL)
+  content   String?
+  fileUrl   String?
+  type      AnnouncementType      @default(GENERAL)
   teachers  AnnouncementTeacher[]
-  createdAt DateTime @default(now()) 
-  updatedAt DateTime @updatedAt 
-  }
-
-
+  createdAt DateTime              @default(now())
+  updatedAt DateTime              @updatedAt
+}
 
 model AnnouncementTeacher {
   announcementId Int
@@ -200,7 +209,7 @@ model AnnouncementTeacher {
   teacherId      String
   teacher        Teacher      @relation(fields: [teacherId], references: [id])
 
-  @@id([announcementId, teacherId]) 
+  @@id([announcementId, teacherId])
 }
 
 enum AnnouncementType {
@@ -219,7 +228,7 @@ enum UserSex {
   PREFER_NOT_TO_SAY
 }
 
-enum Day{
+enum Day {
   MONDAY
   TUESDAY
 }

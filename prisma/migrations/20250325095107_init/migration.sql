@@ -129,6 +129,17 @@ CREATE TABLE `Exam` (
     `branchId` INTEGER NOT NULL,
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `lecturesId` INTEGER NULL,
+    `teacherInvigilatorId` VARCHAR(191) NULL,
+    `externalInvigilatorId` INTEGER NULL,
+
+    PRIMARY KEY (`id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
+CREATE TABLE `ExternalInvigilator` (
+    `id` INTEGER NOT NULL AUTO_INCREMENT,
+    `name` VARCHAR(191) NOT NULL,
+    `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
 
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -138,7 +149,6 @@ CREATE TABLE `ExamSchedule` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
     `examId` INTEGER NOT NULL,
     `date` DATETIME(3) NOT NULL,
-    `location` VARCHAR(191) NOT NULL,
     `invigilator` VARCHAR(191) NOT NULL,
 
     PRIMARY KEY (`id`)
@@ -250,6 +260,12 @@ ALTER TABLE `Exam` ADD CONSTRAINT `Exam_branchId_fkey` FOREIGN KEY (`branchId`) 
 
 -- AddForeignKey
 ALTER TABLE `Exam` ADD CONSTRAINT `Exam_lecturesId_fkey` FOREIGN KEY (`lecturesId`) REFERENCES `Lectures`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `Exam` ADD CONSTRAINT `Exam_teacherInvigilatorId_fkey` FOREIGN KEY (`teacherInvigilatorId`) REFERENCES `Teacher`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `Exam` ADD CONSTRAINT `Exam_externalInvigilatorId_fkey` FOREIGN KEY (`externalInvigilatorId`) REFERENCES `ExternalInvigilator`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `ExamSchedule` ADD CONSTRAINT `ExamSchedule_examId_fkey` FOREIGN KEY (`examId`) REFERENCES `Exam`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;

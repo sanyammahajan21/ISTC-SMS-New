@@ -9,6 +9,7 @@ import {
   getAllSemesters,
   getAllBranches,
   fetchSubjects,
+  getAllTeachers,
 } from "@/lib/actions";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
@@ -22,12 +23,18 @@ interface Exam {
   endTime: Date;
   semesterId: number;
   branchId: number;
+  teacherInvigilatorId?: string | null;
+  externalInvigilatorId?: number | null;
+  externalInvigilator?: {
+    id: number;
+    name: string;
+  } | null;
 }
 
 interface Semester {
   id: number;
   level: number;
-  branchId: number; // Add branchId to Semester interface
+  branchId: number;
 }
 
 interface Branch {
@@ -43,6 +50,16 @@ interface Subject {
   branchId: number;
 }
 
+interface Teacher {
+  id: string;
+  name: string;
+}
+
+interface ExternalInvigilator {
+  id: number;
+  name: string;
+}
+
 interface ExamPageProps {
   role?: string;
 }
@@ -52,6 +69,7 @@ export default function ExamPage({ role }: ExamPageProps) {
   const [semesters, setSemesters] = useState<Semester[]>([]);
   const [branches, setBranches] = useState<Branch[]>([]);
   const [subjects, setSubjects] = useState<Subject[]>([]);
+  const [teachers, setTeachers] = useState<Teacher[]>([]);
   const [selectedSemester, setSelectedSemester] = useState<number | "">("");
   const [selectedBranch, setSelectedBranch] = useState<number | "">("");
   const [form, setForm] = useState<Partial<Exam>>({
@@ -64,23 +82,26 @@ export default function ExamPage({ role }: ExamPageProps) {
   });
   const [duration, setDuration] = useState<string>("50");
   const [availableSemesters, setAvailableSemesters] = useState<Semester[]>([]);
+  const [externalInvigilatorName, setExternalInvigilatorName] = useState("");
+  const [invigilatorType, setInvigilatorType] = useState<
+    "teacher" | "external"
+  >("teacher");
 
-  // Fetch initial data
   useEffect(() => {
     async function fetchData() {
       const examsResponse = await getAllExams();
       const semestersResponse = await getAllSemesters();
       const branchesResponse = await getAllBranches();
+      const teachersResponse = await getAllTeachers();
 
       if (examsResponse?.success) setExams(examsResponse?.data ?? []);
       if (semestersResponse?.success)
         setSemesters(semestersResponse?.data ?? []);
       if (branchesResponse?.success) setBranches(branchesResponse?.data ?? []);
+      if (teachersResponse?.success) setTeachers(teachersResponse?.data ?? []);
     }
     fetchData();
   }, []);
-
-  // Fetch subjects when selectedSemester and selectedBranch change
   useEffect(() => {
     if (selectedSemester && selectedBranch) {
       fetchSubjects(selectedSemester, selectedBranch).then((response) => {
@@ -91,11 +112,9 @@ export default function ExamPage({ role }: ExamPageProps) {
         }
       });
     } else {
-      setSubjects([]); // Clear subjects if no semester or branch is selected
+      setSubjects([]);
     }
   }, [selectedSemester, selectedBranch]);
-
-  // Filter semesters based on the selected branch in the form
   useEffect(() => {
     if (form.branchId) {
       const filteredSemesters = semesters.filter(
@@ -107,7 +126,6 @@ export default function ExamPage({ role }: ExamPageProps) {
     }
   }, [form.branchId, semesters]);
 
-  // Fetch subjects when form.semesterId or form.branchId changes
   useEffect(() => {
     if (form.semesterId && form.branchId) {
       fetchSubjects(form.semesterId, form.branchId).then((response) => {
@@ -118,7 +136,7 @@ export default function ExamPage({ role }: ExamPageProps) {
         }
       });
     } else {
-      setSubjects([]); // Clear subjects if no semester or branch is selected
+      setSubjects([]);
     }
   }, [form.semesterId, form.branchId]);
 
@@ -174,103 +192,77 @@ export default function ExamPage({ role }: ExamPageProps) {
   const checkForOverlappingExams = async (exam: Exam): Promise<boolean> => {
     const response = await getAllExams();
     if (!response?.success) return false;
-  
+
     const existingExams = response.data;
-  
-    const overlappingExam = existingExams.find((existingExam) => {
+
+    return existingExams.some((existingExam) => {
+      if (exam.id && existingExam.id === exam.id) return false;
       return (
         existingExam.branchId === exam.branchId &&
         existingExam.semesterId === exam.semesterId &&
-        existingExam.id !== exam.id && 
         existingExam.examDate.toISOString().split("T")[0] ===
-          exam.examDate.toISOString().split("T")[0] && 
+          exam.examDate.toISOString().split("T")[0] &&
         ((existingExam.startTime <= exam.startTime &&
-          existingExam.endTime > exam.startTime) || 
+          existingExam.endTime > exam.startTime) ||
           (existingExam.startTime < exam.endTime &&
-            existingExam.endTime >= exam.endTime) || 
+            existingExam.endTime >= exam.endTime) ||
           (existingExam.startTime >= exam.startTime &&
-            existingExam.endTime <= exam.endTime)) 
+            existingExam.endTime <= exam.endTime))
       );
     });
-  
-    return !!overlappingExam; 
   };
+
   const handleSubmit = async (e: React.FormEvent) => {
-  e.preventDefault();
-
-  if (
-    !form.subjectId ||
-    !form.examDate ||
-    !form.startTime ||
-    !form.semesterId ||
-    !form.branchId
-  ) {
-    alert("Please fill in all fields.");
-    return;
-  }
-
-  const endTime = calculateEndTime(form.startTime, duration);
-
-  const payload: Exam = {
-    subjectId: form.subjectId!,
-    examDate: new Date(
-      Date.UTC(
-        form.examDate.getFullYear(),
-        form.examDate.getMonth(),
-        form.examDate.getDate()
-      )
-    ),
-    startTime: new Date(
-      Date.UTC(
-        form.startTime.getFullYear(),
-        form.startTime.getMonth(),
-        form.startTime.getDate(),
-        form.startTime.getHours(),
-        form.startTime.getMinutes()
-      )
-    ),
-    endTime: new Date(
-      Date.UTC(
-        endTime.getFullYear(),
-        endTime.getMonth(),
-        endTime.getDate(),
-        endTime.getHours(),
-        endTime.getMinutes()
-      )
-    ),
-    semesterId: form.semesterId!,
-    branchId: form.branchId!,
-  };
-
-  const hasOverlap = await checkForOverlappingExams(payload);
-  if (hasOverlap) {
-    alert(
-      "An exam for the same branch and semester is already scheduled at this date and time. Please choose a different date or time."
-    );
-    return;
-  }
-
-  if (form.id) {
-    await updateExam(form.id, payload);
-    toast(`Exam has been updated`);
-  } else {
-    if (window.confirm("Are you sure you want to add this exam?")) {
-      await createExam(payload);
-      toast(`Exam has been created`);
+    e.preventDefault();
+  
+    if (!form.subjectId || !form.examDate || !form.startTime || !form.semesterId || !form.branchId) {
+      alert("Please fill in all required fields.");
+      return;
     }
-  }
-
-  const response = await getAllExams();
-  if (response?.success) setExams(response?.data ?? []);
-  setForm((prev) => ({
-    subjectId: 0,
-    examDate: new Date(),
-    startTime: new Date(),
-    endTime: new Date(),
-    semesterId: prev.semesterId,
-    branchId: prev.branchId,
-  }));
-};
+  
+    const endTime = calculateEndTime(form.startTime, duration);
+  
+    const payload = {
+      subjectId: form.subjectId,
+      examDate: new Date(form.examDate),
+      startTime: new Date(form.startTime),
+      endTime: new Date(endTime),
+      semesterId: form.semesterId,
+      branchId: form.branchId,
+      ...(invigilatorType === "teacher" && form.teacherInvigilatorId && {
+        teacherInvigilatorId: form.teacherInvigilatorId
+      }),
+      ...(invigilatorType === "external" && externalInvigilatorName && {
+        externalInvigilator: { name: externalInvigilatorName }
+      })
+    };
+  
+    try {
+      const response = await createExam(payload);
+      if (response.success) {
+        toast.success(`Exam ${form.id ? 'updated' : 'created'} successfully`);
+        // Refresh exam list
+        const examsResponse = await getAllExams();
+        if (examsResponse?.success) setExams(examsResponse.data);
+        // Reset form
+        setForm({
+          subjectId: 0,
+          examDate: new Date(),
+          startTime: new Date(),
+          endTime: new Date(),
+          semesterId: form.semesterId,
+          branchId: form.branchId,
+        });
+        setExternalInvigilatorName("");
+        setInvigilatorType("teacher");
+      } else {
+        toast.error(response.error);
+      }
+    } catch (error) {
+      console.error("Error:", error);
+      toast.error("Failed to save exam");
+    }
+  };
 
   const handleUpdateExam = (exam: Exam) => {
     setForm({
@@ -281,7 +273,16 @@ export default function ExamPage({ role }: ExamPageProps) {
       endTime: new Date(exam.endTime),
       semesterId: exam.semesterId,
       branchId: exam.branchId,
+      teacherInvigilatorId: exam.teacherInvigilatorId || undefined,
+      externalInvigilatorId: exam.externalInvigilatorId || undefined,
     });
+
+    if (exam.externalInvigilator) {
+      setInvigilatorType("external");
+      setExternalInvigilatorName(exam.externalInvigilator.name);
+    } else {
+      setInvigilatorType("teacher");
+    }
   };
 
   const handleDeleteExam = async (examId: number) => {
@@ -346,7 +347,15 @@ export default function ExamPage({ role }: ExamPageProps) {
           });
 
           autoTable(doc, {
-            head: [["Subject Code", "Subject Name", "Exam Date", "Start Time", "End Time"]],
+            head: [
+              [
+                "Subject Code",
+                "Subject Name",
+                "Exam Date",
+                "Start Time",
+                "End Time",
+              ],
+            ],
             body: tableData,
             startY: startY + 10,
           });
@@ -403,7 +412,9 @@ export default function ExamPage({ role }: ExamPageProps) {
     });
 
     autoTable(doc, {
-      head: [["Subject Code", "Subject Name", "Exam Date", "Start Time", "End Time"]],
+      head: [
+        ["Subject Code", "Subject Name", "Exam Date", "Start Time", "End Time"],
+      ],
       body: tableData,
       startY: y + pdfImageHeight + 20,
     });
@@ -420,7 +431,6 @@ export default function ExamPage({ role }: ExamPageProps) {
         >
           <h1 className="text-2xl font-bold mb-4">Manage Exams</h1>
           <div className="gap-4">
-            {/* Branch Selection */}
             <select
               name="branchId"
               value={form.branchId}
@@ -511,14 +521,64 @@ export default function ExamPage({ role }: ExamPageProps) {
               <option value="50">50 Minutes</option>
               <option value="90">1 Hour 30 Minutes</option>
             </select>
-          </div>
 
-          <button
-            type="submit"
-            className="bg-blue-600 text-white p-2 rounded-md w-full mt-4"
-          >
-            {form.id ? "Update Exam" : "Add Exam"}
-          </button>
+            {/* Invigilator Selection */}
+            <div className="mb-4">
+              <label className="block mb-2 font-medium">Invigilator Type</label>
+              <div className="flex gap-4 mb-4">
+                <label className="inline-flex items-center">
+                  <input
+                    type="radio"
+                    checked={invigilatorType === "teacher"}
+                    onChange={() => setInvigilatorType("teacher")}
+                    className="form-radio"
+                  />
+                  <span className="ml-2">Teacher</span>
+                </label>
+                <label className="inline-flex items-center">
+                  <input
+                    type="radio"
+                    checked={invigilatorType === "external"}
+                    onChange={() => setInvigilatorType("external")}
+                    className="form-radio"
+                  />
+                  <span className="ml-2">External</span>
+                </label>
+              </div>
+
+              {invigilatorType === "teacher" ? (
+                <select
+                  name="teacherInvigilatorId"
+                  value={form.teacherInvigilatorId || ""}
+                  onChange={handleChange}
+                  className="p-2 border rounded-md w-full"
+                >
+                  <option value="">Select Teacher</option>
+                  {teachers.map((teacher) => (
+                    <option key={teacher.id} value={teacher.id}>
+                      {teacher.name}
+                    </option>
+                  ))}
+                </select>
+              ) : (
+                <input
+                  type="text"
+                  placeholder="External Invigilator Name"
+                  value={externalInvigilatorName}
+                  onChange={(e) => setExternalInvigilatorName(e.target.value)}
+                  className="p-2 border rounded-md w-full"
+                  required={invigilatorType === "external"}
+                />
+              )}
+            </div>
+
+            <button
+              type="submit"
+              className="bg-blue-600 text-white p-2 rounded-md w-full mt-4"
+            >
+              {form.id ? "Update Exam" : "Add Exam"}
+            </button>
+          </div>
         </form>
       )}
 
@@ -583,6 +643,7 @@ export default function ExamPage({ role }: ExamPageProps) {
                 <th className="p-2 border">Exam Date</th>
                 <th className="p-2 border">Start Time</th>
                 <th className="p-2 border">End Time</th>
+                <th className="p-2 border">Invigilator</th>
                 {(role === "registrar" || role === "admin") && (
                   <th className="p-2 border">Actions</th>
                 )}
@@ -599,6 +660,10 @@ export default function ExamPage({ role }: ExamPageProps) {
                   const subject = subjects.find(
                     (sub) => sub.id === exam.subjectId
                   );
+                  const teacherInvigilator = teachers.find(
+                    (t) => t.id === exam.teacherInvigilatorId
+                  );
+
                   return (
                     <tr key={exam.id} className="border">
                       <td className="p-2 border">
@@ -615,6 +680,13 @@ export default function ExamPage({ role }: ExamPageProps) {
                       </td>
                       <td className="p-2 border">
                         {new Date(exam.endTime).toISOString().substring(11, 16)}
+                      </td>
+                      <td className="p-2 border">
+                        {teacherInvigilator
+                          ? teacherInvigilator.name
+                          : exam.externalInvigilator
+                          ? `${exam.externalInvigilator.name} (External)`
+                          : "Not assigned"}
                       </td>
                       {(role === "registrar" || role === "admin") && (
                         <td className="p-2 border flex gap-2">

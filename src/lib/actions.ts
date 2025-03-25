@@ -17,6 +17,7 @@ import { clerkClient } from "@clerk/nextjs/server";
 import { writeFile, mkdir, unlink } from "fs/promises";
 import { join, resolve } from "path";
 import { existsSync } from "fs";
+import { Prisma } from "@prisma/client";
 
 const STORAGE_PATH = process.env.STORAGE_PATH || "./public/uploads";
 const PUBLIC_URL_PATH = `${process.env.STORAGE_PATH}`;
@@ -570,20 +571,35 @@ export const deleteStudent = async (
   }
 };
 
-export const getAllExams = async () => {
+export async function getAllExams() {
   try {
-    const exams = await prisma.exam.findMany();
-    return { success: true, data: exams }; // ✅ Wrap the response
-  } catch (err) {
-    console.log(err);
-    return { success: false, data: [] }; // ✅ Handle errors properly
+    const exams = await prisma.exam.findMany({
+      include: {
+        teacherInvigilator: true,
+        externalInvigilator: true
+      }
+    });
+    return { success: true, data: exams };
+  } catch (error) {
+    console.error("Error fetching exams:", error);
+    return { success: false, error: error.message };
   }
-};
+}
 
 export const getAllSemesters = async () => {
   try {
     const semesters = await prisma.semester.findMany();
     return { success: true, data: semesters };
+  } catch (err) {
+    console.log(err);
+    return { success: false, data: [] };
+  }
+};
+
+export const getAllTeachers = async () => {
+  try {
+    const  teachers = await prisma.teacher.findMany();
+    return { success: true, data: teachers };
   } catch (err) {
     console.log(err);
     return { success: false, data: [] };
@@ -615,51 +631,159 @@ export const getExams = async () => {
   }
 };
 
-export async function createExam(data: {
+export async function createExam(examData: {
   subjectId: number;
   examDate: Date;
   startTime: Date;
   endTime: Date;
   semesterId: number;
   branchId: number;
+  teacherInvigilatorId?: string;
+  externalInvigilator?: { name: string };
 }) {
   try {
-    const exam = await prisma.exam.create({ data });
+    const data: Prisma.ExamCreateInput = {
+      subject: { connect: { id: examData.subjectId } },
+      examDate: examData.examDate,
+      startTime: examData.startTime,
+      endTime: examData.endTime,
+      semester: { connect: { id: examData.semesterId } },
+      branch: { connect: { id: examData.branchId } },
+    };
+    if (examData.teacherInvigilatorId) {
+      data.teacherInvigilator = { connect: { id: examData.teacherInvigilatorId } };
+    }
+    if (examData.externalInvigilator?.name) {
+      data.externalInvigilator = { 
+        create: { 
+          name: examData.externalInvigilator.name 
+        } 
+      };
+    }
+
+    const exam = await prisma.exam.create({
+      data,
+      include: {
+        teacherInvigilator: true,
+        externalInvigilator: true,
+        subject: true,
+        semester: true,
+        branch: true
+      }
+    });
+
     return { success: true, data: exam };
   } catch (error) {
     console.error("Error creating exam:", error);
-    return { success: false, error: "Failed to create exam" };
+    return { success: false, error: error instanceof Error ? error.message : 'Unknown error' };
   }
 }
-
-export const updateExam = async (
-  id: number,
-  data: Partial<{
+export async function updateExam(
+  examId: number,
+  examData: {
     subjectId: number;
     examDate: Date;
     startTime: Date;
     endTime: Date;
     semesterId: number;
     branchId: number;
-  }>
-) => {
-  try {
-    const updatedExam = await prisma.exam.update({
-      where: { id },
-      data,
-    });
-    return { success: true, data: updatedExam };
-  } catch (error) {
-    return { success: false, error: "Failed to update exam" };
+    teacherInvigilatorId?: string;
+    externalInvigilator?: { name: string };
   }
-};
+) {
+  try {
+    // First get the current exam to check for existing external invigilator
+    const currentExam = await prisma.exam.findUnique({
+      where: { id: examId },
+      include: { externalInvigilator: true }
+    });
 
+    const data: Prisma.ExamUpdateInput = {
+      subject: { connect: { id: examData.subjectId } },
+      examDate: examData.examDate,
+      startTime: examData.startTime,
+      endTime: examData.endTime,
+      semester: { connect: { id: examData.semesterId } },
+      branch: { connect: { id: examData.branchId } },
+      teacherInvigilator: examData.teacherInvigilatorId 
+        ? { connect: { id: examData.teacherInvigilatorId } }
+        : { disconnect: true },
+    };
+
+    // Handle external invigilator
+    if (examData.externalInvigilator?.name) {
+      // Delete old external invigilator if exists
+      if (currentExam?.externalInvigilatorId) {
+        await prisma.externalInvigilator.delete({
+          where: { id: currentExam.externalInvigilatorId }
+        });
+      }
+      // Create new external invigilator
+      data.externalInvigilator = {
+        create: {
+          name: examData.externalInvigilator.name
+        }
+      };
+    } else {
+      data.externalInvigilator = { disconnect: true };
+    }
+
+    const exam = await prisma.exam.update({
+      where: { id: examId },
+      data,
+      include: {
+        teacherInvigilator: true,
+        externalInvigilator: true,
+        subject: true,
+        semester: true,
+        branch: true
+      }
+    });
+
+    return { success: true, data: exam };
+  } catch (error) {
+    console.error("Error updating exam:", error);
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Unknown error'
+    };
+  }
+}
 export const deleteExam = async (id: number) => {
   try {
+    // First get the exam with its external invigilator
+    const exam = await prisma.exam.findUnique({
+      where: { id },
+      include: { externalInvigilator: true }
+    });
+
+    if (!exam) {
+      return { success: false, error: "Exam not found" };
+    }
+
+    // Delete related records first
+    await prisma.$transaction([
+      prisma.studentExam.deleteMany({ where: { examId: id } }),
+      prisma.examSchedule.deleteMany({ where: { examId: id } }),
+    ]);
+
+    // Delete the exam
     await prisma.exam.delete({ where: { id } });
+
+    // Delete the external invigilator if it exists
+    if (exam.externalInvigilator) {
+      await prisma.externalInvigilator.delete({
+        where: { id: exam.externalInvigilator.id }
+      });
+    }
+
     return { success: true };
   } catch (error) {
-    return { success: false, error: "Failed to delete exam" };
+    console.error("Error deleting exam:", error);
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : "Failed to delete exam"
+    };
   }
 };
 export const fetchSubjects = async (semesterId: number, branchId: number) => {
