@@ -5,7 +5,7 @@ import { auth } from "@clerk/nextjs/server";
 export async function GET() {
   try {
     const { sessionClaims } = auth();
-    const role = sessionClaims?.metadata?.role;
+    const role = (sessionClaims?.metadata as { role?: string })?.role;
 
     console.log("User Role:", role);
 
