@@ -12,6 +12,12 @@ import GenerateResult from "@/components/certificategeneration/resultgeneration"
 function ExamDashboard({ role }: { role?: string }) {
   const [selectedComponent, setSelectedComponent] = useState<string | null>(null);
   const router = useRouter();
+  const user = { publicMetadata: { role: role || "teacher" } }; // Define user with role from props or default to "teacher"
+  const userRole = user.publicMetadata.role;
+
+  const resultRoute = userRole === "registrar" 
+    ? "/list/results/registrar" 
+    : "/list/results/teacher";
 
   const examOptions = [
     { 
@@ -25,7 +31,7 @@ function ExamDashboard({ role }: { role?: string }) {
       title: "View Submitted Results", 
       description: "Check and review all submitted examination results",
       icon: "📊",
-      route: "/list/results/registrar"
+      route: resultRoute
     },
     { 
       id: "generateDMC", 
