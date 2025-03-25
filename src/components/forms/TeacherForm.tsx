@@ -69,14 +69,14 @@ const TeacherForm = ({
   const { subjects, branches } = relatedData;
 
   return (
-    <form className="flex flex-col gap-8" onSubmit={onSubmit}>
-      <h1 className="text-xl font-semibold">
+    <form className="flex flex-col gap-9 " onSubmit={onSubmit}>
+      <h1 className="text-xl font-semibold text-center md:w-3/4 mx-auto">
         {type === "create" ? "Create a new teacher" : "Update the teacher"}
       </h1>
-      <span className="text-xs text-gray-400 font-medium">
+      <span className="text-l text-black-400 font-medium mt-">
         Authentication Information
       </span>
-      <div className="flex justify-between flex-wrap gap-4">
+      <div className="flex justify-between flex-wrap gap-4 ">
         <InputField
           label="Username"
           name="username"
@@ -100,7 +100,7 @@ const TeacherForm = ({
           error={errors?.password}
         />
       </div>
-      <span className="text-xs text-gray-400 font-medium">
+      <span className="text-l text-black-400 font-medium">
         Personal Information
       </span>
       <div className="flex justify-between flex-wrap gap-4">
@@ -178,8 +178,8 @@ const TeacherForm = ({
              </p>
            )}
          </div> */}
-         <div className="flex flex-col gap-2 w-full md:w-1/4">
-           <label className="text-xs text-gray-500">Branch</label>
+         <div className="flex flex-col gap-2 w-full md:w-3/4">
+           <label className="text-l text-black-500">Branch</label>
            <select
              multiple
              className="ring-[1.5px] ring-gray-300 p-2 rounded-md text-sm w-full"

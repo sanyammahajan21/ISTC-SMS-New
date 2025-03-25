@@ -107,7 +107,7 @@ export function TeacherFilter({
     <div className="flex items-center gap-2">
       {/* Branch Filter */}
       <select
-        className="p-2 rounded-md bg-blue-50 hover:bg-blue-100 transition-colors"
+        className="p-2 rounded-md bg-white-50 hover:bg-white-100 transition-colors"
         value={branchId || ""}
         onChange={handleBranchChange}
       >

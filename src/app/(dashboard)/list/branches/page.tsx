@@ -116,12 +116,12 @@ const renderRow = (item: BranchList) => (
           </div>
           
           <div className="flex items-center gap-3 self-end">
-            <button className="flex items-center justify-center p-2 rounded-md bg-green-100 hover:bg-green-200 transition-colors">
+            <button className="flex items-center justify-center p-2 rounded-md bg-purple-100 hover:bg-purple-200 transition-colors">
               <Image src="/filter.png" alt="Filter" width={16} height={16} />
               <span className="ml-2 text-sm font-medium text-blue-700 hidden md:inline">Filter</span>
             </button>
             
-            <button className="flex items-center justify-center p-2 rounded-md bg-green-100 hover:bg-green-200 transition-colors">
+            <button className="flex items-center justify-center p-2 rounded-md bg-purple-100 hover:bg-purple-200 transition-colors">
               <Image src="/sort.png" alt="Sort" width={16} height={16} />
               <span className="ml-2 text-sm font-medium text-blue-700 hidden md:inline">Sort</span>
             </button>

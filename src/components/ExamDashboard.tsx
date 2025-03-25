@@ -108,7 +108,7 @@ function ExamDashboard({ role }: { role?: string }) {
   }
 
   return (
-    <div className="p-6 bg-blue-50">
+    <div className="p-6 bg-teal-50">
       {/* Header Section */}
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-gray-800 mb-2 font-mono">
@@ -139,7 +139,7 @@ function ExamDashboard({ role }: { role?: string }) {
               {group.map((option) => (
                 <div 
                   key={option.id} 
-                  className="bg-teal-50 p-6 rounded-lg shadow-md hover:shadow-lg shadow-blue-200 hover:shadow-blue-300 transition-all duration-300 border-l-4 border-blue-800 "
+                  className="bg-blue-50 p-6 rounded-lg shadow-md hover:shadow-lg shadow-blue-200 hover:shadow-blue-300 transition-all duration-300 border-l-4 border-blue-800 "
                 >
                   <div className="flex items-start mb-4">
                     <span className="text-3xl mr-4">{option.icon}</span>

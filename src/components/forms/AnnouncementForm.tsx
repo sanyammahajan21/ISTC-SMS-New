@@ -85,14 +85,14 @@ const AnnouncementForm = ({
   const teachers = relatedData?.teachers || [];
 
   return (
-    <form className="flex flex-col gap-8" onSubmit={onSubmit}>
-      <h1 className="text-xl font-semibold">
+    <form className="flex flex-col gap-16  md:w-3/4 mx-auto" onSubmit={onSubmit}>
+      <h1 className="text-xl font-semibold text-center md:w-3/4 mx-auto">
         {type === "create"
           ? "Create a new announcement"
           : "Update the announcement"}
       </h1>
 
-      <div className="flex justify-between flex-wrap gap-4">
+      <div className="flex justify-between flex-wrap gap-8 mx:w-1/2">
         <InputField
           label="Announcement title"
           name="title"
@@ -121,7 +121,7 @@ const AnnouncementForm = ({
         )}
 
         <div className="flex flex-col gap-2 w-full">
-          <label className="text-xs text-gray-500">Type</label>
+          <label className="text-xs text-black-500">Type</label>
           <select
             className="ring-[1.5px] ring-gray-300 p-2 rounded-md text-sm w-full"
             {...register("type")}
@@ -169,7 +169,7 @@ const AnnouncementForm = ({
         )}
 
         <div className="flex flex-col gap-2 w-full">
-          <label className="text-xs text-gray-500">
+          <label className="text-xs text-black-500">
             Upload File (PDF, Image, Excel, max 10MB)
           </label>
           <input

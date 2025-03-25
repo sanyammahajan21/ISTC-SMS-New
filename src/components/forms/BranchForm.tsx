@@ -91,13 +91,14 @@ const BranchForm = ({
   }));
 
   return (
-    <form className="flex flex-col gap-8" onSubmit={onSubmit}>
-      <h1 className="text-xl font-semibold">
+    <form className="flex flex-col gap-16 md:w-3/4 mx-auto" onSubmit={onSubmit}>
+      <h1 className="text-xl font-semibold text-center md:w-3/4 mx-auto">
         {type === "create" ? "Create a new branch" : "Update the branch"}
       </h1>
 
       <div className="flex justify-between flex-wrap gap-4">
         <InputField
+        
           label="Branch Name"
           name="name"
           defaultValue={data?.name}
