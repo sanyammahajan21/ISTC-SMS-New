@@ -15,7 +15,6 @@ export async function GET(req: Request) {
     const results = await prisma.result.findMany({
       where: { 
         teacherId: teacherId, 
-        verified: true, // Only fetch verified results
       },
       include: {
         student: { select: { id: true, name: true } },
@@ -42,6 +41,7 @@ export async function GET(req: Request) {
         End_Term: res.endTerm ?? "N/A",
         Overall_Mark: res.overallMark,
         Grade: res.grade,
+        Verified: res.verified ? "Yes" : "No",
       });
     });
 

@@ -101,7 +101,7 @@ const ResultForm = ({
     }
   }, [data, setValue]);
 
-  const { students, subjects } = relatedData;
+  const { students, subjects, teachers } = relatedData;
 
   return (
     <form className="flex flex-col gap-8" onSubmit={onSubmit}>
@@ -214,6 +214,25 @@ const ResultForm = ({
           {errors.subjectId?.message && (
             <p className="text-xs text-red-400">
               {errors.subjectId.message.toString()}
+            </p>
+          )}
+        </div>
+        <div className="flex flex-col gap-2 w-full md:w-1/4">
+          <label className="text-xs text-gray-500">Teacher</label>
+          <select
+            className="ring-[1.5px] ring-gray-300 p-2 rounded-md text-sm w-full"
+            {...register("teacherId")}
+            defaultValue={data?.teacherId}
+          >
+            {teachers.map((teacher: { id: string; name: string }) => (
+              <option value={teacher.id} key={teacher.id}>
+                {teacher.name}
+              </option>
+            ))}
+          </select>
+          {errors.teacherId?.message && (
+            <p className="text-xs text-red-400">
+              {errors.teacherId.message.toString()}
             </p>
           )}
         </div>

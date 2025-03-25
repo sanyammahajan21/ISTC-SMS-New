@@ -157,9 +157,9 @@ export const resultSchema = z.object({
   .number()
   .min(0, { message: "Overall Marks must be atleast 0!" })
   .max(100, { message: "Overall Marks must be atmost 100!" }),
-
   grade: z.string().optional(),
   studentId: z.string().min(1, { message: "Student is required!" }),
+  teacherId: z.string().min(1, { message: "Teacher is required!" }),
   subjectId: z.coerce.number().min(1, { message: "Subject is required!" }),
 });
 
