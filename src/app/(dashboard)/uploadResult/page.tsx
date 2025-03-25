@@ -11,12 +11,14 @@ const UploadSection: React.FC<UploadSectionProps> = ({ title, onUpload }) => {
   const [file, setFile] = useState<File | null>(null);
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
+  const [showConfirmPopup, setShowConfirmPopup] = useState(false);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
       setFile(e.target.files[0]);
     }
   };
+
   const handleUpload = async () => {
     if (!file) {
       setMessage("Please select a file.");
@@ -38,6 +40,7 @@ const UploadSection: React.FC<UploadSectionProps> = ({ title, onUpload }) => {
 
   return (
     <div className="bg-blue-50 p-6 rounded-lg shadow-md w-full max-w-lg mx-auto mb-6">
+      {/* File Upload Section */}
       <div className="mb-4">
         <label className="block text-gray-700 text-sm font-medium mb-1">File Upload</label>
         <div className="border border-dashed border-gray-400 rounded-md p-4 bg-white">
@@ -51,9 +54,9 @@ const UploadSection: React.FC<UploadSectionProps> = ({ title, onUpload }) => {
       </div>
 
       <button
-        onClick={handleUpload}
+        onClick={() => setShowConfirmPopup(true)} // ✅ Open confirmation popup before uploading
         className={`w-full py-3 px-5 text-white font-medium rounded-md focus:outline-none transition-colors ${
-          loading ? 'bg-blue-700 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700'
+          loading ? "bg-blue-700 cursor-not-allowed" : "bg-blue-600 hover:bg-blue-700"
         }`}
         disabled={loading}
       >
@@ -67,6 +70,33 @@ const UploadSection: React.FC<UploadSectionProps> = ({ title, onUpload }) => {
           }`}
         >
           {message}
+        </div>
+      )}
+
+      {/* ✅ Confirmation Popup */}
+      {showConfirmPopup && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+          <div className="bg-white p-6 rounded-lg shadow-lg max-w-sm text-center">
+            <h2 className="text-xl font-semibold mb-4">Confirm Upload</h2>
+            <p>Are you sure you want to upload this file?</p>
+            <div className="mt-4 flex justify-center gap-4">
+              <button
+                onClick={() => setShowConfirmPopup(false)}
+                className="bg-gray-400 text-white px-4 py-2 rounded"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => {
+                  setShowConfirmPopup(false);
+                  handleUpload(); // ✅ Proceed with upload
+                }}
+                className="bg-green-500 text-white px-4 py-2 rounded"
+              >
+                Confirm
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </div>
