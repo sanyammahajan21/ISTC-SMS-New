@@ -5,11 +5,11 @@ import { auth } from "@clerk/nextjs/server";
 const TeacherPage = () => {
   const { userId } = auth();
   return (
-    <div className="p-6 bg-blue-80">
+    <div className="p-6 bg-blue-50">
       {/* Header Section */}
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-gray-800 mb-2 font-mono">TEACHER DASHBOARD</h1>
-        <div className="h-1 w-24 bg-blue-700"></div>
+        <div className="h-1 w-24 bg-red-500"></div>
       </div>
       
       <div className="flex flex-col lg:flex-row gap-6">

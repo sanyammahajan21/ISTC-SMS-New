@@ -130,7 +130,7 @@ const SubjectListPage = async ({
     .catch(() => []);
 
   return (
-    <div className="bg-white p-4 rounded-md flex-1 m-4 mt-0">
+    <div className="bg-teal-50 p-4 rounded-md flex-1 m-4 mt-0 border border-blue-500">
       {/* TOP */}
       <div className="flex items-center justify-between">
         <h1 className="hidden md:block text-lg font-semibold">All Subjects</h1>

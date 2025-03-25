@@ -46,7 +46,7 @@ const UploadSection: React.FC<UploadSectionProps> = ({ title, onUpload, isTeache
   };
 
   return (
-    <div className="bg-blue-50 p-6 rounded-lg shadow-md w-full max-w-lg mx-auto mb-6">
+    <div className="bg-teal-50 p-6 rounded-lg shadow-md w-full max-w-lg mx-auto mb-6">
       {/* Form fields with more formal styling */}
       {!isTeacherUpload && (
         <div className="mb-4">
@@ -217,35 +217,35 @@ export default function Upload() {
 
 
   return (
-    <div className="p-8 bg-gray-50 min-h-screen flex flex-col items-center">
+    <div className="p-8 bg-blue-50 min-h-screen flex flex-col items-center">
       {/* Header Section */}
       <div className="mb-10 text-center">
-        <h1 className="text-4xl font-bold text-gray-900 font-mono">UPLOAD FILES</h1>
-        <div className="h-1 w-36 bg-blue-700 mx-auto mt-3"></div>
+        <h1 className="text-4xl font-bold text-blue-950 font-mono">UPLOAD FILES</h1>
+        <div className="h-1 w-36 bg-red-500 mx-auto mt-3"></div>
       </div>
       
       <div className="flex flex-col lg:flex-row gap-10 w-full max-w-6xl">
         {/* Student Upload Section */}
-        <div className="w-full lg:w-1/2 bg-white p-8 rounded-xl shadow-lg border border-gray-200">
-          <h2 className="text-xl font-semibold text-gray-900 text-center bg-blue-800 p-4 rounded-md text-white">Student Excel File</h2>
+        <div className="w-full lg:w-1/2 bg-teal-50 p-8 rounded-xl shadow-lg border border-blue-500">
+          <h2 className="text-xl font-semibold text-center bg-blue-900 p-4 rounded-md text-white">Student Excel File</h2>
           <UploadSection title="Student Excel File" onUpload={handleStudentUpload} isTeacherUpload={false} />
         </div>
         
         {/* Teacher Upload Section */}
-        <div className="w-full lg:w-1/2 bg-white p-8 rounded-xl shadow-lg border border-gray-200">
-          <h2 className="text-xl font-semibold text-gray-900 text-center bg-blue-800 p-4 rounded-md text-white">Teacher Excel File</h2>
+        <div className="w-full lg:w-1/2 bg-teal-50 p-8 rounded-xl shadow-lg border border-blue-500">
+          <h2 className="text-xl font-semibold text-center bg-blue-900 p-4 rounded-md text-white">Teacher Excel File</h2>
           <UploadSection title="Teacher Excel File" onUpload={handleTeacherUpload} isTeacherUpload={true} />
         </div>
       </div>
 
       {/* Subjects Upload Section */}
-      <div className="w-full max-w-6xl bg-white p-8 rounded-xl shadow-lg border border-gray-200 mt-10">
-        <h2 className="text-xl font-semibold text-gray-900 text-center bg-blue-800 p-4 rounded-md text-white">Subjects Excel File</h2>
+      <div className="w-full max-w-6xl bg-teal-50 p-8 rounded-xl shadow-lg border border-blue-500 mt-10">
+        <h2 className="text-xl font-semibold text-center bg-blue-900 p-4 rounded-md text-white">Subjects Excel File</h2>
         <UploadSection title="Subjects Excel File" onUpload={handleSubjectsUpload} isTeacherUpload={true} />
       </div>
       {/* Results Upload Section */}
-      <div className="w-full max-w-6xl bg-white p-8 rounded-xl shadow-lg border border-gray-200 mt-10">
-      <h2 className="text-xl font-semibold text-gray-900 text-center bg-blue-800 p-4 rounded-md text-white">Results Excel File</h2>
+      <div className="w-full max-w-6xl bg-teal-50 p-8 rounded-xl shadow-lg border border-blue-500 mt-10">
+      <h2 className="text-xl font-semibold text-center bg-blue-900 p-4 rounded-md text-white">Results Excel File</h2>
       <UploadSection title="Results Excel File" onUpload={handleResultsUpload} isTeacherUpload={true} />
     </div>
     </div>
