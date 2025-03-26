@@ -11,7 +11,9 @@ interface Result {
 }
 
 export default function RegistrarResultsPage() {
-  const [results, setResults] = useState<Record<string, { teacherName: string; subjects: Record<string, boolean> }>>({});
+  const [results, setResults] = useState<
+    Record<string, { teacherName: string; subjects: Record<string, boolean> }>
+  >({});
   const [loading, setLoading] = useState(true);
   const [showConfirm, setShowConfirm] = useState(false);
   const [selectedTeacher, setSelectedTeacher] = useState<string | null>(null);
@@ -26,13 +28,20 @@ export default function RegistrarResultsPage() {
       .then((data: Result[]) => {
         console.log("Fetched data:", data);
 
-        const groupedResults: Record<string, { teacherName: string; subjects: Record<string, boolean> }> = {};
+        const groupedResults: Record<
+          string,
+          { teacherName: string; subjects: Record<string, boolean> }
+        > = {};
 
         data.forEach((res) => {
           if (!groupedResults[res.teacherId]) {
-            groupedResults[res.teacherId] = { teacherName: res.teacherName, subjects: {} };
+            groupedResults[res.teacherId] = {
+              teacherName: res.teacherName,
+              subjects: {},
+            };
           }
-          groupedResults[res.teacherId].subjects[res.subjectName] = res.verified;
+          groupedResults[res.teacherId].subjects[res.subjectName] =
+            res.verified;
         });
 
         setResults(groupedResults);
@@ -57,7 +66,10 @@ export default function RegistrarResultsPage() {
       const res = await fetch("/api/results/verify", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ teacherId: selectedTeacher, subjectName: selectedSubject }),
+        body: JSON.stringify({
+          teacherId: selectedTeacher,
+          subjectName: selectedSubject,
+        }),
       });
 
       if (!res.ok) {
@@ -66,7 +78,10 @@ export default function RegistrarResultsPage() {
 
       setResults((prevResults) => {
         const updatedResults = { ...prevResults };
-        if (updatedResults[selectedTeacher]?.subjects[selectedSubject] !== undefined) {
+        if (
+          updatedResults[selectedTeacher]?.subjects[selectedSubject] !==
+          undefined
+        ) {
           updatedResults[selectedTeacher].subjects[selectedSubject] = true;
         }
         return updatedResults;
@@ -84,7 +99,12 @@ export default function RegistrarResultsPage() {
 
   return (
     <div className="p-6">
-      <h1 className="text-2xl font-bold mb-4">Uploaded Results</h1>
+      <div className="flex justify-between">
+        <h1 className="text-2xl font-bold mb-4">Uploaded Results</h1>
+        <Link href={"/list/results/teacher"}>
+          <h1 className="text-xl font-semibold mb-8 mr-20 p-4 border rounded bg-yellow-200">Check the Result List</h1>
+        </Link>
+      </div>
 
       <table className="w-full border-collapse border border-gray-300">
         <thead>
@@ -103,7 +123,11 @@ export default function RegistrarResultsPage() {
                 <tr key={`${teacherId}-${subjectName}`} className="border">
                   <td className="border p-2">{data.teacherName}</td>
                   <td className="border p-2">{subjectName}</td>
-                  <td className={`border p-2 ${verified ? "text-green-600" : "text-red-600"}`}>
+                  <td
+                    className={`border p-2 ${
+                      verified ? "text-green-600" : "text-red-600"
+                    }`}
+                  >
                     {verified ? "Verified" : "Unverified"}
                   </td>
                   <td className="border p-2">
@@ -117,7 +141,9 @@ export default function RegistrarResultsPage() {
                   <td className="border p-2">
                     {!verified && (
                       <button
-                        onClick={() => handleVerifyClick(teacherId, subjectName)}
+                        onClick={() =>
+                          handleVerifyClick(teacherId, subjectName)
+                        }
                         className="bg-green-500 text-white px-3 py-1 rounded"
                       >
                         Verify
@@ -141,7 +167,10 @@ export default function RegistrarResultsPage() {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
           <div className="bg-white p-6 rounded-lg shadow-lg">
             <h2 className="text-xl font-semibold mb-4">Confirm Verification</h2>
-            <p>Are you sure you want to verify the result for {selectedSubject}? This action cannot be undone.</p>
+            <p>
+              Are you sure you want to verify the result for {selectedSubject}?
+              This action cannot be undone.
+            </p>
             <div className="mt-4 flex justify-end space-x-3">
               <button
                 onClick={() => setShowConfirm(false)}

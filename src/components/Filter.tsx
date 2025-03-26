@@ -31,8 +31,10 @@ export default function Filters({
     const url = new URL(window.location.href);
     if (branchId) {
       url.searchParams.set("branchId", branchId);
+      url.searchParams.delete("semester"); // Reset semester when branch changes
     } else {
       url.searchParams.delete("branchId");
+      url.searchParams.delete("semester"); // Reset semester when branch is cleared
     }
     router.push(url.toString());
   };
@@ -69,6 +71,7 @@ export default function Filters({
         className="p-2 rounded-md bg-blue-50 hover:bg-blue-100 transition-colors"
         value={selectedSemester || ""}
         onChange={handleSemesterChange}
+        disabled={!selectedBranchId}
       >
         <option value="">All Semesters</option>
         {semesters.map((sem) => (
@@ -86,7 +89,6 @@ export function TeacherFilter({
   branchId,
 }: {
   branches: { id: number; name: string }[];
-  
   branchId?: string;
 }) {
   const router = useRouter();
@@ -102,7 +104,6 @@ export function TeacherFilter({
     router.push(url.toString());
   };
 
-  
   return (
     <div className="flex items-center gap-2">
       {/* Branch Filter */}
@@ -133,8 +134,8 @@ export function ResultFilters({
   const router = useRouter();
 
   // State for dependent dropdowns
-  const [filteredSemesters, setFilteredSemesters] = useState<Semester[]>(semesters);
-  const [filteredSubjects, setFilteredSubjects] = useState<Subject[]>(subjects);
+  const [filteredSemesters, setFilteredSemesters] = useState<Semester[]>([]);
+  const [filteredSubjects, setFilteredSubjects] = useState<Subject[]>([]);
 
   // Update semesters when branch changes
   useEffect(() => {
@@ -142,7 +143,14 @@ export function ResultFilters({
       const filtered = semesters.filter((sem) => sem.branchId === parseInt(branchId));
       setFilteredSemesters(filtered);
     } else {
-      setFilteredSemesters(semesters);
+      setFilteredSemesters([]);
+    }
+    // Reset semester and subject when branch changes
+    if (!branchId) {
+      const url = new URL(window.location.href);
+      url.searchParams.delete("semester");
+      url.searchParams.delete("subjectId");
+      router.replace(url.toString());
     }
   }, [branchId, semesters]);
 
@@ -155,12 +163,27 @@ export function ResultFilters({
       );
       setFilteredSubjects(filtered);
     } else {
-      setFilteredSubjects(subjects);
+      setFilteredSubjects([]);
+    }
+    // Reset subject when semester changes
+    if (!semester && branchId) {
+      const url = new URL(window.location.href);
+      url.searchParams.delete("subjectId");
+      router.replace(url.toString());
     }
   }, [branchId, semester, subjects]);
 
   const handleFilterChange = (key: string, value: string) => {
     const url = new URL(window.location.href);
+    
+    // Reset dependent filters when parent filter changes
+    if (key === "branchId") {
+      url.searchParams.delete("semester");
+      url.searchParams.delete("subjectId");
+    } else if (key === "semester") {
+      url.searchParams.delete("subjectId");
+    }
+    
     if (value) {
       url.searchParams.set(key, value);
     } else {
@@ -173,7 +196,7 @@ export function ResultFilters({
     <div className="flex gap-4 my-4">
       {/* Branch Dropdown */}
       <select
-        defaultValue={branchId || ""}
+        value={branchId || ""}
         onChange={(e) => handleFilterChange("branchId", e.target.value)}
         className="p-2 border rounded"
       >
@@ -187,9 +210,10 @@ export function ResultFilters({
 
       {/* Semester Dropdown */}
       <select
-        defaultValue={semester || ""}
+        value={semester || ""}
         onChange={(e) => handleFilterChange("semester", e.target.value)}
         className="p-2 border rounded"
+        disabled={!branchId}
       >
         <option value="">Filter by Semester</option>
         {filteredSemesters.map((sem) => (
@@ -201,9 +225,10 @@ export function ResultFilters({
 
       {/* Subject Dropdown */}
       <select
-        defaultValue={subjectId || ""}
+        value={subjectId || ""}
         onChange={(e) => handleFilterChange("subjectId", e.target.value)}
         className="p-2 border rounded"
+        disabled={!semester}
       >
         <option value="">Filter by Subject</option>
         {filteredSubjects.map((subject) => (
@@ -225,7 +250,7 @@ export function SubjectFilters({
   const router = useRouter();
 
   // State for dependent dropdowns
-  const [filteredSemesters, setFilteredSemesters] = useState<Semester[]>(semesters);
+  const [filteredSemesters, setFilteredSemesters] = useState<Semester[]>([]);
 
   // Update semesters when branch changes
   useEffect(() => {
@@ -233,12 +258,24 @@ export function SubjectFilters({
       const filtered = semesters.filter((sem) => sem.branchId === parseInt(branchId));
       setFilteredSemesters(filtered);
     } else {
-      setFilteredSemesters(semesters);
+      setFilteredSemesters([]);
+    }
+    // Reset semester when branch changes
+    if (!branchId) {
+      const url = new URL(window.location.href);
+      url.searchParams.delete("semester");
+      router.replace(url.toString());
     }
   }, [branchId, semesters]);
 
   const handleFilterChange = (key: string, value: string) => {
     const url = new URL(window.location.href);
+    
+    // Reset semester when branch changes
+    if (key === "branchId") {
+      url.searchParams.delete("semester");
+    }
+    
     if (value) {
       url.searchParams.set(key, value);
     } else {
@@ -251,7 +288,7 @@ export function SubjectFilters({
     <div className="flex gap-4">
       {/* Branch Dropdown */}
       <select
-        defaultValue={branchId || ""}
+        value={branchId || ""}
         onChange={(e) => handleFilterChange("branchId", e.target.value)}
         className="p-2 border rounded"
       >
@@ -265,9 +302,10 @@ export function SubjectFilters({
 
       {/* Semester Dropdown */}
       <select
-        defaultValue={semester || ""}
+        value={semester || ""}
         onChange={(e) => handleFilterChange("semester", e.target.value)}
         className="p-2 border rounded"
+        disabled={!branchId}
       >
         <option value="">Filter by Semester</option>
         {filteredSemesters.map((sem) => (

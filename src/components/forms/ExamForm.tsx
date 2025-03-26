@@ -502,14 +502,14 @@ export default function ExamPage({ role }: ExamPageProps) {
         ["Subject Code", "Subject Name", "Exam Date", "Start Time", "End Time", "Invigilators"],
       ],
       body: tableData,
-      startY: y + pdfImageHeight + 20, // Now y is properly defined
+      startY: y + pdfImageHeight + 20,
       styles: {
         cellPadding: 5,
         fontSize: 10,
         valign: 'middle'
       },
       columnStyles: {
-        5: { // Invigilators column
+        5: { 
           cellWidth: 'auto',
           minCellHeight: 20
         }
@@ -684,10 +684,8 @@ export default function ExamPage({ role }: ExamPageProps) {
           </div>
         </form>
       )}
-      {/* Exam Datesheet Display */}
       <h1 className="text-2xl font-bold mb-4">Exam Datesheet</h1>
       <div className="flex gap-4 mb-6">
-        {/* Branch Selection */}
         <select
           value={selectedBranch}
           onChange={(e) => {
@@ -703,17 +701,15 @@ export default function ExamPage({ role }: ExamPageProps) {
             </option>
           ))}
         </select>
-
-        {/* Semester Selection */}
         <select
           value={selectedSemester}
           onChange={(e) => setSelectedSemester(Number(e.target.value) || "")}
           className="p-2 border rounded-md"
-          disabled={!selectedBranch} // Disable if no branch is selected
+          disabled={!selectedBranch} 
         >
           <option value="">Select Semester</option>
           {semesters
-            .filter((semester) => semester.branchId === selectedBranch) // Filter semesters by branch
+            .filter((semester) => semester.branchId === selectedBranch) 
             .map((semester) => (
               <option key={semester.id} value={semester.id}>
                 {`Semester ${semester.level}`}
@@ -784,7 +780,7 @@ export default function ExamPage({ role }: ExamPageProps) {
                           <div className="mb-1">
                             {exam.teacherInvigilators.map((teacher) => (
                               <div key={teacher.id} className="font-medium">
-                                {teacher.name} (Teacher)
+                                {teacher.name} 
                               </div>
                             ))}
                           </div>
@@ -792,10 +788,10 @@ export default function ExamPage({ role }: ExamPageProps) {
 
                         {/* External Invigilators */}
                         {exam.externalInvigilators?.length > 0 && (
-                          <div className="text-gray-600">
+                          <div className="mb-1">
                             {exam.externalInvigilators.map((invigilator) => (
                               <div key={invigilator.id}>
-                                {invigilator.name} (External)
+                                {invigilator.name}
                               </div>
                             ))}
                           </div>
