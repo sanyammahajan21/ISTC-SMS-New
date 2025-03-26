@@ -102,26 +102,29 @@ const LoginPage = () => {
             filter: "blur(10px)",
           }}
         ></div>
+        
       <SignIn.Root>
         <SignIn.Step
           name="start"
-          className="bg-white bg-opacity-60 p-12 rounded-xl shadow-2xl flex flex-col gap-6 w-96 transform transition-all duration-300 hover:scale-105 border border-blue-950"
-        >
+          className="bg-white bg-opacity-60 p-12 rounded-xl shadow-2xl flex flex-col gap-6 w-96 transform transition-all duration-300 hover:scale-105 border border-blue-950">
+          <div className="absolute inset-0 flex justify-center items-center -z-10 opacity-20">
+            <Image src="/lock.png" alt="Secure Login" width={1900} height={1000} />
+          </div>
           <h1 className="text-3xl font-extrabold text-blue-900 flex items-center gap-2">
             <Image src="/logo1.png" alt="Logo" width={34} height={34} />
             <span>Indo Swiss Training Centre</span>
           </h1>
-          <h2 className="text-red-600">Sign in to your account</h2>
+          <h2 className="text-red-600 ">Sign in to your account</h2>
           
-          <Clerk.GlobalError className="text-sm text-red-400" />
+          <Clerk.GlobalError className="text-sm text-red-400 font-bold" />
 
           {/* Role Selection Dropdown */}
           <Clerk.Field name="role" className="flex flex-col gap-4">
-            <Clerk.Label className="text-xs text-black">Select Role</Clerk.Label>
+            <Clerk.Label className="text-s text-black">Select Role</Clerk.Label>
             <select
               value={role}
               onChange={handleRoleChange}
-              className="p-2 rounded-md ring-1 ring-black bg-blue-100 text-black focus:ring-blue-500"
+              className="p-2 rounded-md ring-1 ring-black bg-blue-100 text-black focus:ring-blue-500 opacity-80"
             >
               <option value="" disabled>Select a Role</option>
               <option value="teacher">Teacher</option>
@@ -132,22 +135,22 @@ const LoginPage = () => {
 
           {/* Username Field */}
           <Clerk.Field name="identifier" className="flex flex-col gap-2">
-            <Clerk.Label className="text-xs text-black">Username</Clerk.Label>
+            <Clerk.Label className="text-s text-black">Username</Clerk.Label>
             <Clerk.Input
               type="text"
               required
-              className="p-3 rounded-md ring-1 ring-blue-900 bg-blue-100 text-black focus:ring-blue-500"
+              className="p-3 rounded-md ring-1 ring-blue-900 bg-blue-100 text-black focus:ring-blue-500 opacity-80"
             />
             <Clerk.FieldError className="text-xs text-red-400" />
           </Clerk.Field>
 
           {/* Password Field */}
           <Clerk.Field name="password" className="flex flex-col gap-2">
-            <Clerk.Label className="text-xs text-black">Password</Clerk.Label>
+            <Clerk.Label className="text-s text-black">Password</Clerk.Label>
             <Clerk.Input
               type="password"
               required
-              className="p-3 rounded-md ring-1 ring-blue-900 bg-blue-100 text-black focus:ring-blue-500"
+              className="p-3 rounded-md ring-1 ring-blue-900 bg-blue-100 text-black focus:ring-blue-500 opacity-80"
             />
             <Clerk.FieldError className="text-xs text-red-400" />
           </Clerk.Field>

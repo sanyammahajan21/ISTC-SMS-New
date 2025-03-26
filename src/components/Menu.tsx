@@ -129,12 +129,12 @@ const Menu = async () => {
   const role = user?.publicMetadata.role as string;
   
   return (
-    <div className="mt-6 text-sm">
+    <div className="mt-6 text-sm ">
       {menuItems.map((i) => (
         <div className="flex flex-col mb-8" key={i.title}>
           {i.title && (
             <div className="hidden lg:block px-4 mb-3">
-              <span className="text-gray-500 font-semibold text-xs tracking-widest uppercase inline-block after:content-[''] after:block after:w-8 after:h-0.5 after:bg-blue-500 after:mt-1">
+              <span className="text-gray-500 font-semibold text-xs tracking-widest uppercase inline-block after:content-[''] after:block after:w-8 after:h-0.5 after:bg-blue-900 after:mt-1">
                 {i.title}
               </span>
             </div>
@@ -146,7 +146,7 @@ const Menu = async () => {
                   <Link
                     href={item.href}
                     key={item.label}
-                    className="flex items-center justify-center lg:justify-start gap-3 text-gray-600 hover:text-blue-600 py-3 px-4 rounded-lg hover:bg-blue-50 hover:shadow-sm transition-all duration-200 border-l-2 border-transparent hover:border-l-2 hover:border-blue-500"
+                    className="flex items-center justify-center lg:justify-start gap-3 text-gray-600 hover:text-blue-900 py-3 px-4 rounded-lg hover:bg-blue-50 hover:shadow-md hover:shadow-blue-200 transition-all duration-200 border-l-2 border-transparent hover:border-l-2 hover:border-blue-900"
                   >
                     <div className="w-6 h-6 relative flex-shrink-0 p-1 bg-gray-100 rounded-md group-hover:bg-blue-100">
                       <Image

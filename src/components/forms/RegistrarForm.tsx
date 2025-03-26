@@ -58,11 +58,11 @@ const RegistrarForm = ({
   const { subjects } = relatedData;
 
   return (
-    <form className="flex flex-col gap-8" onSubmit={onSubmit}>
-      <h1 className="text-xl font-semibold">
+    <form className="flex flex-col gap-10" onSubmit={onSubmit}>
+      <h1 className="text-xl font-semibold text-center">
         {type === "create" ? "Create a new Registrar" : "Update the Registrar"}
       </h1>
-      <span className="text-xs text-gray-400 font-medium">
+      <span className="text-xs text-black font-bold">
         Authentication Information
       </span>
       <div className="flex justify-between flex-wrap gap-4">
@@ -89,7 +89,7 @@ const RegistrarForm = ({
           error={errors?.password}
         />
       </div>
-      <span className="text-xs text-gray-400 font-medium">
+      <span className="text-xs text-black font-bold">
         Personal Information
       </span>
       <div className="flex justify-between flex-wrap gap-4">
@@ -121,7 +121,7 @@ const RegistrarForm = ({
       {state.error && (
         <span className="text-red-500">Something went wrong!</span>
       )}
-      <button className="bg-blue-400 text-white p-2 rounded-md">
+      <button className="bg-blue-900 text-white p-2 rounded-md">
         {type === "create" ? "Create" : "Update"}
       </button>
     </form>

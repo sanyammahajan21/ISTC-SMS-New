@@ -27,7 +27,7 @@ const Navbar = async () => {
           className="w-[200px] p-3 bg-transparent outline-none"
         />
       </div> */}
-      <div className="flex items-center gap-6 justify-end w-full font-extrabold font-serif">
+      <div className="flex items-center gap-6 text-2xl justify-end w-full font-extrabold font-serif text-blue-950">
         INDO SWISS TRIANING CENTER,SECTOR 30C, CHANDIGARH 
         </div>
       {/* ICONS AND USER */}
@@ -40,7 +40,7 @@ const Navbar = async () => {
         </div> */}
         <div className="flex flex-col mx-3">
           <span className="text-xs leading-3 uppercase font-bold ">{user?.username as string}</span>
-          <span className="text-[10px] text-gray-500 text-right">
+          <span className="text-[10px] text-blue-700 text-right">
             {user?.publicMetadata?.role as string}
           </span>
         </div>

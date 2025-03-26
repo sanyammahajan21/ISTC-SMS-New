@@ -46,7 +46,7 @@ const UploadSection: React.FC<UploadSectionProps> = ({ title, onUpload, isTeache
   };
 
   return (
-    <div className="bg-teal-50 p-6 rounded-lg shadow-md w-full max-w-lg mx-auto mb-6">
+    <div className="bg-blue-50 p-6 rounded-lg shadow-sm shadow-blue-900 w-full max-w-lg mx-auto mb-6">
       {/* Form fields with more formal styling */}
       {!isTeacherUpload && (
         <div className="mb-4">
@@ -89,7 +89,7 @@ const UploadSection: React.FC<UploadSectionProps> = ({ title, onUpload, isTeache
       <button
         onClick={handleUpload}
         className={`w-full py-3 px-5 text-white font-medium rounded-md focus:outline-none transition-colors ${
-          loading ? 'bg-blue-700 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700'
+          loading ? 'bg-blue-700 cursor-not-allowed' : 'bg-blue-800 hover:bg-teal-800'
         }`}
         disabled={loading}
       >

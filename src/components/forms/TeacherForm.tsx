@@ -69,7 +69,7 @@ const TeacherForm = ({
   const { subjects, branches } = relatedData;
 
   return (
-    <form className="flex flex-col gap-9 " onSubmit={onSubmit}>
+    <form className="flex flex-col gap-9" onSubmit={onSubmit}>
       <h1 className="text-xl font-semibold text-center md:w-3/4 mx-auto">
         {type === "create" ? "Create a new teacher" : "Update the teacher"}
       </h1>
@@ -201,7 +201,7 @@ const TeacherForm = ({
       {state.error && (
         <span className="text-red-500">Something went wrong!</span>
       )}
-      <button className="bg-blue-400 text-white p-2 rounded-md">
+      <button className="bg-blue-900 text-white p-2 rounded-md">
         {type === "create" ? "Create" : "Update"}
       </button>
     </form>
