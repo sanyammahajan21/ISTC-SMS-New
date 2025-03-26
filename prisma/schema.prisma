@@ -50,7 +50,7 @@ model Teacher {
   branches      Branch[]
   announcements AnnouncementTeacher[]
   results       Result[]
-  Exam          Exam[]
+  invigilatedExams Exam[]            @relation("TeacherToExam")
 }
 
 model Registrar {
@@ -141,17 +141,16 @@ model Exam {
   studentExams          StudentExam[]
   lecture               Lectures?            @relation(fields: [lecturesId], references: [id])
   lecturesId            Int?
-  teacherInvigilator   Teacher?            @relation(fields: [teacherInvigilatorId], references: [id])
-  teacherInvigilatorId String?
-  externalInvigilator  ExternalInvigilator? @relation(fields: [externalInvigilatorId], references: [id])
-  externalInvigilatorId Int?
+  teacherInvigilators   Teacher[]            @relation("TeacherToExam")
+  externalInvigilators ExternalInvigilator[]
   ExamSchedule          ExamSchedule[]
 }
 
 model ExternalInvigilator {
   id        Int      @id @default(autoincrement())
   name      String
-  exams     Exam[]
+  examId    Int
+  exam      Exam              @relation(fields: [examId], references: [id])
   createdAt DateTime @default(now())
 }
 

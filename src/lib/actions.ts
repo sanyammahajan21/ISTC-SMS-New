@@ -575,14 +575,31 @@ export async function getAllExams() {
   try {
     const exams = await prisma.exam.findMany({
       include: {
-        teacherInvigilator: true,
-        externalInvigilator: true
+        teacherInvigilators: {
+          select: {
+            id: true,
+            name: true
+          }
+        },
+        externalInvigilators: true,
+        subject: true,
+        semester: true,
+        branch: true,
+        studentExams: true,
+        lecture: true,
+        ExamSchedule: true
+      },
+      orderBy: {
+        examDate: 'asc'
       }
     });
     return { success: true, data: exams };
   } catch (error) {
     console.error("Error fetching exams:", error);
-    return { success: false, error: error.message };
+    return { 
+      success: false, 
+      error: error instanceof Error ? error.message : 'Unknown error' 
+    };
   }
 }
 
@@ -638,8 +655,8 @@ export async function createExam(examData: {
   endTime: Date;
   semesterId: number;
   branchId: number;
-  teacherInvigilatorId?: string;
-  externalInvigilator?: { name: string };
+  teacherInvigilatorIds?: string[];
+  externalInvigilators?: { name: string }[];
 }) {
   try {
     const data: Prisma.ExamCreateInput = {
@@ -650,22 +667,24 @@ export async function createExam(examData: {
       semester: { connect: { id: examData.semesterId } },
       branch: { connect: { id: examData.branchId } },
     };
-    if (examData.teacherInvigilatorId) {
-      data.teacherInvigilator = { connect: { id: examData.teacherInvigilatorId } };
+    if (examData.teacherInvigilatorIds?.length) {
+      data.teacherInvigilators = {
+        connect: examData.teacherInvigilatorIds.map(id => ({ id }))
+      };
     }
-    if (examData.externalInvigilator?.name) {
-      data.externalInvigilator = { 
-        create: { 
-          name: examData.externalInvigilator.name 
-        } 
+    if (examData.externalInvigilators?.length) {
+      data.externalInvigilators = {
+        create: examData.externalInvigilators.map(invigilator => ({
+          name: invigilator.name
+        }))
       };
     }
 
     const exam = await prisma.exam.create({
       data,
       include: {
-        teacherInvigilator: true,
-        externalInvigilator: true,
+        teacherInvigilators: true,
+        externalInvigilators: true,
         subject: true,
         semester: true,
         branch: true
@@ -675,9 +694,13 @@ export async function createExam(examData: {
     return { success: true, data: exam };
   } catch (error) {
     console.error("Error creating exam:", error);
-    return { success: false, error: error instanceof Error ? error.message : 'Unknown error' };
+    return { 
+      success: false, 
+      error: error instanceof Error ? error.message : 'Unknown error' 
+    };
   }
 }
+
 export async function updateExam(
   examId: number,
   examData: {
@@ -687,16 +710,22 @@ export async function updateExam(
     endTime: Date;
     semesterId: number;
     branchId: number;
-    teacherInvigilatorId?: string;
-    externalInvigilator?: { name: string };
+    teacherInvigilatorIds?: string[];
+    externalInvigilators?: { name: string }[];
   }
 ) {
   try {
-    // First get the current exam to check for existing external invigilator
     const currentExam = await prisma.exam.findUnique({
       where: { id: examId },
-      include: { externalInvigilator: true }
+      include: { 
+        teacherInvigilators: true,
+        externalInvigilators: true 
+      }
     });
+
+    if (!currentExam) {
+      return { success: false, error: "Exam not found" };
+    }
 
     const data: Prisma.ExamUpdateInput = {
       subject: { connect: { id: examData.subjectId } },
@@ -705,35 +734,46 @@ export async function updateExam(
       endTime: examData.endTime,
       semester: { connect: { id: examData.semesterId } },
       branch: { connect: { id: examData.branchId } },
-      teacherInvigilator: examData.teacherInvigilatorId 
-        ? { connect: { id: examData.teacherInvigilatorId } }
-        : { disconnect: true },
     };
-
-    // Handle external invigilator
-    if (examData.externalInvigilator?.name) {
-      // Delete old external invigilator if exists
-      if (currentExam?.externalInvigilatorId) {
-        await prisma.externalInvigilator.delete({
-          where: { id: currentExam.externalInvigilatorId }
+    if (examData.teacherInvigilatorIds) {
+      if (currentExam.teacherInvigilators.length > 0) {
+        await prisma.exam.update({
+          where: { id: examId },
+          data: {
+            teacherInvigilators: {
+              disconnect: currentExam.teacherInvigilators.map(teacher => ({ id: teacher.id }))
+            }
+          }
         });
       }
-      // Create new external invigilator
-      data.externalInvigilator = {
-        create: {
-          name: examData.externalInvigilator.name
-        }
-      };
-    } else {
-      data.externalInvigilator = { disconnect: true };
+      
+      if (examData.teacherInvigilatorIds.length > 0) {
+        data.teacherInvigilators = {
+          connect: examData.teacherInvigilatorIds.map(id => ({ id }))
+        };
+      }
+    }
+    if (examData.externalInvigilators) {
+      if (currentExam.externalInvigilators.length > 0) {
+        await prisma.externalInvigilator.deleteMany({
+          where: { id: { in: currentExam.externalInvigilators.map(i => i.id) } }
+        });
+      }
+      if (examData.externalInvigilators.length > 0) {
+        data.externalInvigilators = {
+          create: examData.externalInvigilators.map(invigilator => ({
+            name: invigilator.name
+          }))
+        };
+      }
     }
 
     const exam = await prisma.exam.update({
       where: { id: examId },
       data,
       include: {
-        teacherInvigilator: true,
-        externalInvigilator: true,
+        teacherInvigilators: true,
+        externalInvigilators: true,
         subject: true,
         semester: true,
         branch: true
@@ -749,33 +789,40 @@ export async function updateExam(
     };
   }
 }
+
 export const deleteExam = async (id: number) => {
   try {
-    // First get the exam with its external invigilator
     const exam = await prisma.exam.findUnique({
       where: { id },
-      include: { externalInvigilator: true }
+      include: { 
+        teacherInvigilators: true,
+        externalInvigilators: true,
+        studentExams: true,
+        ExamSchedule: true
+      }
     });
 
     if (!exam) {
       return { success: false, error: "Exam not found" };
     }
-
-    // Delete related records first
     await prisma.$transaction([
       prisma.studentExam.deleteMany({ where: { examId: id } }),
+      
       prisma.examSchedule.deleteMany({ where: { examId: id } }),
+      
+      prisma.externalInvigilator.deleteMany({ 
+        where: { id: { in: exam.externalInvigilators.map(i => i.id) } }
+      }),
+      prisma.exam.update({
+        where: { id },
+        data: {
+          teacherInvigilators: {
+            disconnect: exam.teacherInvigilators.map(teacher => ({ id: teacher.id }))
+          }
+        }
+      }),
+      prisma.exam.delete({ where: { id } })
     ]);
-
-    // Delete the exam
-    await prisma.exam.delete({ where: { id } });
-
-    // Delete the external invigilator if it exists
-    if (exam.externalInvigilator) {
-      await prisma.externalInvigilator.delete({
-        where: { id: exam.externalInvigilator.id }
-      });
-    }
 
     return { success: true };
   } catch (error) {
@@ -821,9 +868,9 @@ export const createAnnouncement = async (
         throw new Error("File size must be less than 10MB");
       }
 
-      const fileData = Buffer.from(file.data, "base64"); // Decode base64 file data
-      const safeFileName = `${Date.now()}_${file.name}`; // Create a unique file name
-      const filePath = join(STORAGE_PATH, safeFileName); // Define the file path
+      const fileData = Buffer.from(file.data, "base64"); 
+      const safeFileName = `${Date.now()}_${file.name}`; 
+      const filePath = join(STORAGE_PATH, safeFileName); 
 
       // Create the uploads directory if it doesn't exist
       if (!existsSync(STORAGE_PATH)) {

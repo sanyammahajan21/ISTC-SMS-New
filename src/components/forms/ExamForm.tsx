@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Select from "react-select";
 import {
   getAllExams,
   createExam,
@@ -64,6 +65,11 @@ interface ExamPageProps {
   role?: string;
 }
 
+interface ExternalInvigilatorInput {
+  id: string;
+  name: string;
+}
+
 export default function ExamPage({ role }: ExamPageProps) {
   const [exams, setExams] = useState<Exam[]>([]);
   const [semesters, setSemesters] = useState<Semester[]>([]);
@@ -86,6 +92,63 @@ export default function ExamPage({ role }: ExamPageProps) {
   const [invigilatorType, setInvigilatorType] = useState<
     "teacher" | "external"
   >("teacher");
+  const [externalInvigilators, setExternalInvigilators] = useState<
+    ExternalInvigilatorInput[]
+  >([]);
+
+  const teacherOptions = teachers.map((teacher) => ({
+    value: teacher.id,
+    label: teacher.name,
+  }));
+
+  const [selectedTeacherOptions, setSelectedTeacherOptions] = useState<
+    { value: string; label: string }[]
+  >([]);
+
+  const addExternalInvigilator = () => {
+    setExternalInvigilators((prev) => [
+      ...prev,
+      { id: Date.now().toString(), name: "" },
+    ]);
+  };
+  const removeExternalInvigilator = (id: string) => {
+    setExternalInvigilators((prev) => prev.filter((item) => item.id !== id));
+  };
+  const handleExternalInvigilatorChange = (id: string, value: string) => {
+    setExternalInvigilators((prev) =>
+      prev.map((item) => (item.id === id ? { ...item, name: value } : item))
+    );
+  };
+
+  // When updating an exam, populate the form with existing data
+  // const handleUpdateExam = (exam: Exam) => {
+  //   setForm({
+  //     id: exam.id,
+  //     subjectId: exam.subjectId,
+  //     examDate: new Date(exam.examDate),
+  //     startTime: new Date(exam.startTime),
+  //     endTime: new Date(exam.endTime),
+  //     semesterId: exam.semesterId,
+  //     branchId: exam.branchId,
+  //   });
+
+  //   if (exam.teacherInvigilators?.length) {
+  //     const selectedTeachers = exam.teacherInvigilators.map(teacher => ({
+  //       value: teacher.id,
+  //       label: teacher.name
+  //     }));
+  //     setSelectedTeacherOptions(selectedTeachers);
+  //     setInvigilatorType("teacher");
+  //   } else if (exam.externalInvigilators?.length) {
+  //     setExternalInvigilators(
+  //       exam.externalInvigilators.map(invigilator => ({
+  //         id: invigilator.id.toString(),
+  //         name: invigilator.name
+  //       }))
+  //     );
+  //     setInvigilatorType("external");
+  //   }
+  // };
 
   useEffect(() => {
     async function fetchData() {
@@ -214,14 +277,20 @@ export default function ExamPage({ role }: ExamPageProps) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-  
-    if (!form.subjectId || !form.examDate || !form.startTime || !form.semesterId || !form.branchId) {
+
+    if (
+      !form.subjectId ||
+      !form.examDate ||
+      !form.startTime ||
+      !form.semesterId ||
+      !form.branchId
+    ) {
       alert("Please fill in all required fields.");
       return;
     }
-  
+
     const endTime = calculateEndTime(form.startTime, duration);
-  
+
     const payload = {
       subjectId: form.subjectId,
       examDate: new Date(form.examDate),
@@ -229,22 +298,28 @@ export default function ExamPage({ role }: ExamPageProps) {
       endTime: new Date(endTime),
       semesterId: form.semesterId,
       branchId: form.branchId,
-      ...(invigilatorType === "teacher" && form.teacherInvigilatorId && {
-        teacherInvigilatorId: form.teacherInvigilatorId
+      // Always include both types if they have values
+      ...(selectedTeacherOptions.length > 0 && {
+        teacherInvigilatorIds: selectedTeacherOptions.map(
+          (option) => option.value
+        ),
       }),
-      ...(invigilatorType === "external" && externalInvigilatorName && {
-        externalInvigilator: { name: externalInvigilatorName }
-      })
+      ...(externalInvigilators.length > 0 && {
+        externalInvigilators: externalInvigilators.map((invigilator) => ({
+          name: invigilator.name,
+        })),
+      }),
     };
-  
+
     try {
-      const response = await createExam(payload);
+      const response = form.id
+        ? await updateExam({ ...payload, id: form.id })
+        : await createExam(payload);
+
       if (response.success) {
-        toast.success(`Exam ${form.id ? 'updated' : 'created'} successfully`);
-        // Refresh exam list
+        toast.success(`Exam ${form.id ? "updated" : "created"} successfully`);
         const examsResponse = await getAllExams();
         if (examsResponse?.success) setExams(examsResponse.data);
-        // Reset form
         setForm({
           subjectId: 0,
           examDate: new Date(),
@@ -253,8 +328,8 @@ export default function ExamPage({ role }: ExamPageProps) {
           semesterId: form.semesterId,
           branchId: form.branchId,
         });
-        setExternalInvigilatorName("");
-        setInvigilatorType("teacher");
+        setExternalInvigilators([]);
+        setSelectedTeacherOptions([]);
       } else {
         toast.error(response.error);
       }
@@ -374,51 +449,73 @@ export default function ExamPage({ role }: ExamPageProps) {
     semesterLevel: number
   ) => {
     const doc = new jsPDF();
-
+  
     const headerImage = "/docLogo.png";
     const img = new Image();
     img.src = headerImage;
-
+  
     await new Promise((resolve) => {
       img.onload = resolve;
     });
-
+  
     const imgWidth = 800;
     const imgHeight = 100;
     const aspectRatio = imgWidth / imgHeight;
     const pdfImageWidth = 180;
     const pdfImageHeight = pdfImageWidth / aspectRatio;
     const x = (doc.internal.pageSize.getWidth() - pdfImageWidth) / 2;
-    const y = 10;
-
+    const y = 10; // Make sure this is defined
+  
     doc.addImage(img, "PNG", x, y, pdfImageWidth, pdfImageHeight);
-
+  
     doc.setFontSize(18);
     doc.text(
       `Exam Datesheet - ${branchName} - Semester ${semesterLevel}`,
       50,
       y + pdfImageHeight + 10
     );
-
+  
     const tableData = exams.map((exam) => {
       const subject = subjects.find((sub) => sub.id === exam.subjectId);
+      
+      // Format teacher invigilators
+      const teacherNames = exam.teacherInvigilators?.map(t => t.name).join(', ') || 'None';
+      
+      // Format external invigilators
+      const externalNames = exam.externalInvigilators?.map(e => `${e.name} (External)`).join(', ') || 'None';
+      
+      // Combine all invigilators
+      const allInvigilators = `${teacherNames}${teacherNames && externalNames ? '\n' : ''}${externalNames}`;
+  
       return [
         subject?.subjectCode || "N/A",
         subject?.name || "N/A",
         new Date(exam.examDate).toLocaleDateString(),
-        new Date(exam.startTime).toISOString().substring(11, 16),
-        new Date(exam.endTime).toISOString().substring(11, 16),
+        new Date(exam.startTime).toTimeString().substring(0, 5),
+        new Date(exam.endTime).toTimeString().substring(0, 5),
+        allInvigilators
       ];
     });
-
+  
     autoTable(doc, {
       head: [
-        ["Subject Code", "Subject Name", "Exam Date", "Start Time", "End Time"],
+        ["Subject Code", "Subject Name", "Exam Date", "Start Time", "End Time", "Invigilators"],
       ],
       body: tableData,
-      startY: y + pdfImageHeight + 20,
+      startY: y + pdfImageHeight + 20, // Now y is properly defined
+      styles: {
+        cellPadding: 5,
+        fontSize: 10,
+        valign: 'middle'
+      },
+      columnStyles: {
+        5: { // Invigilators column
+          cellWidth: 'auto',
+          minCellHeight: 20
+        }
+      }
     });
-
+  
     doc.save(`Exam_Schedule_${branchName}_Semester_${semesterLevel}.pdf`);
   };
 
@@ -524,52 +621,58 @@ export default function ExamPage({ role }: ExamPageProps) {
 
             {/* Invigilator Selection */}
             <div className="mb-4">
-              <label className="block mb-2 font-medium">Invigilator Type</label>
-              <div className="flex gap-4 mb-4">
-                <label className="inline-flex items-center">
-                  <input
-                    type="radio"
-                    checked={invigilatorType === "teacher"}
-                    onChange={() => setInvigilatorType("teacher")}
-                    className="form-radio"
-                  />
-                  <span className="ml-2">Teacher</span>
-                </label>
-                <label className="inline-flex items-center">
-                  <input
-                    type="radio"
-                    checked={invigilatorType === "external"}
-                    onChange={() => setInvigilatorType("external")}
-                    className="form-radio"
-                  />
-                  <span className="ml-2">External</span>
-                </label>
+              <div className="mb-4">
+                <label className="block mb-2">Select Teachers</label>
+                <Select
+                  options={teacherOptions}
+                  value={selectedTeacherOptions}
+                  onChange={(selectedOptions) => {
+                    setSelectedTeacherOptions(
+                      selectedOptions as { value: string; label: string }[]
+                    );
+                  }}
+                  placeholder="Select Teachers"
+                  className="react-select-container"
+                  classNamePrefix="react-select"
+                  isMulti
+                  isClearable
+                />
               </div>
 
-              {invigilatorType === "teacher" ? (
-                <select
-                  name="teacherInvigilatorId"
-                  value={form.teacherInvigilatorId || ""}
-                  onChange={handleChange}
-                  className="p-2 border rounded-md w-full"
+              <div className="mb-4">
+                <label className="block mb-2">External Invigilators</label>
+                {externalInvigilators.map((invigilator) => (
+                  <div key={invigilator.id} className="flex gap-2 mb-2">
+                    <input
+                      type="text"
+                      placeholder="Invigilator Name"
+                      value={invigilator.name}
+                      onChange={(e) =>
+                        handleExternalInvigilatorChange(
+                          invigilator.id,
+                          e.target.value
+                        )
+                      }
+                      className="p-2 border rounded-md flex-grow"
+                      required
+                    />
+                    <button
+                      type="button"
+                      onClick={() => removeExternalInvigilator(invigilator.id)}
+                      className="bg-red-500 text-white p-2 rounded-md"
+                    >
+                      Remove
+                    </button>
+                  </div>
+                ))}
+                <button
+                  type="button"
+                  onClick={addExternalInvigilator}
+                  className="bg-blue-500 text-white p-2 rounded-md mt-2"
                 >
-                  <option value="">Select Teacher</option>
-                  {teachers.map((teacher) => (
-                    <option key={teacher.id} value={teacher.id}>
-                      {teacher.name}
-                    </option>
-                  ))}
-                </select>
-              ) : (
-                <input
-                  type="text"
-                  placeholder="External Invigilator Name"
-                  value={externalInvigilatorName}
-                  onChange={(e) => setExternalInvigilatorName(e.target.value)}
-                  className="p-2 border rounded-md w-full"
-                  required={invigilatorType === "external"}
-                />
-              )}
+                  Add External Invigilator
+                </button>
+              </div>
             </div>
 
             <button
@@ -581,7 +684,6 @@ export default function ExamPage({ role }: ExamPageProps) {
           </div>
         </form>
       )}
-
       {/* Exam Datesheet Display */}
       <h1 className="text-2xl font-bold mb-4">Exam Datesheet</h1>
       <div className="flex gap-4 mb-6">
@@ -590,7 +692,7 @@ export default function ExamPage({ role }: ExamPageProps) {
           value={selectedBranch}
           onChange={(e) => {
             setSelectedBranch(Number(e.target.value) || "");
-            setSelectedSemester(""); // Reset semester when branch changes
+            setSelectedSemester("");
           }}
           className="p-2 border rounded-md"
         >
@@ -618,8 +720,6 @@ export default function ExamPage({ role }: ExamPageProps) {
               </option>
             ))}
         </select>
-
-        {/* Download Complete Datesheet Button */}
         <button
           onClick={downloadCompleteDatesheet}
           className="bg-green-500 text-white p-2 rounded-md ml-auto"
@@ -627,8 +727,6 @@ export default function ExamPage({ role }: ExamPageProps) {
           Download Complete Datesheet
         </button>
       </div>
-
-      {/* Display Exams for Selected Branch and Semester */}
       {selectedSemester && selectedBranch && (
         <div>
           <h2 className="text-xl font-semibold mb-2">
@@ -660,9 +758,8 @@ export default function ExamPage({ role }: ExamPageProps) {
                   const subject = subjects.find(
                     (sub) => sub.id === exam.subjectId
                   );
-                  const teacherInvigilator = teachers.find(
-                    (t) => t.id === exam.teacherInvigilatorId
-                  );
+                  const teacherInvigilators = exam.teacherInvigilators || [];
+                  const externalInvigilators = exam.externalInvigilators || [];
 
                   return (
                     <tr key={exam.id} className="border">
@@ -675,18 +772,40 @@ export default function ExamPage({ role }: ExamPageProps) {
                       </td>
                       <td className="p-2 border">
                         {new Date(exam.startTime)
-                          .toISOString()
-                          .substring(11, 16)}
+                          .toTimeString()
+                          .substring(0, 5)}
                       </td>
                       <td className="p-2 border">
-                        {new Date(exam.endTime).toISOString().substring(11, 16)}
+                        {new Date(exam.endTime).toTimeString().substring(0, 5)}
                       </td>
                       <td className="p-2 border">
-                        {teacherInvigilator
-                          ? teacherInvigilator.name
-                          : exam.externalInvigilator
-                          ? `${exam.externalInvigilator.name} (External)`
-                          : "Not assigned"}
+                        {/* Teacher Invigilators */}
+                        {exam.teacherInvigilators?.length > 0 && (
+                          <div className="mb-1">
+                            {exam.teacherInvigilators.map((teacher) => (
+                              <div key={teacher.id} className="font-medium">
+                                {teacher.name} (Teacher)
+                              </div>
+                            ))}
+                          </div>
+                        )}
+
+                        {/* External Invigilators */}
+                        {exam.externalInvigilators?.length > 0 && (
+                          <div className="text-gray-600">
+                            {exam.externalInvigilators.map((invigilator) => (
+                              <div key={invigilator.id}>
+                                {invigilator.name} (External)
+                              </div>
+                            ))}
+                          </div>
+                        )}
+
+                        {/* No invigilators case */}
+                        {!exam.teacherInvigilators?.length &&
+                          !exam.externalInvigilators?.length && (
+                            <div className="text-gray-400">Not assigned</div>
+                          )}
                       </td>
                       {(role === "registrar" || role === "admin") && (
                         <td className="p-2 border flex gap-2">
