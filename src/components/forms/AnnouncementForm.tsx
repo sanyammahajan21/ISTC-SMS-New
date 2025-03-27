@@ -85,6 +85,7 @@ const AnnouncementForm = ({
   const teachers = relatedData?.teachers || [];
 
   return (
+<<<<<<< HEAD
     <form className="flex flex-col gap-8 md:w-3/4 mx-auto" onSubmit={onSubmit}>
       <h1 className="text-xl font-semibold text-center md:w-full mx-auto">
         {type === "create" ? "Create a new announcement" : "Update the announcement"}
@@ -115,6 +116,33 @@ const AnnouncementForm = ({
   
       {data && (
         <div className="w-full md:w-1/2">
+=======
+    <form className="flex flex-col gap-16 mx-8" onSubmit={onSubmit}>
+      <h1 className="text-xl font-semibold text-center md:w-3/4 mx-auto">
+        {type === "create"
+          ? "Create a new announcement"
+          : "Update the announcement"}
+      </h1>
+
+      <div className="flex justify-between flex-wrap gap-9">
+        <InputField
+          label="Announcement title"
+          name="title"
+          defaultValue={data?.title}
+          register={register}
+          error={errors?.title}
+        />
+        <InputField
+          label="Content"
+          name="content"
+          defaultValue={data?.content}
+          register={register}
+          error={errors?.content}
+          type="textarea"
+        />
+
+        {data && (
+>>>>>>> fb258575426d3f3ae3135e22d7857033518f66d8
           <InputField
             label="Id"
             name="id"
