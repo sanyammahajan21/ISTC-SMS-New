@@ -32,11 +32,11 @@ const DiplomaGenerator = ({ student }: DiplomaProps) => {
       // Base coordinates from the document
       // A4 size: 210x297mm, scaling from the document dimensions
       const scale = 0.24;
-      const certificateNumber = `${student.id.substring(0, 3)}`;
+      // const certificateNumber = `${student.id.substring(0, 6)}`;
       // Add exact content from DIPLOMAIT2010.doc
       doc.setFontSize(17);
       doc.text(` ${student.username}`, 163 * scale, (1234 - 1160) * scale);
-      doc.text(`${certificateNumber}`,230,(1234 - 1160) * scale);
+      doc.text(`${student.username}`,230,(1234 - 1160) * scale);
       doc.text(`${student.name.toUpperCase()}`, 260* scale, (1234 - 648) * scale);
       doc.text(`${student.fatherName.toUpperCase()}`, 260 * scale, (1234 - 580) * scale);
       doc.setFontSize(12);
@@ -45,7 +45,7 @@ const DiplomaGenerator = ({ student }: DiplomaProps) => {
       doc.text(`July,${graduationYear}`, 226 * scale, (1234 - 363) * scale);
       
       // Use exact expiry date from document
-      doc.text(`${formattedDate}`, 133 * scale, (1234 - 85) * scale);
+      doc.text(`${formattedDate}`, 133 * scale, (1234 - 110) * scale);
       
       // Add other content as per the exact document structure
       doc.setFontSize(12);

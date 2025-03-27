@@ -36,26 +36,26 @@ export async function GET(request: NextRequest) {
 
     // Add certificate details
     doc.setFontSize(14);
-    doc.text(`No.Prin./Char/${student.username}/ISTC `, 35, 62);
-    doc.text(`Dated: ${formattedDate}`, 134, 62);
+    doc.text(`No.Prin./Char/${student.username}/ISTC `, 32, 79);
+    doc.text(`Dated: ${formattedDate}`, 140, 79);
 
     doc.setFontSize(16);
-    doc.text("MIGRATION CERTIFICATE", 105, 83, { align: "center" });
+    doc.text("MIGRATION CERTIFICATE", 105, 97, { align: "center" });
 
     doc.setLineWidth(0.5);
-    doc.line(70, 84, 140, 84);
+    doc.line(70, 98, 140, 98);
 
     doc.setFontSize(14);
     const text = `This is to certify that ${student.name.toUpperCase()}, Roll No. ${student.username}, S/o/D/o Sh. ${student.fatherName.toUpperCase()} was a bonafide student of this institute from ${fromMonthYear} to ${toMonthYear}.`;
 
     const splitText = doc.splitTextToSize(text, 140);
-    doc.text(splitText, 28, 100);
+    doc.text(splitText, 30, 110);
 
     const objectionText = "The institute has No Objection for his/her further studies from any recognized Board/Institute or University.";
     const splitObjText = doc.splitTextToSize(objectionText, 150);
-    doc.text(splitObjText, 26, 127);
+    doc.text(splitObjText, 29, 131);
 
-    doc.text("(Principal)", 160, 165);
+    doc.text("(Principal)", 157, 165);
 
     // Generate PDF output
     const pdfOutput = doc.output("arraybuffer");

@@ -85,31 +85,36 @@ const AnnouncementForm = ({
   const teachers = relatedData?.teachers || [];
 
   return (
-    <form className="flex flex-col gap-16  md:w-3/4 mx-auto" onSubmit={onSubmit}>
-      <h1 className="text-xl font-semibold text-center md:w-3/4 mx-auto">
-        {type === "create"
-          ? "Create a new announcement"
-          : "Update the announcement"}
+    <form className="flex flex-col gap-8 md:w-3/4 mx-auto" onSubmit={onSubmit}>
+      <h1 className="text-xl font-semibold text-center md:w-full mx-auto">
+        {type === "create" ? "Create a new announcement" : "Update the announcement"}
       </h1>
-
-      <div className="flex justify-between flex-wrap gap-8 mx:w-1/2">
-        <InputField
-          label="Announcement title"
-          name="title"
-          defaultValue={data?.title}
-          register={register}
-          error={errors?.title}
-        />
-        <InputField
-          label="Content"
-          name="content"
-          defaultValue={data?.content}
-          register={register}
-          error={errors?.content}
-          type="textarea"
-        />
-
-        {data && (
+  
+      <div className="flex justify-between gap-8 w-full">
+        <div className="w-full md:w-1/2">
+          <InputField 
+            label="Announcement title"
+            name="title"
+            defaultValue={data?.title}
+            register={register}
+            error={errors?.title}
+          />
+        </div>
+  
+        <div className="w-full md:w-1/2">
+          <InputField
+            label="Content"
+            name="content"
+            defaultValue={data?.content}
+            register={register}
+            error={errors?.content}
+            type="textarea"
+          />
+        </div>
+      </div>
+  
+      {data && (
+        <div className="w-full md:w-1/2">
           <InputField
             label="Id"
             name="id"
@@ -118,81 +123,81 @@ const AnnouncementForm = ({
             error={errors?.id}
             hidden
           />
+        </div>
+      )}
+  
+      <div className="flex flex-col gap-2 w-full md:w-1/2">
+        <label className="text-xs text-black-500">Type</label>
+        <select
+          className="ring-[1.5px] ring-gray-300 p-2 rounded-md text-sm w-full"
+          {...register("type")}
+          defaultValue={data?.type || "GENERAL"}
+        >
+          <option value="GENERAL">General Announcement</option>
+          <option value="TEACHER_SPECIFIC">
+            Teacher-Specific Announcement
+          </option>
+        </select>
+        {errors.type?.message && (
+          <p className="text-xs text-red-400">
+            {errors.type.message.toString()}
+          </p>
         )}
-
-        <div className="flex flex-col gap-2 w-full">
-          <label className="text-xs text-black-500">Type</label>
+      </div>
+  
+      {announcementType === "TEACHER_SPECIFIC" && (
+        <div className="flex flex-col gap-2 w-full md:w-1/2">
+          <label className="text-xs text-gray-500">
+            Teachers (for teacher-specific announcements)
+          </label>
           <select
             className="ring-[1.5px] ring-gray-300 p-2 rounded-md text-sm w-full"
-            {...register("type")}
-            defaultValue={data?.type || "GENERAL"}
+            multiple
+            onChange={(e) => {
+              const selectedOptions = Array.from(
+                e.target.selectedOptions
+              ).map((option) => option.value);
+              setSelectedTeachers(selectedOptions);
+            }}
           >
-            <option value="GENERAL">General Announcement</option>
-            <option value="TEACHER_SPECIFIC">
-              Teacher-Specific Announcement
-            </option>
+            {teachers.map((teacher: { id: string; name: string }) => (
+              <option value={teacher.id} key={teacher.id}>
+                {teacher.name}
+              </option>
+            ))}
           </select>
-          {errors.type?.message && (
+          {errors.teacherIds?.message && (
             <p className="text-xs text-red-400">
-              {errors.type.message.toString()}
+              {errors.teacherIds.message.toString()}
             </p>
           )}
         </div>
-
-        {announcementType === "TEACHER_SPECIFIC" && (
-          <div className="flex flex-col gap-2 w-full">
-            <label className="text-xs text-gray-500">
-              Teachers (for teacher-specific announcements)
-            </label>
-            <select
-              className="ring-[1.5px] ring-gray-300 p-2 rounded-md text-sm w-full"
-              multiple
-              onChange={(e) => {
-                const selectedOptions = Array.from(
-                  e.target.selectedOptions
-                ).map((option) => option.value);
-                setSelectedTeachers(selectedOptions);
-              }}
-            >
-              {teachers.map((teacher: { id: string; name: string }) => (
-                <option value={teacher.id} key={teacher.id}>
-                  {teacher.name}
-                </option>
-              ))}
-            </select>
-            {errors.teacherIds?.message && (
-              <p className="text-xs text-red-400">
-                {errors.teacherIds.message.toString()}
-              </p>
-            )}
-          </div>
-        )}
-
-        <div className="flex flex-col gap-2 w-full">
-          <label className="text-xs text-black-500">
-            Upload File (PDF, Image, Excel, max 10MB)
-          </label>
-          <input
-            type="file"
-            onChange={(e) => {
-              const selectedFile = e.target.files?.[0];
-              if (selectedFile) {
-                if (selectedFile.size > 10 * 1024 * 1024) {
-                  toast.error("File size must be less than 10MB");
-                  e.target.value = ""; 
-                } else {
-                  setFile(selectedFile);
-                }
+      )}
+  
+      <div className="flex flex-col gap-2 w-full md:w-1/2">
+        <label className="text-xs text-black-500">
+          Upload File (PDF, Image, Excel, max 10MB)
+        </label>
+        <input
+          type="file"
+          onChange={(e) => {
+            const selectedFile = e.target.files?.[0];
+            if (selectedFile) {
+              if (selectedFile.size > 10 * 1024 * 1024) {
+                toast.error("File size must be less than 10MB");
+                e.target.value = ""; 
+              } else {
+                setFile(selectedFile);
               }
-            }}
-          />
-        </div>
+            }
+          }}
+        />
       </div>
-
+  
       {state.error && (
         <span className="text-red-500">Something went wrong!</span>
       )}
-
+  
       <button className="bg-blue-900 text-white p-2 rounded-md">
         {type === "create" ? "Create" : "Update"}
       </button>
