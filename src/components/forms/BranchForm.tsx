@@ -91,7 +91,7 @@ const BranchForm = ({
   }));
 
   return (
-    <form className="flex flex-col gap-16 md:w-3/4 mx-auto" onSubmit={onSubmit}>
+    <form className="flex flex-col gap-16 mx-8" onSubmit={onSubmit}>
       <h1 className="text-xl font-semibold text-center md:w-3/4 mx-auto">
         {type === "create" ? "Create a new branch" : "Update the branch"}
       </h1>

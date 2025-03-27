@@ -85,14 +85,14 @@ const AnnouncementForm = ({
   const teachers = relatedData?.teachers || [];
 
   return (
-    <form className="flex flex-col gap-16  md:w-3/4 mx-auto" onSubmit={onSubmit}>
+    <form className="flex flex-col gap-16 mx-8" onSubmit={onSubmit}>
       <h1 className="text-xl font-semibold text-center md:w-3/4 mx-auto">
         {type === "create"
           ? "Create a new announcement"
           : "Update the announcement"}
       </h1>
 
-      <div className="flex justify-between flex-wrap gap-8 mx:w-1/2">
+      <div className="flex justify-between flex-wrap gap-9">
         <InputField
           label="Announcement title"
           name="title"
