@@ -132,6 +132,7 @@ const LoginPage = () => {
               <option value="teacher">Teacher</option>
               <option value="admin">Admin</option>
               <option value="registrar">Registrar</option>
+              <option value="theoryIncharge">Theory Incharge</option>
             </select>
           </Clerk.Field>
 
