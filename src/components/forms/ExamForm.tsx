@@ -471,7 +471,7 @@ export default function ExamPage({ role }: ExamPageProps) {
     doc.setFontSize(18);
     doc.text(
       `Exam Datesheet - ${branchName} - Semester ${semesterLevel}`,
-      50,
+      15,
       y + pdfImageHeight + 10
     );
   

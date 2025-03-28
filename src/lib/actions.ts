@@ -10,6 +10,7 @@ import {
   TeacherSchema,
   AnnouncementSchema,
   ResultSchema,
+  TeacherInchargeSchema,
 } from "./formValidationSchemas";
 import prisma from "./prisma";
 import { clerkClient } from "@clerk/nextjs/server";
@@ -439,6 +440,92 @@ export const deleteRegistrar = async (
     await clerkClient.users.deleteUser(id);
 
     await prisma.registrar.delete({
+      where: {
+        id: id,
+      },
+    });
+
+    // revalidatePath("/list/teachers");
+    return { success: true, error: false };
+  } catch (err) {
+    console.log(err);
+    return { success: false, error: true };
+  }
+};
+
+export const createTeacherIncharge = async (
+  currentState: CurrentState,
+  data: TeacherInchargeSchema
+) => {
+  try {
+    const user = await clerkClient.users.createUser({
+      username: data.username,
+      password: data.password || "",
+      // name: data.name,
+      publicMetadata: { role: "teacherIncharge" },
+    });
+
+    await prisma.teacherIncharge.create({
+      data: {
+        id: user.id,
+        username: data.username,
+        name: data.name,
+        email: data.email || null,
+        phone: data.phone || "",
+      },
+    });
+
+    // revalidatePath("/list/teachers");
+    return { success: true, error: false };
+  } catch (err) {
+    console.log(err);
+    return { success: false, error: true };
+  }
+};
+
+export const updateTeacherIncharge = async (
+  currentState: CurrentState,
+  data: TeacherInchargeSchema
+) => {
+  if (!data.id) {
+    return { success: false, error: true };
+  }
+  try {
+    const user = await clerkClient.users.updateUser(data.id, {
+      username: data.username,
+      ...(data.password !== "" && { password: data.password }),
+      name: data.name,
+    });
+
+    await prisma.teacherIncharge.update({
+      where: {
+        id: data.id,
+      },
+      data: {
+        ...(data.password !== "" && { password: data.password }),
+        username: data.username,
+        name: data.name,
+        email: data.email || null,
+        phone: data.phone || null,
+      },
+    });
+    // revalidatePath("/list/teachers");
+    return { success: true, error: false };
+  } catch (err) {
+    console.log(err);
+    return { success: false, error: true };
+  }
+};
+
+export const deleteTeacherIncharge = async (
+  currentState: CurrentState,
+  data: FormData
+) => {
+  const id = data.get("id") as string;
+  try {
+    await clerkClient.users.deleteUser(id);
+
+    await prisma.teacherIncharge.delete({
       where: {
         id: id,
       },

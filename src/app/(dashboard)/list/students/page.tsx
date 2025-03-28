@@ -72,7 +72,7 @@ const StudentListPage = async ({
         </div>
       </td>
       <td className="hidden md:table-cell">{item.username}</td>
-      <td className="hidden md:table-cell">{item.semesterId}</td>
+      <td className="hidden md:table-cell">{item.semester.level}</td>
       <td className="hidden md:table-cell">{item.phone}</td>
       <td className="hidden md:table-cell">{item.sex}</td>
 
