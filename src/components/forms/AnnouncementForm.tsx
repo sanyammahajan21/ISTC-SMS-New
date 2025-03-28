@@ -43,8 +43,6 @@ const AnnouncementForm = ({
       error: false,
     }
   );
-
-  // Watch the "type" field to determine if teacher selection should be shown
   const announcementType = watch("type", data?.type || "GENERAL");
 
   const onSubmit = handleSubmit((data) => {
@@ -200,6 +198,7 @@ const AnnouncementForm = ({
             </p>
           )}
         </div>
+<<<<<<< Updated upstream
       )}
   
       <div className="flex flex-col gap-2 w-full md:w-1/2">
@@ -216,6 +215,54 @@ const AnnouncementForm = ({
                 e.target.value = ""; 
               } else {
                 setFile(selectedFile);
+=======
+
+        {announcementType === "TEACHER_SPECIFIC" && (
+          <div className="flex flex-col gap-2 w-full">
+            <label className="text-xs text-gray-500">
+              Teachers (for teacher-specific announcements)
+            </label>
+            <select
+              className="ring-[1.5px] ring-gray-300 p-2 rounded-md text-sm w-full"
+              multiple
+              onChange={(e) => {
+                const selectedOptions = Array.from(
+                  e.target.selectedOptions
+                ).map((option) => option.value);
+                setSelectedTeachers(selectedOptions);
+              }}
+            >
+              {teachers.map((teacher: { id: string; name: string }) => (
+                <option value={teacher.id} key={teacher.id}>
+                  {teacher.name}
+                </option>
+              ))}
+            </select>
+            {errors.teacherIds?.message && (
+              <p className="text-xs text-red-400">
+                {errors.teacherIds.message.toString()}
+              </p>
+            )}
+          </div>
+        )}
+
+        <div className="flex flex-col gap-2 w-full">
+          <label className="text-xs text-blac
+          k-500">
+            Upload File (PDF, Image, Excel, max 10MB)
+          </label>
+          <input
+            type="file"
+            onChange={(e) => {
+              const selectedFile = e.target.files?.[0];
+              if (selectedFile) {
+                if (selectedFile.size > 10 * 1024 * 1024) {
+                  toast.error("File size must be less than 10MB");
+                  e.target.value = ""; 
+                } else {
+                  setFile(selectedFile);
+                }
+>>>>>>> Stashed changes
               }
             }
           }}
