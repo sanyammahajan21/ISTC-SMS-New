@@ -12,32 +12,49 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ success: false, message: 'Semester ID is required' }, { status: 400 });
     }
     
-    // Find all students in the specified semester who have results
+    // Find all students in the specified semester with results
     const students = await prisma.student.findMany({
       where: {
         semesterId: parseInt(semesterId),
         results: {
-          some: {} // Only include students who have at least one result
+          some: {
+            subject: {
+              semesterId: parseInt(semesterId) // Only subjects from this semester
+            }
+          }
         }
       },
       include: {
         branch: { include: { _count: { select: { lectures: true } } } },
         semester: true,
         results: {
+          where: {
+            subject: {
+              semesterId: parseInt(semesterId) // Filter for this semester's subjects
+            }
+          },
           include: { subject: true },
         }
       }
     });
     
-    if (students.length === 0) {
+    // Filter students with only passing grades
+    const validStudents = students.filter(student => {
+      // Check if all subjects in this semester have grade better than 'E'
+      return student.results.every(result => 
+        result.grade !== 'E'
+      );
+    });
+    
+    if (validStudents.length === 0) {
       return NextResponse.json({
         success: false,
-        message: 'No students found with results for the selected semester'
+        message: 'No students found with passing grades for the selected semester'
       }, { status: 404 });
     }
     
     // Reset progress tracking
-    updateProgress(0, students.length);
+    updateProgress(0, validStudents.length);
     
     // Create a ZIP file to store all PDFs
     const zip = new JSZip();
@@ -45,8 +62,8 @@ export async function POST(req: NextRequest) {
     const folderName = `dmc_semester_${semesterId}_${timestamp}`;
     
     // Process each student and generate PDF
-    for (let i = 0; i < students.length; i++) {
-      const student = students[i];
+    for (let i = 0; i < validStudents.length; i++) {
+      const student = validStudents[i];
       
       // Generate PDF for this student
       const pdfDoc = await generateStudentPDF(student);
@@ -56,7 +73,7 @@ export async function POST(req: NextRequest) {
       zip.file(fileName, pdfDoc.output('arraybuffer'));
       
       // Update progress
-      updateProgress(i + 1, students.length);
+      updateProgress(i + 1, validStudents.length);
     }
     
     // Generate ZIP file as base64
@@ -66,7 +83,7 @@ export async function POST(req: NextRequest) {
     // Return success response with download data
     return NextResponse.json({
       success: true,
-      message: `Generated DMCs for ${students.length} students`,
+      message: `Generated DMCs for ${validStudents.length} students`,
       dataUrl: dataUrl,
       filename: `${folderName}.zip`
     });
@@ -91,7 +108,6 @@ async function generateStudentPDF(student: any) {
   // Set font
   doc.setFont('helvetica');
   
-  
   const scale = 0.24;
   
   // Top header section
@@ -103,10 +119,10 @@ async function generateStudentPDF(student: any) {
   // Program information
   doc.setFontSize(12);
   // Roll number or username (top left)
-  doc.text(student.username, 213 * scale, (1234 - 1130) * scale);
+  doc.text(student.username, 213 * scale, (1234 - 1150) * scale);
   
   // Diploma program name (centered)
-  doc.text(`DIPLOMA IN ${student.branch.name.toUpperCase()}`, 176 * scale, (1234 - 962) * scale);
+  doc.text(`DIPLOMA IN ${student.branch.name.toUpperCase()}`, 176 * scale, (1234 - 969) * scale);
   
   // Determine semester period based on semester number
   const getSemesterPeriod = () => {
@@ -116,7 +132,7 @@ async function generateStudentPDF(student: any) {
     if (semesterNumber % 2 === 0) {
       return `FEBRUARY ${currentYear} to JUNE ${currentYear}`;
     } else {
-      return `JULY ${currentYear} to JANUARY ${currentYear}`;
+      return `JULY ${currentYear-1} to JANUARY ${currentYear}`;
     }
   };
   
@@ -163,32 +179,20 @@ async function generateStudentPDF(student: any) {
     const sessionalMarks = Number(result.sessionalExam) || 0;
     const endTermMarks = Number(result.endTerm) || 0;
     const sessionalMax = 50;
-    const endTermMax = result.overallMark || 100;
+    const endTermMax = result.subject.maxMarks || 100;
     
     // Sessional marks
-    doc.text(`${sessionalMarks}/${sessionalMax}`, 585 * scale, (subjectStartY + index * yIncrement) * scale);
+    doc.text(`${sessionalMarks}`, 585 * scale, (subjectStartY + index * yIncrement) * scale);
     
     // End term marks
-    doc.text(`${endTermMarks}/${endTermMax}`, 680 * scale, (subjectStartY + index * yIncrement) * scale);
+    doc.text(`${endTermMarks}`, 680 * scale, (subjectStartY + index * yIncrement) * scale);
     
-    // Calculate grade based on percentage
-    const totalSubjectMarks = sessionalMarks + endTermMarks;
-    const totalSubjectMaxMarks = sessionalMax + endTermMax;
-    const percentage = (totalSubjectMarks / totalSubjectMaxMarks) * 100;
-    
-    let grade = 'F';
-    if (percentage >= 90) grade = 'A';
-    else if (percentage >= 80) grade = 'B';
-    else if (percentage >= 70) grade = 'C+';
-    else if (percentage >= 60) grade = 'C';
-    else if (percentage >= 50) grade = 'D';
-    
-    // Add grade
-    doc.text(grade, 773 * scale, (subjectStartY + index * yIncrement) * scale);
+    // Add grade from database
+    doc.text(result.grade, 773 * scale, (subjectStartY + index * yIncrement) * scale);
     
     // Update totals
-    totalMarks += totalSubjectMarks;
-    totalMaxMarks += totalSubjectMaxMarks;
+    totalMarks += sessionalMarks + endTermMarks;
+    totalMaxMarks += endTermMax;
   });
   
   // Add total marks at specific position based on original layout

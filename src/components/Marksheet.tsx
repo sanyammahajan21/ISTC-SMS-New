@@ -25,16 +25,20 @@ const MarksSheetCertificate = ({ student }: MarksSheetCertificateProps) => {
     const currentYear = new Date().getFullYear();
     const semesterNumber = Number(student.semesterId);
     
-
     if (semesterNumber % 2 === 0) {
-      return `FEBRUARY${currentYear} to JUNE ${currentYear}`;
+      return `FEBRUARY ${currentYear} to JUNE ${currentYear}`;
     } else {
-      return `JULY${currentYear-1} to JANUARY ${currentYear}`;
+      return `JULY ${currentYear-1} to JANUARY ${currentYear}`;
     }
   };
   
   const handleDownload = async () => {
     try {
+      // Filter results for current semester
+      const currentSemesterResults = student.results.filter(result => 
+        result.subject.semesterId === student.semesterId
+      );
+
       // Create a new PDF document
       const doc = new jsPDF({
         orientation: 'portrait',
@@ -91,9 +95,10 @@ const MarksSheetCertificate = ({ student }: MarksSheetCertificateProps) => {
       const subjectStartY = 1234 - 610; // From bottom of page
       const yIncrement = 26; // Space between subjects
       
-      student.results.forEach((result, index) => {
-        if (index >= 8) return; // Only display up to 8 subjects as in the original
-        
+      // Limit to 8 subjects or fewer if there are less
+      const displaySubjects = currentSemesterResults.slice(0, 8);
+      
+      displaySubjects.forEach((result, index) => {
         // Serial number
         doc.text(`${index + 1}`, 78 * scale, (subjectStartY + index * yIncrement) * scale);
         
@@ -104,7 +109,7 @@ const MarksSheetCertificate = ({ student }: MarksSheetCertificateProps) => {
         const sessionalMarks = Number(result.sessionalExam) || 0;
         const endTermMarks = Number(result.endTerm) || 0;
         const sessionalMax = 50;
-        const endTermMax = result.subject.maxMarks|| 100;
+        const endTermMax = result.subject.maxMarks || 100;
         
         // Sessional marks
         doc.text(`${sessionalMarks}`, 585 * scale, (subjectStartY + index * yIncrement) * scale);
@@ -114,21 +119,13 @@ const MarksSheetCertificate = ({ student }: MarksSheetCertificateProps) => {
         
         // Calculate grade based on percentage
         const totalSubjectMarks = sessionalMarks + endTermMarks;
-        const totalSubjectMaxMarks = sessionalMax + endTermMax;
-        const percentage = (totalSubjectMarks / totalSubjectMaxMarks) * 100;
-        
-        // let grade = 'F';
-        // if (percentage >= 90) grade = 'A';
-        // else if (percentage >= 80) grade = 'B';
-        // else if (percentage >= 70) grade = 'C+';
-        // else if (percentage >= 60) grade = 'C';
-        // else if (percentage >= 50) grade = 'D';
+        const totalSubjectMaxMarks = endTermMax;
         
         // Add grade
         doc.text(result.grade, 773 * scale, (subjectStartY + index * yIncrement) * scale);
         
         // Update totals
-        totalMarks += result.overallMark;
+        totalMarks += totalSubjectMarks;
         totalMaxMarks += totalSubjectMaxMarks;
       });
       
