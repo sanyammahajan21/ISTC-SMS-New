@@ -125,12 +125,12 @@ const TranscriptCertificate = ({ student, startDate, endDate }: TranscriptCertif
       
       // Add date at top
       doc.setFontSize(12);
-      doc.text(`Dated: ${formattedDate}`, 90, 38);
+      doc.text(`Dated: ${formattedDate}`, 90, 64);
       
       // Add TRANSCRIPT header
       doc.setFontSize(12);
       doc.setFont('times', 'bold');
-      doc.text('TRANSCRIPT', 105, 42, { align: 'center' });
+      doc.text('TRANSCRIPT', 105, 69, { align: 'center' });
       doc.setFont('times', 'normal');
       
       // Add first paragraph with student details (like marksheet)
@@ -139,7 +139,7 @@ const TranscriptCertificate = ({ student, startDate, endDate }: TranscriptCertif
 
       // Set the starting position for the text
       let xPos = 20;
-      let yPos = 50;  
+      let yPos = 75;  
 
       // Split the text into lines if it exceeds the width
       const lines = doc.splitTextToSize(fullText, 170); // 170 is the width for the text
@@ -151,7 +151,7 @@ const TranscriptCertificate = ({ student, startDate, endDate }: TranscriptCertif
       doc.text(`This transcript is being issued to ${student.name} at ${genderTerms.possessive} own request for higher education`, 20, yPos + 13);
 
       // Update yPos after the paragraph has been added
-      yPos += lines.length * 14 + 5; // Increase Y position based on the number of lines plus additional line
+      yPos += lines.length * 4 + 5; // Increase Y position based on the number of lines plus additional line
 
       // Add second paragraph for marks details
       const detailText = `Following is the detail of the marks secured by ${genderTerms.pronoun} in the eight Semesters during ${genderTerms.possessive} study at this institute.`;
