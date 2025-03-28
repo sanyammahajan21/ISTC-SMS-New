@@ -90,7 +90,7 @@ const StudentForm = ({
           error={errors?.password}
         />
       </div>
-      <span className="text-xs text-gray-400 font-medium">
+      <span className="text-l text-black font-medium">
         Personal Information
       </span>
       
@@ -163,9 +163,9 @@ const StudentForm = ({
           />
         )}
         <div className="flex flex-col gap-2 w-full md:w-1/4">
-          <label className="text-xs text-gray-500">Gender</label>
+          <label className="text-xs text-black">Gender</label>
           <select
-            className="ring-[1.5px] ring-gray-300 p-2 rounded-md text-sm w-full"
+            className="ring-[1.5px] ring-blue-950 p-2 rounded-md text-sm w-full"
             {...register("sex")}
             defaultValue={data?.sex}
           >
@@ -180,9 +180,9 @@ const StudentForm = ({
           )}
         </div>
         <div className="flex flex-col gap-2 w-full md:w-1/4">
-          <label className="text-xs text-gray-500">Semester</label>
+          <label className="text-xs text-black">Semester</label>
           <select
-            className="ring-[1.5px] ring-gray-300 p-2 rounded-md text-sm w-full"
+            className="ring-[1.5px] ring-blue-950 p-2 rounded-md text-sm w-full"
             {...register("semesterId")}
             defaultValue={data?.semesterId}
           >
@@ -199,9 +199,9 @@ const StudentForm = ({
           )}
         </div>
         <div className="flex flex-col gap-2 w-full md:w-1/4">
-          <label className="text-xs text-gray-500">Branch</label>
+          <label className="text-xs text-black">Branch</label>
           <select
-            className="ring-[1.5px] ring-gray-300 p-2 rounded-md text-sm w-full"
+            className="ring-[1.5px] ring-blue-950 p-2 rounded-md text-sm w-full"
             {...register("branchId")}
             defaultValue={data?.branchId}
           >

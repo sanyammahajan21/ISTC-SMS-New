@@ -73,11 +73,11 @@ const TeacherForm = ({
       <h1 className="text-xl font-semibold text-center md:w-3/4 mx-auto">
         {type === "create" ? "Create a new teacher" : "Update the teacher"}
       </h1>
-      <span className="text-l text-black-400 font-medium mt-">
+      <span className="text-l text-black font-medium ">
         Authentication Information
       </span>
       <div className="flex justify-between flex-wrap gap-4 ">
-        <InputField
+        <InputField 
           label="Username"
           name="username"
           defaultValue={data?.username}
@@ -106,9 +106,9 @@ const TeacherForm = ({
       <div className="flex justify-between flex-wrap gap-4">
         {/* Suffix Dropdown */}
         <div className="flex flex-col gap-2 w-full md:w-1/4">
-          <label className="text-xs text-gray-500">Prefix</label>
+          <label className="text-xs text-black">Prefix</label>
           <select
-            className="ring-[1.5px] ring-gray-300 p-2 rounded-md text-sm w-full"
+            className="ring-[1.5px] ring-blue-950 p-2 rounded-md text-sm w-full"
             {...register("suffix")}
             defaultValue={data?.suffix || "Mr."}
           >

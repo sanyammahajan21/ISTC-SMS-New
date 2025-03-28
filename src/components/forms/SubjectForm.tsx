@@ -130,9 +130,9 @@ const SubjectForm = ({
           />
         )}
         <div className="flex flex-col gap-2 w-full md:w-1/4">
-          <label className="text-xs text-gray-500">Type</label>
+          <label className="text-xs text-black">Type</label>
           <select
-            className="ring-[1.5px] ring-gray-300 p-2 rounded-md text-sm w-full"
+            className="ring-[1.5px] ring-blue-950 p-2 rounded-md text-sm w-full"
             {...register("type")}
             defaultValue={data?.type}
           >
@@ -146,9 +146,9 @@ const SubjectForm = ({
           )}
         </div>
         <div className="flex flex-col gap-2 w-full md:w-1/4">
-          <label className="text-xs text-gray-500">Branch</label>
+          <label className="text-xs text-black">Branch</label>
           <select
-            className="ring-[1.5px] ring-gray-300 p-2 rounded-md text-sm w-full"
+            className="ring-[1.5px] ring-blue-950 p-2 rounded-md text-sm w-full"
             {...register("branchId")}
             defaultValue={data?.branchId}
           >
@@ -174,9 +174,9 @@ const SubjectForm = ({
           )}
         </div>
         <div className="flex flex-col gap-2 w-full md:w-1/4">
-          <label className="text-xs text-gray-500">Semester</label>
+          <label className="text-xs text-black">Semester</label>
           <select
-            className="ring-[1.5px] ring-gray-300 p-2 rounded-md text-sm w-full"
+            className="ring-[1.5px] ring-blue-950 p-2 rounded-md text-sm w-full"
             {...register("semesterId")}
             defaultValue={data?.semesterId}
           >
@@ -193,7 +193,7 @@ const SubjectForm = ({
           )}
         </div>
         <div className="flex flex-col gap-2 w-full ">
-          <label className="text-xs text-gray-500">Teachers</label>
+          <label className="text-xs text-black">Teachers</label>
           <Select
             isMulti
             options={teacherOptions}
@@ -215,7 +215,7 @@ const SubjectForm = ({
           )}
         </div>
         <div className="flex flex-col gap-2 w-full">
-          <label className="text-xs text-gray-500">
+          <label className="text-xs text-black">
             Upload File (PDF, Image, Excel, max 10MB)
           </label>
           <input
@@ -237,7 +237,7 @@ const SubjectForm = ({
       {state.error && (
         <span className="text-red-500">Something went wrong!</span>
       )}
-      <button className="bg-blue-400 text-white p-2 rounded-md">
+      <button className="bg-blue-900 text-white p-2 rounded-md">
         {type === "create" ? "Create" : "Update"}
       </button>
     </form>
