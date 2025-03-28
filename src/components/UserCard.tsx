@@ -4,13 +4,14 @@ import Image from "next/image";
 const UserCard = async ({
   type,
 }: {
-  type: "admin" | "teacher" | "student" | "registrar";
+  type: "admin" | "teacher" | "student" | "registrar"| "theoryIncharge";
 }) => {
   const modelMap: Record<typeof type, any> = {
     admin: prisma.admin,
     teacher: prisma.teacher,
     student: prisma.student,
     registrar: prisma.registrar,
+    theoryIncharge: prisma.theoryIncharge,
   };
 
   const data = await modelMap[type].count();
@@ -36,6 +37,12 @@ const UserCard = async ({
       textColor: "text-green-800"
     },
     registrar: {
+      bgColor: "bg-gradient-to-br from-amber-50 to-amber-100 border-l-4 border-amber-600",
+      iconBg: "bg-amber-100",
+      iconPath: "/registrar.png",
+      textColor: "text-amber-800"
+    },
+    theoryIncharge: {
       bgColor: "bg-gradient-to-br from-amber-50 to-amber-100 border-l-4 border-amber-600",
       iconBg: "bg-amber-100",
       iconPath: "/registrar.png",
