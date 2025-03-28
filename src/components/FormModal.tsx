@@ -7,6 +7,7 @@ import {
   deleteSubject,
   deleteTeacher,
   deleteRegistrar,
+  deleteTheoryIncharge,
   deleteAnnouncement,
   deleteResult,
 } from "@/lib/actions";
@@ -26,6 +27,7 @@ const deleteActionMap = {
   exam: deleteExam,
 // TODO: OTHER DELETE ACTIONS
   registrar: deleteRegistrar,
+  theoryIncharge: deleteTheoryIncharge,
   result: deleteResult,
   attendance: deleteSubject,
   announcement: deleteAnnouncement,
@@ -37,6 +39,9 @@ const TeacherForm = dynamic(() => import("./forms/TeacherForm"), {
   loading: () => <h1>Loading...</h1>,
 });
 const RegistrarForm = dynamic(() => import("./forms/RegistrarForm"), {
+  loading: () => <h1>Loading...</h1>,
+});
+const TheoryInchargeForm = dynamic(() => import("./forms/TheoryInchargeForm"), {
   loading: () => <h1>Loading...</h1>,
 });
 const StudentForm = dynamic(() => import("./forms/StudentForm"), {
@@ -93,6 +98,14 @@ const forms: {
   ),
   registrar: (setOpen, type, data, relatedData) => (
     <RegistrarForm
+      type={type}
+      data={data}
+      setOpen={setOpen}
+      relatedData={relatedData}
+    />
+  ),
+  theoryIncharge: (setOpen, type, data, relatedData) => (
+    <TheoryInchargeForm
       type={type}
       data={data}
       setOpen={setOpen}

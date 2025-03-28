@@ -44,7 +44,7 @@ const StudentListPage = async ({
       accessor: "gender",
       className: "hidden lg:table-cell",
     },
-    ...(role === "admin" || role === "registrar"
+    ...(role === "admin" || role === "registrar" || role === "theoryIncharge"
       ? [
           {
             header: "Actions",
@@ -83,7 +83,7 @@ const StudentListPage = async ({
               <>View</>
             </button>
           </Link>
-          {(role === "admin" || role === "registrar") && (
+          {(role === "admin" || role === "registrar" || role === "theoryIncharge") && (
             <FormContainer table="student" type="delete" id={item.id} />
           )}
           {(role === "teacher" ) && (
@@ -184,7 +184,7 @@ const StudentListPage = async ({
               semester={semester}
             />
             {(
-              role === "admin" || role === "registrar") && (
+              role === "admin" || role === "registrar" || role === "theoryIncharge") && (
               <FormContainer table="student" type="create" />
             )}
           </div>

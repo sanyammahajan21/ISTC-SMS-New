@@ -90,7 +90,7 @@ const SubjectDetailsPage = async ({
       accessor: "gender",
       className: "hidden lg:table-cell",
     },
-    ...(role === "admin" || role === "registrar" || role == 'teacher'
+    ...(role === "admin" || role === "registrar" || role == 'teacher'|| role === "theoryIncharge"
       ? [
           {
             header: "Actions",
@@ -128,10 +128,10 @@ const SubjectDetailsPage = async ({
               <>View</>
             </button>
           </Link> */}
-          {(role === "admin" || role === "registrar") && (
+          {(role === "admin" || role === "registrar" || role === "theoryIncharge") && (
             <FormContainer table="student" type="delete" id={item.id} />
           )}
-          {(role === "teacher" || role === "registrar") && (
+          {(role === "teacher" || role === "registrar" || role === "theoryIncharge") && (
             <FormContainer table="result" type="create" data={{ student: item }} />
           )}
         </div>

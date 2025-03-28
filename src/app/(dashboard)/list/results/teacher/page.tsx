@@ -31,7 +31,7 @@ const ResultListPage = async ({ searchParams }: { searchParams: { [key: string]:
       <td className="hidden md:table-cell">{item.subject.name}</td>
       <td>
         <div className="flex items-center gap-2">
-          {(role === "registrar" || role === "teacher") && (
+          {(role === "registrar" || role === "teacher" || role === "theoryIncharge") && (
             <>
               <FormContainer table="result" type="update" data={item} />
               <FormContainer table="result" type="delete" id={item.id} />

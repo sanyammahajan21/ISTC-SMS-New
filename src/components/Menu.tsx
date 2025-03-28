@@ -22,7 +22,7 @@ const menuItems = [
         icon: "/student.png",
         label: "Students",
         href: "/list/students",
-        visible: ["admin", "teacher", "registrar"],
+        visible: ["admin", "teacher", "registrar","theoryIncharge"],
       },
       {
         icon: "/registrar.png",
@@ -64,7 +64,7 @@ const menuItems = [
         icon: "/exam.png",
         label: "Exams",
         href: "/list/exams",
-        visible: ["teacher", "registrar"],
+        visible: ["teacher", "registrar", "theoryIncharge"],
       },
       {
         icon: "/result.png",

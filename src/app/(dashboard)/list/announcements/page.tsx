@@ -46,7 +46,7 @@ const AnnouncementListPage = async ({
       accessor: "file",
       className: "hidden md:table-cell",
     },
-    ...(role === "admin" || role === "registrar"
+    ...(role === "admin" || role === "registrar"|| role === "theoryIncharge"
       ? [
           {
             header: "Actions",
@@ -83,7 +83,7 @@ const AnnouncementListPage = async ({
       </td>
       <td>
         <div className="flex items-center gap-2">
-          {(role === "admin" || role === "registrar") && (
+          {(role === "admin" || role === "registrar" || role === "theoryIncharge") && (
             <>
               <FormContainer table="announcement" type="update" data={item} />
               <FormContainer table="announcement" type="delete" id={item.id} />
@@ -156,7 +156,7 @@ const AnnouncementListPage = async ({
             <TableSearch />
           </div>
           <div className="flex items-center gap-3 self-end">
-            {(role === "admin" || role === "registrar") && (
+            {(role === "admin" || role === "registrar" || role === "theoryIncharge") && (
               <FormContainer table="announcement" type="create" />
             )}
           </div>

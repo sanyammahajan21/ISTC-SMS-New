@@ -143,4 +143,4 @@ const TheoryInchargeListPage = async ({
   );
 };
 
-export default RegistrarListPage;
+export default TheoryInchargeListPage;
