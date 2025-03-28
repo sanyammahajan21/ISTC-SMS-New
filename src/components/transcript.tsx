@@ -151,7 +151,7 @@ const TranscriptCertificate = ({ student, startDate, endDate }: TranscriptCertif
       doc.text(`This transcript is being issued to ${student.name} at ${genderTerms.possessive} own request for higher education`, 20, yPos + 13);
 
       // Update yPos after the paragraph has been added
-      yPos += lines.length * 5 + 5; // Increase Y position based on the number of lines plus additional line
+      yPos += lines.length * 14 + 5; // Increase Y position based on the number of lines plus additional line
 
       // Add second paragraph for marks details
       const detailText = `Following is the detail of the marks secured by ${genderTerms.pronoun} in the eight Semesters during ${genderTerms.possessive} study at this institute.`;

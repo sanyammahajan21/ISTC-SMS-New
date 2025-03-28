@@ -27,8 +27,8 @@ const Navbar = async () => {
           className="w-[200px] p-3 bg-transparent outline-none"
         />
       </div> */}
-      <div className="flex items-center gap-6 text-2xl justify-end w-full font-extrabold font-serif text-blue-950">
-        INDO SWISS TRIANING CENTER,SECTOR 30C, CHANDIGARH 
+      <div className="flex items-center gap-6 text-2xl justify-end w-full font-extrabold font-times text-blue-950">
+        INDO SWISS TRIANING CENTRE,SECTOR 30C, CHANDIGARH 
         </div>
       {/* ICONS AND USER */}
       <div className="flex items-center gap-6 justify-end w-full">
