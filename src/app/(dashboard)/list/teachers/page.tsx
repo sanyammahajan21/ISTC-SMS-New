@@ -38,7 +38,7 @@ const TeacherListPage = async ({
       accessor: "branches",
       className: "hidden md:table-cell",
     },
-    ...(role === "admin" || role === "registrar"
+    ...(role === "admin" || role === "registrar" || role === "theoryIncharge"
       ? [
           {
             header: "Actions",
@@ -83,7 +83,7 @@ const TeacherListPage = async ({
               <>View</>
             </button>
           </Link>
-          {(role === "registrar" || role === "admin") && (
+          {(role === "registrar" || role === "admin" || role === "theoryIncharge") && (
             <>
               <FormContainer table="teacher" type="update" data={item} />
               <FormContainer table="teacher" type="delete" id={item.id} />
@@ -181,7 +181,7 @@ const TeacherListPage = async ({
               // semester={searchParams.semester}
             />
 
-            {(role === "admin" || role === "registrar") && (
+            {(role === "admin" || role === "registrar" || role === "theoryIncharge") && (
               <FormContainer table="teacher" type="create" />
             )}
           </div>

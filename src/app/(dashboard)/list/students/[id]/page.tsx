@@ -81,7 +81,7 @@ const SingleStudentPage = async ({
                   <h1 className="text-xl font-semibold text-gray-800">
                     {student.name}
                   </h1>
-                  {(role === "admin" || role === "registrar") && (
+                  {(role === "admin" || role === "registrar" || role === "theoryIncharge") && (
                     <FormContainer table="student" type="update" data={student} />
                   )}
                 </div>

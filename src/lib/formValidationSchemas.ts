@@ -79,7 +79,7 @@ export const registrarSchema = z.object({
 
 export type RegistrarSchema = z.infer<typeof registrarSchema>;
 
-export const teacherInchargeSchema = z.object({
+export const theoryInchargeSchema = z.object({
   id: z.string().optional(),
   username: z
     .string()
@@ -99,7 +99,7 @@ export const teacherInchargeSchema = z.object({
   phone: z.string().optional(),
 });
 
-export type TeacherInchargeSchema = z.infer<typeof teacherInchargeSchema>;
+export type TheoryInchargeSchema = z.infer<typeof theoryInchargeSchema>;
 
 
 export const studentSchema = z.object({

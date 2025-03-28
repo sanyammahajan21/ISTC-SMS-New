@@ -7,7 +7,7 @@ export type FormContainerProps = {
     | "teacher"
     | "student"
     | "registrar"
-    | "teacherIncharge"
+    | "theoryIncharge"
     | "subject"
     | "branch"
     | "exam"

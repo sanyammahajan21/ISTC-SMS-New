@@ -28,6 +28,8 @@ const AdminPage = ({
               <UserCard type="teacher" />
               <UserCard type="student" />
               <UserCard type="registrar" />
+              <UserCard type="theoryIncharge" />
+
             </div>
           </div>
           

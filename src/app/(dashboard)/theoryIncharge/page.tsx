@@ -3,7 +3,7 @@ import AttendanceChartContainer from "@/components/AttendanceChartContainer";
 import EventCalendarContainer from "@/components/EventCalendarContainer";
 import UserCard from "@/components/UserCard";
 
-const TeacherInchargePage = ({
+const TheoryInchargePage = ({
   searchParams,
 }: {
   searchParams: { [keys: string]: string | undefined };
@@ -13,7 +13,7 @@ const TeacherInchargePage = ({
       {/* Header Section */}
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-black mb-2 font-mono">
-          TEACHER INCHARGE DASHBOARD
+          THEORY INCHARGE DASHBOARD
         </h1>
         <div className="h-1 w-24 bg-red-500"></div>
       </div>
@@ -66,4 +66,4 @@ const TeacherInchargePage = ({
   );
 };
 
-export default TeacherInchargePage;
+export default TheoryInchargePage;

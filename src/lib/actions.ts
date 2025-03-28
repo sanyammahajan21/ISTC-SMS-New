@@ -10,7 +10,7 @@ import {
   TeacherSchema,
   AnnouncementSchema,
   ResultSchema,
-  TeacherInchargeSchema,
+  TheoryInchargeSchema,
 } from "./formValidationSchemas";
 import prisma from "./prisma";
 import { clerkClient } from "@clerk/nextjs/server";
@@ -453,19 +453,19 @@ export const deleteRegistrar = async (
   }
 };
 
-export const createTeacherIncharge = async (
+export const createTheoryIncharge = async (
   currentState: CurrentState,
-  data: TeacherInchargeSchema
+  data: TheoryInchargeSchema
 ) => {
   try {
     const user = await clerkClient.users.createUser({
       username: data.username,
       password: data.password || "",
       // name: data.name,
-      publicMetadata: { role: "teacherIncharge" },
+      publicMetadata: { role: "theoryIncharge" },
     });
 
-    await prisma.teacherIncharge.create({
+    await prisma.theoryIncharge.create({
       data: {
         id: user.id,
         username: data.username,
@@ -483,9 +483,9 @@ export const createTeacherIncharge = async (
   }
 };
 
-export const updateTeacherIncharge = async (
+export const updateTheoryIncharge = async (
   currentState: CurrentState,
-  data: TeacherInchargeSchema
+  data: TheoryInchargeSchema
 ) => {
   if (!data.id) {
     return { success: false, error: true };
@@ -497,7 +497,7 @@ export const updateTeacherIncharge = async (
       name: data.name,
     });
 
-    await prisma.teacherIncharge.update({
+    await prisma.theoryIncharge.update({
       where: {
         id: data.id,
       },
@@ -517,7 +517,7 @@ export const updateTeacherIncharge = async (
   }
 };
 
-export const deleteTeacherIncharge = async (
+export const deleteTheoryIncharge = async (
   currentState: CurrentState,
   data: FormData
 ) => {
@@ -525,7 +525,7 @@ export const deleteTeacherIncharge = async (
   try {
     await clerkClient.users.deleteUser(id);
 
-    await prisma.teacherIncharge.delete({
+    await prisma.theoryIncharge.delete({
       where: {
         id: id,
       },

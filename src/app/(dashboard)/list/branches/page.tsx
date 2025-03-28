@@ -31,7 +31,7 @@ const columns = [
     className: "hidden md:table-cell",
   },
   
-  ...(role === "registrar"
+  ...(role === "registrar"|| role === "theoryIncharge"
     ? [
         {
           header: "Actions",
@@ -50,7 +50,7 @@ const renderRow = (item: BranchList) => (
     <td className="hidden md:table-cell">{item.capacity}</td>
     <td>
       <div className="flex items-center gap-2">
-        {role === "registrar" && (
+        {role === "registrar" || role === "theoryIncharge" && (
           <>
             <FormContainer table="branch" type="update" data={item} />
             <FormContainer table="branch" type="delete" id={item.id} />
@@ -126,7 +126,7 @@ const renderRow = (item: BranchList) => (
               <span className="ml-2 text-sm font-medium text-blue-700 hidden md:inline">Sort</span>
             </button>
             
-            {role === "registrar" && (
+            {role === "registrar" || role === "theoryIncharge" && (
               <FormContainer table="branch" type="create" />
             )}
           </div>
