@@ -26,14 +26,14 @@ const TheoryInchargeForm = ({
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<TheoryInchargerSchema>({
+  } = useForm<TheoryInchargeSchema>({
     resolver: zodResolver(theoryInchargeSchema),
   });
 
   const [img, setImg] = useState<any>();
 
   const [state, formAction] = useFormState(
-    type === "create" ? createRegistrar : updateRegistrar,
+    type === "create" ? createTheoryIncharge : updateTheoryIncharge,
     {
       success: false,
       error: false,
@@ -49,7 +49,7 @@ const TheoryInchargeForm = ({
 
   useEffect(() => {
     if (state.success) {
-      toast(`Registar has been ${type === "create" ? "created" : "updated"}!`);
+      toast(`Theory Incharge has been ${type === "create" ? "created" : "updated"}!`);
       setOpen(false);
       router.refresh();
     }
@@ -60,7 +60,7 @@ const TheoryInchargeForm = ({
   return (
     <form className="flex flex-col gap-10" onSubmit={onSubmit}>
       <h1 className="text-xl font-semibold text-center">
-        {type === "create" ? "Create a new Registrar" : "Update the Registrar"}
+        {type === "create" ? "Create a new Theory Incharge" : "Update the Theory Incharge"}
       </h1>
       <span className="text-xs text-black font-bold">
         Authentication Information
@@ -128,4 +128,4 @@ const TheoryInchargeForm = ({
   );
 };
 
-export default RegistrarForm;
+export default TheoryInchargeForm;
