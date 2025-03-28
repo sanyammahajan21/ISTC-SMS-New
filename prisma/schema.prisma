@@ -62,6 +62,15 @@ model Registrar {
   createdAt DateTime @default(now())
 }
 
+model teacherIncharge {
+  id        String   @id @default(uuid())
+  username  String   @unique
+  name      String
+  email     String?  @unique
+  phone     String?  @unique
+  createdAt DateTime @default(now())
+}
+
 model Semester {
   id       Int       @id @default(autoincrement())
   level    Int

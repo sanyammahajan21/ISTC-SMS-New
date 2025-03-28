@@ -79,6 +79,28 @@ export const registrarSchema = z.object({
 
 export type RegistrarSchema = z.infer<typeof registrarSchema>;
 
+export const teacherInchargeSchema = z.object({
+  id: z.string().optional(),
+  username: z
+    .string()
+    .min(3, { message: "Username must be at least 3 characters long!" })
+    .max(20, { message: "Username must be at most 20 characters long!" }),
+  password: z
+    .string()
+    .min(8, { message: "Password must be at least 8 characters long!" })
+    .optional()
+    .or(z.literal("")),
+  name: z.string().min(1, { message: "Name is required!" }),
+  email: z
+    .string()
+    .email({ message: "Invalid email address!" })
+    .optional()
+    .or(z.literal("")),
+  phone: z.string().optional(),
+});
+
+export type TeacherInchargeSchema = z.infer<typeof teacherInchargeSchema>;
+
 
 export const studentSchema = z.object({
   id: z.string().optional(),
