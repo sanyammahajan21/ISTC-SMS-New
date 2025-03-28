@@ -4,14 +4,14 @@ import Table from "@/components/Table";
 import TableSearch from "@/components/TableSearch";
 import prisma from "@/lib/prisma";
 import { ITEM_PER_PAGE } from "@/lib/settings";
-import { TeacherIncharge, Prisma } from "@prisma/client";
+import { TheoryIncharge, Prisma } from "@prisma/client";
 import Image from "next/image";
 
 import { auth } from "@clerk/nextjs/server";
 
-type TeacherInchargeList = TeacherIncharge;
+type TheoryInchargeList = TheoryIncharge;
 
-const TeacherInchargeListPage = async ({
+const TheoryInchargeListPage = async ({
   searchParams,
 }: {
   searchParams: { [key: string]: string | undefined };
@@ -25,7 +25,7 @@ const TeacherInchargeListPage = async ({
       accessor: "username",
     },
     {
-      header: "TeacherIncharge Id",
+      header: "TheoryIncharge Id",
       accessor: "id",
       className: "hidden md:table-cell",
     },
@@ -39,7 +39,7 @@ const TeacherInchargeListPage = async ({
       : []),
   ];
 
-  const renderRow = (item: TeacherInchargerList) => (
+  const renderRow = (item: TheoryInchargerList) => (
     <tr
       key={item.id}
       className="border-b border-gray-200 even:bg-slate-50 text-sm hover:bg-lamaPurpleLight"
@@ -54,8 +54,8 @@ const TeacherInchargeListPage = async ({
         <div className="flex items-center gap-2">
           {role === "admin" && (
             <>
-              <FormContainer table="teacherIncharge" type="update" data={item} />
-              <FormContainer table="teacherIncharge" type="delete" id={item.id} />
+              <FormContainer table="theoryIncharge" type="update" data={item} />
+              <FormContainer table="theoryIncharge" type="delete" id={item.id} />
             </>
           )}
         </div>
@@ -68,7 +68,7 @@ const TeacherInchargeListPage = async ({
   const p = page ? parseInt(page) : 1;
 
   // URL PARAMS CONDITION
-  const query: Prisma.TeacherInchargeWhereInput = {};
+  const query: Prisma.TheoryInchargeWhereInput = {};
 
   if (queryParams) {
     for (const [key, value] of Object.entries(queryParams)) {
@@ -85,12 +85,12 @@ const TeacherInchargeListPage = async ({
   }
 
   const [data, count] = await prisma.$transaction([
-    prisma.teacherIncharge.findMany({
+    prisma.theoryIncharge.findMany({
       where: query,
       take: ITEM_PER_PAGE,
       skip: ITEM_PER_PAGE * (p - 1),
     }),
-    prisma.teacherIncharge.count({ where: query }),
+    prisma.theoryIncharge.count({ where: query }),
   ]);
 
   return (
@@ -124,7 +124,7 @@ const TeacherInchargeListPage = async ({
             </button> */}
             
             {role === "admin" && (
-              <FormContainer table="teacherIncharge" type="create" />
+              <FormContainer table="theoryIncharge" type="create" />
             )}
           </div>
         </div>

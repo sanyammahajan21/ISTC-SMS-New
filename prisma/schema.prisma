@@ -62,7 +62,7 @@ model Registrar {
   createdAt DateTime @default(now())
 }
 
-model teacherIncharge {
+model TheoryIncharge {
   id        String   @id @default(uuid())
   username  String   @unique
   name      String

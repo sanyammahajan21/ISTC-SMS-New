@@ -3,7 +3,7 @@ import AttendanceChartContainer from "@/components/AttendanceChartContainer";
 import EventCalendarContainer from "@/components/EventCalendarContainer";
 import UserCard from "@/components/UserCard";
 
-const TeacherInchargePage = ({
+const TheoryInchargePage = ({
   searchParams,
 }: {
   searchParams: { [keys: string]: string | undefined };
@@ -66,4 +66,4 @@ const TeacherInchargePage = ({
   );
 };
 
-export default TeacherInchargePage;
+export default TheoryInchargePage;
